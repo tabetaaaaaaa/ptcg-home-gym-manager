@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export', # django-import-export の追加
+    'django_filters', # django-filter の追加
     'cards.apps.CardsConfig',
     'tailwind', # django-tailwind の追加
 ]
