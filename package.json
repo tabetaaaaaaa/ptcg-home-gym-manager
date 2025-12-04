@@ -4,8 +4,8 @@
   "description": "Pokemon Card Management App",
   "main": "index.js",
   "scripts": {
-    "build": "tailwindcss -i ./static/css/src/input.css -o ./static/css/dist/output.css",
-    "watch": "tailwindcss -i ./static/css/src/input.css -o ./static/css/dist/output.css --watch"
+    "build": "tailwindcss -i ./static/css/src/input.css -o ./static/css/dist/styles.css",
+    "watch": "tailwindcss -i ./static/css/src/input.css -o ./static/css/dist/styles.css --watch"
   },
   "keywords": [],
   "author": "",

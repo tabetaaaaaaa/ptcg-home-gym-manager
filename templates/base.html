@@ -1,0 +1,28 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="ja" data-theme="corporate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポケモンカード管理</title>
+    {% tailwind_css %}
+</head>
+<body>
+    {# ヘッダー #}
+    <div class="navbar bg-base-100">
+        <a class="btn btn-ghost text-xl" href="/">ポケモンカード管理</a>
+    </div>
+
+    {# メインコンテンツ #}
+    <main class="container mx-auto p-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    {# フッター #}
+    <footer class="footer footer-center p-4 bg-base-300 text-base-content">
+        <aside>
+            <p>Copyright © {% now "Y" %} - All right reserved by PokeApp</p>
+        </aside>
+    </footer>
+</body>
+</html>

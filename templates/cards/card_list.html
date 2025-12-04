@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-8 text-center tracking-wide">ポケモンカード一覧</h1>
+
+    {% if card_list %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for card in card_list %}
+        <div class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1">
+            <figure class="px-10 pt-10">
+                <img src="{% if card.image_path %}{{ MEDIA_URL }}{{ card.image_path }}{% else %}{% static 'images/nonepic.png' %}{% endif %}" alt="{{ card.name }}" class="rounded-xl h-48 w-full object-contain" />
+            </figure>
+            <div class="card-body items-center text-center">
+                <h2 class="card-title">{{ card.name }}</h2>
+                <p class="text-lg font-semibold">{{ card.quantity }}枚</p>
+                
+                <div class="flex flex-wrap justify-center gap-1 my-2">
+                    <span class="badge badge-primary">{{ card.evolution_stage.name }}</span>
+                    {% for type in card.types.all %}
+                        <span class="badge badge-secondary">{{ type.name }}</span>
+                    {% endfor %}
+                    {% for feature in card.special_features.all %}
+                        <span class="badge badge-accent">{{ feature.name }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="collapse collapse-arrow bg-base-200 mt-4">
+                    <input type="checkbox" /> 
+                    <div class="collapse-title text-sm font-medium">
+                        詳細情報
+                    </div>
+                    <div class="collapse-content text-left"> 
+                        <ul class="list-disc list-inside text-sm">
+                            {% if card.evolves_from %}
+                                <li>進化元: {{ card.evolves_from.name }}</li>
+                            {% endif %}
+                            {% if card.move_types.all %}
+                                <li>わざの属性: 
+                                    {% for move_type in card.move_types.all %}
+                                        <span class="badge badge-outline badge-sm">{{ move_type.name }}</span>
+                                    {% endfor %}
+                                </li>
+                            {% endif %}
+                            {% if card.memo %}
+                                <li>メモ: {{ card.memo|linebreaksbr }}</li>
+                            {% endif %}
+                            <li>登録日時: {{ card.created_at|date:"Y/m/d H:i" }}</li>
+                            <li>更新日時: {{ card.updated_at|date:"Y/m/d H:i" }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <p class="text-xl text-gray-500">まだカードが登録されていません。</p>
+        <a href="/admin/" class="btn btn-primary mt-4">管理画面でカードを登録する</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

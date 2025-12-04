@@ -37,5 +37,4 @@ COPY package.json package-lock.json* ./
 # `npm ci`の方がロックファイルに基づいてクリーンインストールするため、より再現性が高くなります
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# ソースコードのコピー
-COPY . .
+# ソースコードはdocker-compose.ymlのvolumesでマウントするため、ここではコピーしない
