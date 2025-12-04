@@ -26,3 +26,7 @@ env/
 # OS specific
 .DS_Store
 Thumbs.db
+
+# Node.js
+node_modules/
+/static/css/dist/

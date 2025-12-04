@@ -1,10 +1,11 @@
 services:
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      bash -c "npm run watch &
+              python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
-      - ./media:/app/media
     ports:
       - "8000:8000"
     depends_on:
@@ -18,8 +19,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./.env
-    ports:
-      - "5432:5432"
 
 volumes:
   postgres_data:
