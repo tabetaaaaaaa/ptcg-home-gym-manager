@@ -1,0 +1,46 @@
+{% load static %}
+<div id="card-{{ card.pk }}" class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1">
+    <figure class="px-10 pt-10">
+        <img src="{% if card.image_path %}{{ MEDIA_URL }}{{ card.image_path }}{% else %}{% static 'images/nonepic.png' %}{% endif %}" alt="{{ card.name }}" class="rounded-xl h-48 w-full object-contain" />
+    </figure>
+    <div class="card-body items-center text-center">
+        <h2 class="card-title">{{ card.name }}</h2>
+        <p class="text-lg font-semibold">{{ card.quantity }}枚</p>
+        
+        <div class="flex flex-wrap justify-center gap-1 my-2">
+            <span class="badge badge-primary">{{ card.evolution_stage.name }}</span>
+            {% for type in card.types.all %}
+                <span class="badge badge-secondary">{{ type.name }}</span>
+            {% endfor %}
+            {% for feature in card.special_features.all %}
+                <span class="badge badge-accent">{{ feature.name }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="collapse collapse-arrow bg-base-200 mt-4">
+            <input type="checkbox" /> 
+            <div class="collapse-title text-sm font-medium">
+                詳細情報
+            </div>
+            <div class="collapse-content text-left"> 
+                <ul class="list-disc list-inside text-sm">
+                    {% if card.evolves_from %}
+                        <li>進化元: {{ card.evolves_from.name }}</li>
+                    {% endif %}
+                    {% if card.move_types.all %}
+                        <li>わざの属性: 
+                            {% for move_type in card.move_types.all %}
+                                <span class="badge badge-outline badge-sm">{{ move_type.name }}</span>
+                            {% endfor %}
+                        </li>
+                    {% endif %}
+                    {% if card.memo %}
+                        <li>メモ: {{ card.memo|linebreaksbr }}</li>
+                    {% endif %}
+                    <li>登録日時: {{ card.created_at|date:"Y/m/d H:i" }}</li>
+                    <li>更新日時: {{ card.updated_at|date:"Y/m/d H:i" }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

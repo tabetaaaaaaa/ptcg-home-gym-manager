@@ -45,11 +45,13 @@ INSTALLED_APPS = [
     'django_filters', # django-filter の追加
     'cards.apps.CardsConfig',
     'tailwind', # django-tailwind の追加
+    'django_htmx', # django-htmx の追加
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django_htmx.middleware.HtmxMiddleware', # django-htmx のミドルウェア
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
