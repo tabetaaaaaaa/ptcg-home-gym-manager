@@ -48,7 +48,7 @@ class PokemonCard(models.Model):
     """ポケモンカード"""
     name = models.CharField("カード名称", max_length=100)
     quantity = models.PositiveIntegerField("所持枚数", default=0)
-    image_path = models.CharField("画像ファイルパス", max_length=255, null=True, blank=True)
+    image = models.ImageField("画像", upload_to='cards/', null=True, blank=True)
     memo = models.TextField("メモ", null=True, blank=True)
     
     # 外部キー (Foreign Key)

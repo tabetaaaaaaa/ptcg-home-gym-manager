@@ -14,5 +14,5 @@ class PokemonCardForm(forms.ModelForm):
             'special_features': forms.SelectMultiple(attrs={'class': 'select select-bordered w-full'}),
             'move_types': forms.SelectMultiple(attrs={'class': 'select select-bordered w-full'}),
             'memo': forms.Textarea(attrs={'class': 'textarea textarea-bordered w-full', 'rows': 3}),
-            'image_path': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered w-full'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered w-full'}),
         }

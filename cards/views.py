@@ -8,7 +8,7 @@ from .forms import PokemonCardForm
 
 def card_create(request):
     if request.method == 'POST':
-        form = PokemonCardForm(request.POST)
+        form = PokemonCardForm(request.POST, request.FILES)
         if form.is_valid():
             card = form.save()
             # データベースからリレーションを再取得
@@ -31,7 +31,7 @@ def card_create(request):
 def card_edit(request, pk):
     card = get_object_or_404(PokemonCard, pk=pk)
     if request.method == 'POST':
-        form = PokemonCardForm(request.POST, instance=card)
+        form = PokemonCardForm(request.POST, request.FILES, instance=card)
         if form.is_valid():
             card = form.save()
             # データベースからリレーションを再取得

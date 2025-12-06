@@ -15,7 +15,7 @@
         </button>
     </div>
     <figure class="px-10 pt-10">
-        <img src="{% if card.image_path %}{{ MEDIA_URL }}{{ card.image_path }}{% else %}{% static 'images/nonepic.png' %}{% endif %}" alt="{{ card.name }}" class="rounded-xl h-48 w-full object-contain" />
+        <img src="{% if card.image %}{{ card.image.url }}{% else %}{% static 'images/nonepic.png' %}{% endif %}" alt="{{ card.name }}" class="rounded-xl h-48 w-full object-contain" />
     </figure>
     <div class="card-body items-center text-center">
         <h2 class="card-title">{{ card.name }}</h2>

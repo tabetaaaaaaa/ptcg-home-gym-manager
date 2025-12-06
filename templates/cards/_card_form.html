@@ -12,6 +12,7 @@
             hx-target="#card-grid"
             hx-swap="afterbegin"
             {% endif %}
+            enctype="multipart/form-data"
             hx-indicator=".htmx-indicator"
         >
             {% csrf_token %}
@@ -73,3 +74,4 @@
         }, { once: true });
     })();
 </script>
+
