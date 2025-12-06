@@ -21,41 +21,7 @@
               hx-trigger="change, submit"
               hx-target="#card-list-container"
               hx-swap="innerHTML">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                
-                <div class="form-control">
-                    <label class="label"><span class="label-text">{{ filter.form.name.label }}</span></label>
-                    {{ filter.form.name }}
-                </div>
-                
-                <div class="form-control">
-                    <label class="label"><span class="label-text">{{ filter.form.types.label }}</span></label>
-                    {{ filter.form.types }}
-                </div>
-
-                <div class="form-control">
-                    <label class="label"><span class="label-text">{{ filter.form.evolution_stage.label }}</span></label>
-                    {{ filter.form.evolution_stage }}
-                </div>
-
-                <div class="form-control">
-                    <label class="label"><span class="label-text">{{ filter.form.special_features.label }}</span></label>
-                    {{ filter.form.special_features }}
-                </div>
-
-                <div class="form-control">
-                    <label class="label"><span class="label-text">{{ filter.form.move_types.label }}</span></label>
-                    {{ filter.form.move_types }}
-                </div>
-                
-                {# ソート機能のドロップダウンを追加 #}
-                <div class="form-control">
-                    <label class="label"><span class="label-text">{{ filter.form.ordering.label }}</span></label>
-                    {{ filter.form.ordering|add_class:"select select-bordered w-full" }}
-                </div>
-
-            </div>
-            <div class="flex justify-end gap-2 mt-4">
+                        {% include "cards/_search_form.html" %}            <div class="flex justify-end gap-2 mt-4">
                 <a href="{% url 'cards:card_list' %}" class="btn btn-ghost">リセット</a>
             </div>
         </form>

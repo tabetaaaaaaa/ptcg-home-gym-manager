@@ -29,8 +29,8 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # It reads a comma-separated string from the environment variable and splits it into a list.
 # The default is set to local hosts for development purposes.
+# ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
-
 
 # Application definition
 

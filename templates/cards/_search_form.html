@@ -1,0 +1,87 @@
+{% load widget_tweaks %}
+
+<div class="grid grid-cols-1 gap-4 mb-4">
+    <div class="form-control">
+        <label class="label"><span class="label-text">{{ filter.form.name.label }}</span></label>
+        {{ filter.form.name }}
+    </div>
+</div>
+
+<div class="flex flex-col gap-4">
+    {# Types Filter #}
+    <div class="collapse collapse-plus bg-base-100 rounded-lg">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium">
+            {{ filter.form.types.label }}
+        </div>
+        <div class="collapse-content">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            {% for choice in filter.form.types %}
+                <label class="label cursor-pointer justify-start gap-3">
+                    {{ choice.tag }}
+                    <span class="label-text">{{ choice.choice_label }}</span>
+                </label>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Evolution Stage Filter #}
+    <div class="collapse collapse-plus bg-base-100 rounded-lg">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium">
+            {{ filter.form.evolution_stage.label }}
+        </div>
+        <div class="collapse-content">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-x-4 gap-y-2 p-2">
+            {% for choice in filter.form.evolution_stage %}
+                <label class="label cursor-pointer justify-start gap-3">
+                    {{ choice.tag }}
+                    <span class="label-text">{{ choice.choice_label }}</span>
+                </label>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Special Features Filter #}
+    <div class="collapse collapse-plus bg-base-100 rounded-lg">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium">
+                {{ filter.form.special_features.label }}
+            </div>
+            <div class="collapse-content">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-x-4 gap-y-2 p-2">
+                {% for choice in filter.form.special_features %}
+                    <label class="label cursor-pointer justify-start gap-3">
+                        {{ choice.tag }}
+                        <span class="label-text">{{ choice.choice_label }}</span>
+                    </label>
+                {% endfor %}
+                </div>
+            </div>    </div>
+
+    {# Move Types Filter #}
+    <div class="collapse collapse-plus bg-base-100 rounded-lg">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium">
+            {{ filter.form.move_types.label }}
+        </div>
+        <div class="collapse-content">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            {% for choice in filter.form.move_types %}
+                <label class="label cursor-pointer justify-start gap-3">
+                    {{ choice.tag }}
+                    <span class="label-text">{{ choice.choice_label }}</span>
+                </label>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mt-4 flex justify-end">
+    <div class="form-control w-full sm:w-1/2 md:w-1/3">
+        <label class="label"><span class="label-text">{{ filter.form.ordering.label }}</span></label>
+        {{ filter.form.ordering|add_class:"select select-bordered w-full" }}
+    </div>
+</div>

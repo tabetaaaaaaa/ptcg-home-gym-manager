@@ -11,28 +11,28 @@ class PokemonCardFilter(django_filters.FilterSet):
         widget=forms.TextInput(attrs={'class': 'input input-bordered w-full'})
     )
 
-    types = django_filters.ModelChoiceFilter(
+    types = django_filters.ModelMultipleChoiceFilter(
         queryset=Type.objects.all(),
         label='タイプ',
-        widget=forms.Select(attrs={'class': 'select select-bordered w-full'})
+        widget=forms.CheckboxSelectMultiple
     )
 
-    evolution_stage = django_filters.ModelChoiceFilter(
+    evolution_stage = django_filters.ModelMultipleChoiceFilter(
         queryset=EvolutionStage.objects.all(),
         label='進化段階',
-        widget=forms.Select(attrs={'class': 'select select-bordered w-full'})
+        widget=forms.CheckboxSelectMultiple
     )
 
-    special_features = django_filters.ModelChoiceFilter(
+    special_features = django_filters.ModelMultipleChoiceFilter(
         queryset=SpecialFeature.objects.all(),
         label='特別',
-        widget=forms.Select(attrs={'class': 'select select-bordered w-full'})
+        widget=forms.CheckboxSelectMultiple
     )
 
-    move_types = django_filters.ModelChoiceFilter(
+    move_types = django_filters.ModelMultipleChoiceFilter(
         queryset=MoveType.objects.all(),
         label='わざのエネルギータイプ',
-        widget=forms.Select(attrs={'class': 'select select-bordered w-full'})
+        widget=forms.CheckboxSelectMultiple
     )
 
     CHOICES = (
@@ -55,9 +55,8 @@ class PokemonCardFilter(django_filters.FilterSet):
             'created_at',
         ),
         choices=CHOICES,
-        empty_label=None,
-    )
-
+                    empty_label=None,
+                )
     class Meta:
         model = PokemonCard
         # fields の指定により、GETパラメータのキー名とフィルタのフィールド名が一致する
