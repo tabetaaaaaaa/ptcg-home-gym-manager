@@ -27,6 +27,29 @@ def card_create(request):
         form = PokemonCardForm()
         return render(request, 'cards/_card_form.html', {'form': form})
 
+@require_http_methods(["GET", "POST"])
+def card_edit(request, pk):
+    card = get_object_or_404(PokemonCard, pk=pk)
+    if request.method == 'POST':
+        form = PokemonCardForm(request.POST, instance=card)
+        if form.is_valid():
+            card = form.save()
+            # データベースからリレーションを再取得
+            card = PokemonCard.objects.select_related(
+                'evolution_stage', 'evolves_from'
+            ).prefetch_related(
+                'types', 'special_features', 'move_types'
+            ).get(pk=card.pk)
+            response = render(request, 'cards/_card_item.html', {'card': card})
+            response['HX-Trigger'] = 'closeModal'
+            return response
+        else:
+            # バリデーション失敗時はフォームを再描画
+            return render(request, 'cards/_card_form.html', {'form': form, 'card': card})
+    else: # GET request
+        form = PokemonCardForm(instance=card)
+        return render(request, 'cards/_card_form.html', {'form': form, 'card': card})
+
 
 class CardListView(ListView):
     model = PokemonCard
@@ -63,7 +86,7 @@ def decrease_card_quantity(request, pk):
     return render(request, 'cards/_card_item.html', {'card': card})
 
 @require_http_methods(["GET", "DELETE"])
-def delete_card(request, pk):
+def card_delete(request, pk):
     card = get_object_or_404(PokemonCard, pk=pk)
 
     if request.method == 'GET':

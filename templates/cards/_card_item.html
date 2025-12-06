@@ -1,7 +1,12 @@
 {% load static %}
 <div id="card-{{ card.pk }}" class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1 relative">
     <div class="absolute top-3 right-3 z-10"> {# ボタンをカードの右上に配置するためのdiv #}
-        <button class="btn btn-ghost btn-sm" disabled>編集</button>
+        <button
+          class="btn btn-ghost btn-sm"
+          hx-get="{% url 'cards:card_edit' card.pk %}"
+          hx-target="#dialog-target">
+          編集
+        </button>
         <button
           class="btn btn-ghost btn-sm text-error"
           hx-get="{% url 'cards:card_delete' card.pk %}"

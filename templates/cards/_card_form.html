@@ -1,8 +1,19 @@
 <dialog id="modal-form" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
-        <h3 class="font-bold text-lg mb-4">新しいカードを登録</h3>
+        <h3 class="font-bold text-lg mb-4">{% if card %}カードを編集{% else %}新しいカードを登録{% endif %}</h3>
         
-        <form hx-post="{% url 'cards:card_create' %}" hx-target="#card-grid" hx-swap="afterbegin" hx-indicator=".htmx-indicator">
+        <form 
+            {% if card %}
+            hx-post="{% url 'cards:card_edit' card.pk %}"
+            hx-target="#card-{{ card.pk }}"
+            hx-swap="outerHTML"
+            {% else %}
+            hx-post="{% url 'cards:card_create' %}"
+            hx-target="#card-grid"
+            hx-swap="afterbegin"
+            {% endif %}
+            hx-indicator=".htmx-indicator"
+        >
             {% csrf_token %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 {% for field in form %}
@@ -28,7 +39,7 @@
                     <span class="loading loading-spinner"></span>
                     処理中...
                 </span>
-                <button type="submit" class="btn btn-primary">登録する</button>
+                <button type="submit" class="btn btn-primary">{% if card %}更新する{% else %}登録する{% endif %}</button>
                 <button type="button" class="btn" onclick="document.getElementById('modal-form').close()">キャンセル</button>
             </div>
         </form>

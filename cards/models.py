@@ -40,7 +40,7 @@ class PokemonCard(models.Model):
     evolves_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="進化元カード")
 
     # 多対多 (Many-to-Many)
-    types = models.ManyToManyField(Type, verbose_name="タイプ", blank=True)
+    types = models.ManyToManyField(Type, verbose_name="タイプ")
     special_features = models.ManyToManyField(SpecialFeature, verbose_name="特徴", blank=True)
     move_types = models.ManyToManyField(MoveType, verbose_name="わざの属性", blank=True)
 
