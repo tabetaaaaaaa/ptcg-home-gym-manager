@@ -60,7 +60,7 @@
                         <li>進化元: {{ card.evolves_from.name }}</li>
                     {% endif %}
                     {% if card.move_types.all %}
-                        <li>わざの属性: 
+                        <li>わざのタイプ: 
                             {% for move_type in card.move_types.all %}
                                 <span class="badge badge-outline badge-sm">{{ move_type.name }}</span>
                             {% endfor %}

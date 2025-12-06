@@ -70,6 +70,11 @@ class CardListView(ListView):
         context['filter'] = self.filterset
         return context
 
+    def get_template_names(self):
+        if self.request.htmx:
+            return ['cards/_card_list_content.html']
+        return ['cards/card_list.html']
+
 @require_POST
 def increase_card_quantity(request, pk):
     card = get_object_or_404(PokemonCard, pk=pk)

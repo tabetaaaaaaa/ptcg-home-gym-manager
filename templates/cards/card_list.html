@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load widget_tweaks %}
 
 {% block content %}
 <div class="container mx-auto p-4">
@@ -15,7 +16,11 @@
 
     {# 検索フォーム ここから #}
     <div class="bg-base-200 p-6 rounded-lg shadow mb-8">
-        <form method="get">
+        <form method="get"
+              hx-get="{% url 'cards:card_list' %}"
+              hx-trigger="change, submit"
+              hx-target="#card-list-container"
+              hx-swap="innerHTML">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 
                 <div class="form-control">
@@ -42,33 +47,25 @@
                     <label class="label"><span class="label-text">{{ filter.form.move_types.label }}</span></label>
                     {{ filter.form.move_types }}
                 </div>
+                
+                {# ソート機能のドロップダウンを追加 #}
+                <div class="form-control">
+                    <label class="label"><span class="label-text">{{ filter.form.ordering.label }}</span></label>
+                    {{ filter.form.ordering|add_class:"select select-bordered w-full" }}
+                </div>
+
             </div>
             <div class="flex justify-end gap-2 mt-4">
-                <button type="submit" class="btn btn-primary">検索</button>
                 <a href="{% url 'cards:card_list' %}" class="btn btn-ghost">リセット</a>
             </div>
         </form>
     </div>
     {# 検索フォーム ここまで #}
 
-    <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {% for card in card_list %}
-            {% include 'cards/_card_item.html' %}
-        {% empty %}
-            {# htmxで動的に要素を追加する場合、このemptyブロックは意図通りに機能しない可能性がある #}
-        {% endfor %}
+    {# HTMXが更新するターゲットコンテナ #}
+    <div id="card-list-container">
+        {% include "cards/_card_list_content.html" %}
     </div>
 
-    {% if not card_list %}
-    <div id="empty-card-message" class="text-center py-16">
-        <p class="text-xl text-gray-500">まだカードが登録されていません。</p>
-        <button 
-            hx-get="{% url 'cards:card_create' %}" 
-            hx-target="#dialog-target"
-            class="btn btn-primary mt-4">
-            最初のカードを登録する
-        </button>
-    </div>
-    {% endif %}
 </div>
 {% endblock content %}

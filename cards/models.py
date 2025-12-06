@@ -3,6 +3,10 @@ from django.db import models
 class Type(models.Model):
     """カードのタイプ (例: 炎, 水)"""
     name = models.CharField("属性名", max_length=50, unique=True)
+    display_order = models.PositiveIntegerField("表示順", default=0)
+
+    class Meta:
+        ordering = ['display_order']
 
     def __str__(self):
         return self.name
@@ -10,20 +14,32 @@ class Type(models.Model):
 class EvolutionStage(models.Model):
     """進化段階 (例: たね, 1進化)"""
     name = models.CharField("進化段階", max_length=50, unique=True)
+    display_order = models.PositiveIntegerField("表示順", default=0)
+
+    class Meta:
+        ordering = ['display_order']
 
     def __str__(self):
         return self.name
 
 class SpecialFeature(models.Model):
-    """特徴 (例: ex, V)"""
-    name = models.CharField("特徴", max_length=50, unique=True)
+    """特別 (例: ex, V)"""
+    name = models.CharField("特別", max_length=50, unique=True)
+    display_order = models.PositiveIntegerField("表示順", default=0)
+
+    class Meta:
+        ordering = ['display_order']
 
     def __str__(self):
         return self.name
 
 class MoveType(models.Model):
-    """わざの属性 (例: 炎, 水, 無色)"""
-    name = models.CharField("わざの属性名", max_length=50, unique=True)
+    """わざのタイプ (例: 炎, 水, 無色)"""
+    name = models.CharField("わざのエネルギータイプ", max_length=50, unique=True)
+    display_order = models.PositiveIntegerField("表示順", default=0)
+
+    class Meta:
+        ordering = ['display_order']
 
     def __str__(self):
         return self.name
@@ -41,8 +57,8 @@ class PokemonCard(models.Model):
 
     # 多対多 (Many-to-Many)
     types = models.ManyToManyField(Type, verbose_name="タイプ")
-    special_features = models.ManyToManyField(SpecialFeature, verbose_name="特徴", blank=True)
-    move_types = models.ManyToManyField(MoveType, verbose_name="わざの属性", blank=True)
+    special_features = models.ManyToManyField(SpecialFeature, verbose_name="特別", blank=True)
+    move_types = models.ManyToManyField(MoveType, verbose_name="わざのエネルギータイプ", blank=True)
 
     # 日時
     created_at = models.DateTimeField("作成日時", auto_now_add=True)

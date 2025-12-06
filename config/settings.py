@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'cards.apps.CardsConfig',
     'tailwind', # django-tailwind の追加
     'django_htmx', # django-htmx の追加
+    'widget_tweaks', # django-widget-tweaks の追加
 ]
 
 MIDDLEWARE = [

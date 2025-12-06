@@ -1,0 +1,15 @@
+{# 新規カードが挿入されるプレースホルダー #}
+<div id="new-card-placeholder" hx-swap-oob="afterbegin"></div>
+
+<div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for card in filter.qs %}
+        {% include 'cards/_card_item.html' with card=card %}
+    {% endfor %}
+</div>
+
+{% if not filter.qs %}
+<div id="empty-card-message" class="text-center py-16">
+    <p class="text-xl text-gray-500">対象のカードが見つかりません。</p>
+    <a href="{% url 'cards:card_list' %}" class="btn btn-primary mt-4">検索条件をリセットする</a>
+</div>
+{% endif %}

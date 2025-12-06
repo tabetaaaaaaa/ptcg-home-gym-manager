@@ -6,8 +6,28 @@ from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType
 class PokemonCardAdmin(ImportExportModelAdmin):
     pass
 
-admin.site.register(PokemonCard, PokemonCardAdmin) # 変更
-admin.site.register(Type)
-admin.site.register(EvolutionStage)
-admin.site.register(SpecialFeature)
-admin.site.register(MoveType)
+@admin.register(EvolutionStage)
+class EvolutionStageAdmin(admin.ModelAdmin):
+    """EvolutionStageモデルの管理画面設定"""
+    list_display = ('name', 'display_order')
+    list_editable = ('display_order',)
+
+@admin.register(Type)
+class TypeAdmin(admin.ModelAdmin):
+    """Typeモデルの管理画面設定"""
+    list_display = ('name', 'display_order')
+    list_editable = ('display_order',)
+
+@admin.register(SpecialFeature)
+class SpecialFeatureAdmin(admin.ModelAdmin):
+    """SpecialFeatureモデルの管理画面設定"""
+    list_display = ('name', 'display_order')
+    list_editable = ('display_order',)
+
+@admin.register(MoveType)
+class MoveTypeAdmin(admin.ModelAdmin):
+    """MoveTypeモデルの管理画面設定"""
+    list_display = ('name', 'display_order')
+    list_editable = ('display_order',)
+
+admin.site.register(PokemonCard, PokemonCardAdmin)
