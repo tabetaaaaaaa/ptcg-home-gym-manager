@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
-    CardListView, card_create, increase_card_quantity, decrease_card_quantity
+    CardListView, card_create, increase_card_quantity, decrease_card_quantity,
+    delete_card
 )
 
 app_name = 'cards'
@@ -10,4 +11,5 @@ urlpatterns = [
     path('new/', card_create, name='card_create'),
     path('<int:pk>/increase/', increase_card_quantity, name='increase_card_quantity'),
     path('<int:pk>/decrease/', decrease_card_quantity, name='decrease_card_quantity'),
+    path('<int:pk>/delete/', delete_card, name='card_delete'),
 ]

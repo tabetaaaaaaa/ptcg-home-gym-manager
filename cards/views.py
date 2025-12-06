@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.http import HttpResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType
 from .filters import PokemonCardFilter
 from .forms import PokemonCardForm
@@ -61,3 +61,20 @@ def decrease_card_quantity(request, pk):
         card.quantity -= 1
         card.save()
     return render(request, 'cards/_card_item.html', {'card': card})
+
+@require_http_methods(["GET", "DELETE"])
+def delete_card(request, pk):
+    card = get_object_or_404(PokemonCard, pk=pk)
+
+    if request.method == 'GET':
+        # 確認モーダルのHTMLを返す
+        return render(request, 'cards/_card_confirm_delete.html', {'card': card})
+
+    elif request.method == 'DELETE':
+        # カードを削除
+        card.delete()
+        # htmxがこのレスポンスを受け取ると、hx-targetで指定された要素をDOMから削除する
+        # さらに、HX-Triggerヘッダーでモーダルを閉じるようフロントエンドに指示する
+        response = HttpResponse("")
+        response['HX-Trigger'] = 'closeModal'
+        return response

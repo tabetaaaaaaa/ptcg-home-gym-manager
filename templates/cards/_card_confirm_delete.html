@@ -1,0 +1,48 @@
+<dialog id="modal-confirm-delete" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">削除確認</h3>
+        <p class="py-4">本当に「{{ card.name }}」を削除しますか？<br>この操作は取り消せません。</p>
+        <div class="modal-action">
+            <button
+                class="btn btn-error"
+                hx-delete="{% url 'cards:card_delete' card.pk %}"
+                hx-target="#card-{{ card.pk }}"
+                hx-swap="outerHTML">
+                削除する
+            </button>
+            <button type="button" class="btn" onclick="document.getElementById('modal-confirm-delete').close()">キャンセル</button>
+        </div>
+    </div>
+</dialog>
+
+<script>
+    (function() {
+        const modal = document.getElementById('modal-confirm-delete');
+        
+        // モーダルを表示
+        if (modal) {
+            modal.showModal();
+        }
+
+        // モーダルが閉じられたときに自身をDOMから削除する
+        modal.addEventListener('close', () => {
+            const dialogTarget = document.getElementById('dialog-target');
+            if (dialogTarget) {
+                dialogTarget.innerHTML = '';
+            }
+        });
+
+        // htmxによるリクエストが完了する前に、成功ならモーダルを閉じる
+        document.body.addEventListener('htmx:beforeSwap', function(evt) {
+            // このモーダル内のフォームからのリクエストであるかを確認
+            if(evt.detail.requestConfig.elt.closest('#modal-confirm-delete')) {
+                // サーバーからのレスポンスヘッダーに 'closeModal' が含まれていればモーダルを閉じる
+                if (evt.detail.xhr.getResponseHeader("HX-Trigger") === 'closeModal') {
+                    modal.close();
+                    // このイベントリスナーは一度きりで良いので削除
+                    evt.detail.elt.removeEventListener('htmx:beforeSwap', arguments.callee);
+                }
+            }
+        });
+    })();
+</script>

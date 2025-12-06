@@ -1,5 +1,14 @@
 {% load static %}
-<div id="card-{{ card.pk }}" class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1">
+<div id="card-{{ card.pk }}" class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1 relative">
+    <div class="absolute top-3 right-3 z-10"> {# ボタンをカードの右上に配置するためのdiv #}
+        <button class="btn btn-ghost btn-sm" disabled>編集</button>
+        <button
+          class="btn btn-ghost btn-sm text-error"
+          hx-get="{% url 'cards:card_delete' card.pk %}"
+          hx-target="#dialog-target">
+          削除
+        </button>
+    </div>
     <figure class="px-10 pt-10">
         <img src="{% if card.image_path %}{{ MEDIA_URL }}{{ card.image_path }}{% else %}{% static 'images/nonepic.png' %}{% endif %}" alt="{{ card.name }}" class="rounded-xl h-48 w-full object-contain" />
     </figure>
