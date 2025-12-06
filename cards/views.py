@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType
 from .filters import PokemonCardFilter
 from .forms import PokemonCardForm
@@ -45,3 +46,18 @@ class CardListView(ListView):
         context = super().get_context_data(**kwargs)
         context['filter'] = self.filterset
         return context
+
+@require_POST
+def increase_card_quantity(request, pk):
+    card = get_object_or_404(PokemonCard, pk=pk)
+    card.quantity += 1
+    card.save()
+    return render(request, 'cards/_card_item.html', {'card': card})
+
+@require_POST
+def decrease_card_quantity(request, pk):
+    card = get_object_or_404(PokemonCard, pk=pk)
+    if card.quantity > 0:
+        card.quantity -= 1
+        card.save()
+    return render(request, 'cards/_card_item.html', {'card': card})

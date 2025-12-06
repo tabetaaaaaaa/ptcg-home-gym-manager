@@ -5,7 +5,25 @@
     </figure>
     <div class="card-body items-center text-center">
         <h2 class="card-title">{{ card.name }}</h2>
-        <p class="text-lg font-semibold">{{ card.quantity }}枚</p>
+
+        <div class="card-actions justify-center items-center my-2 w-full">
+            <span class="mr-2">枚数:</span>
+            <span class="font-bold text-lg">{{ card.quantity }}</span>
+            <div class="btn-group ml-4">
+              <button
+                class="btn btn-secondary btn-sm"
+                hx-post="{% url 'cards:decrease_card_quantity' card.pk %}"
+                hx-target="#card-{{ card.pk }}"
+                hx-swap="outerHTML"
+              >-</button>
+              <button
+                class="btn btn-primary btn-sm"
+                hx-post="{% url 'cards:increase_card_quantity' card.pk %}"
+                hx-target="#card-{{ card.pk }}"
+                hx-swap="outerHTML"
+              >+</button>
+            </div>
+        </div>
         
         <div class="flex flex-wrap justify-center gap-1 my-2">
             <span class="badge badge-primary">{{ card.evolution_stage.name }}</span>
