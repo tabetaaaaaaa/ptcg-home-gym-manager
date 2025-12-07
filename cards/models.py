@@ -55,7 +55,7 @@ class PokemonCard(models.Model):
     evolution_stage = models.ForeignKey(EvolutionStage, on_delete=models.PROTECT, verbose_name="進化段階")
 
     # 多対多 (Many-to-Many)
-    types = models.ManyToManyField(Type, verbose_name="タイプ")
+    types = models.ManyToManyField(Type, verbose_name="タイプ", blank=False)
     special_features = models.ManyToManyField(SpecialFeature, verbose_name="特別", blank=True)
     move_types = models.ManyToManyField(MoveType, verbose_name="わざのエネルギータイプ", blank=True)
 
