@@ -53,7 +53,7 @@
                             <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
                                 {% for choice in form.types %}
                                 <label class="label cursor-pointer justify-start gap-2">
-                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
+                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ form.types.html_name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
                                     <span class="label-text text-sm">{{ choice.choice_label }}</span>
                                 </label>
                                 {% endfor %}
@@ -121,7 +121,7 @@
                             <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
                                 {% for choice in form.special_features %}
                                 <label class="label cursor-pointer justify-start gap-2">
-                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
+                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ form.special_features.html_name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
                                     <span class="label-text text-sm">{{ choice.choice_label }}</span>
                                 </label>
                                 {% endfor %}
@@ -146,7 +146,7 @@
                             <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
                                 {% for choice in form.move_types %}
                                 <label class="label cursor-pointer justify-start gap-2">
-                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
+                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ form.move_types.html_name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
                                     <span class="label-text text-sm">{{ choice.choice_label }}</span>
                                 </label>
                                 {% endfor %}
