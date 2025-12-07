@@ -1,16 +1,27 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
-<html lang="ja" data-theme="fantasy">
+<html lang="ja" data-theme="pastel">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ポケモンカード管理</title>
+    <title>Pokemon Card Home Gym Maneger</title>
     {% tailwind_css %}
 </head>
 <body>
     {# ヘッダー #}
-    <div class="navbar bg-base-100">
-        <a class="btn btn-ghost text-xl" href="/">ポケモンカード管理</a>
+    <div class="navbar bg-base-200 shadow-md">
+        <div class="navbar-start">
+            <a class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 from-30% to-red-600" href="/">Pokemon Card Home Gym Manager</a>
+        </div>
+        <div class="navbar-end">
+            {# ヘッダー用の新規登録ボタン #}
+            <button 
+                hx-get="{% url 'cards:card_create' %}" 
+                hx-target="#dialog-target"
+                class="btn btn-warning">
+                新規カード登録
+            </button>
+        </div>
     </div>
 
     {# メインコンテンツ #}

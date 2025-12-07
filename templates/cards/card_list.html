@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mx-auto p-4">
-    <div class="flex justify-between items-center mb-8">
+    <!-- <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold tracking-wide">ポケモンカード一覧</h1>
         <button 
             hx-get="{% url 'cards:card_create' %}" 
@@ -12,24 +12,23 @@
             class="btn btn-primary">
             新規登録
         </button>
-    </div>
+    </div> -->
 
     {# 検索フォーム ここから #}
-    <div class="bg-base-200 p-6 rounded-lg shadow mb-8">
+    <div class="fieldset bg-base-200 border-warning rounded-box w-xs border p-4">
+        <legend class="fieldset-legend font-bold mb-4">カード検索</legend>
         <form method="get"
-              hx-get="{% url 'cards:card_list' %}"
-              hx-trigger="change, submit"
-              hx-target="#card-list-container"
-              hx-swap="innerHTML">
-                        {% include "cards/_search_form.html" %}            <div class="flex justify-end gap-2 mt-4">
-                <a href="{% url 'cards:card_list' %}" class="btn btn-ghost">リセット</a>
-            </div>
+            hx-get="{% url 'cards:card_list' %}"
+            hx-trigger="change, submit"
+            hx-target="#card-list-container"
+            hx-swap="innerHTML">
+                        {% include "cards/_search_form.html" %}            
         </form>
     </div>
     {# 検索フォーム ここまで #}
 
     {# HTMXが更新するターゲットコンテナ #}
-    <div id="card-list-container">
+    <div id="card-list-container" class="mt-8">
         {% include "cards/_card_list_content.html" %}
     </div>
 

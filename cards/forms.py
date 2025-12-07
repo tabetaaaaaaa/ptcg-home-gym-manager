@@ -6,7 +6,7 @@ class PokemonCardForm(forms.ModelForm):
         model = PokemonCard
         fields = '__all__'
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'input input-boardered w-full'}),
+            'name': forms.TextInput(attrs={'class': 'input input-bordered w-full'}),
             'quantity': forms.NumberInput(attrs={'class': 'input input-bordered w-full'}),
             'evolution_stage': forms.Select(attrs={'class': 'select select-bordered w-full'}),
             'evolves_from': forms.Select(attrs={'class': 'select select-bordered w-full'}),
