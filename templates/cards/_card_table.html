@@ -1,0 +1,20 @@
+<div class="overflow-x-auto">
+    <table class="table table-zebra table-compact w-full">
+        <thead>
+            <tr>
+                <th class="w-24">画像</th>
+                <th>カード名</th>
+                <th>進化段階</th>
+                <th>タイプ</th>
+                <th>特徴</th>
+                <th class="w-20">枚数</th>
+                <th class="w-32">操作</th>
+            </tr>
+        </thead>
+        <tbody id="card-table-body">
+            {% for card in cards %}
+                {% include 'cards/_card_table_row.html' with card=card %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

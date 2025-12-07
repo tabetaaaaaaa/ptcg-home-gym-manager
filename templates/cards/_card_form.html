@@ -10,7 +10,11 @@
             hx-swap="outerHTML"
             {% else %}
             hx-post="{% url 'cards:card_create' %}"
+            {% if view_mode == 'table' %}
+            hx-target="#card-table-body"
+            {% else %}
             hx-target="#card-grid"
+            {% endif %}
             hx-swap="afterbegin"
             {% endif %}
             enctype="multipart/form-data"

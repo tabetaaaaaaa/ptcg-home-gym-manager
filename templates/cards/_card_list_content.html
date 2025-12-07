@@ -6,11 +6,17 @@
     <span class="text-sm text-gray-600">検索結果: <strong class="text-gray-800">{{ filter.qs|length }}</strong> 件</span>
 </div>
 
-<div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    {% for card in filter.qs %}
-        {% include 'cards/_card_item.html' with card=card %}
-    {% endfor %}
-</div>
+{% if view_mode == 'table' %}
+    {# テーブル表示モード #}
+    {% include 'cards/_card_table.html' with cards=filter.qs %}
+{% else %}
+    {# カード表示モード(デフォルト) #}
+    <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for card in filter.qs %}
+            {% include 'cards/_card_item.html' with card=card %}
+        {% endfor %}
+    </div>
+{% endif %}
 
 {% if not filter.qs %}
 <div id="empty-card-message" class="text-center py-16">

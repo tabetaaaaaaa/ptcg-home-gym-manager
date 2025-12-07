@@ -1,0 +1,59 @@
+{% load static %}
+<tr id="card-{{ card.pk }}">
+    <td>
+        {% if card.image %}
+            <img src="{{ card.image.url }}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded">
+        {% else %}
+            <img src="{% static 'images/nonepic.png' %}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded">
+        {% endif %}
+    </td>
+    <td class="font-semibold">{{ card.name }}</td>
+    <td>
+        {% if card.evolution_stage %}
+            <span class="badge badge-primary whitespace-nowrap">{{ card.evolution_stage.name }}</span>
+        {% endif %}
+    </td>
+    <td>
+        <div class="flex flex-wrap gap-1">
+            {% for type in card.types.all %}
+                <span class="badge badge-secondary badge-sm whitespace-nowrap">{{ type.name }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td>
+        <div class="flex flex-wrap gap-1">
+            {% for feature in card.special_features.all %}
+                <span class="badge badge-accent badge-sm whitespace-nowrap">{{ feature.name }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td>
+        <div class="flex items-center gap-2">
+            <span class="font-bold text-lg">{{ card.quantity }}</span>
+            <div class="btn-group btn-group-vertical">
+                <button class="btn btn-primary btn-xs"
+                        hx-post="{% url 'cards:increase_card_quantity' card.pk %}"
+                        hx-target="#card-{{ card.pk }}"
+                        hx-swap="outerHTML">+</button>
+                <button class="btn btn-secondary btn-xs"
+                        hx-post="{% url 'cards:decrease_card_quantity' card.pk %}"
+                        hx-target="#card-{{ card.pk }}"
+                        hx-swap="outerHTML">-</button>
+            </div>
+        </div>
+    </td>
+    <td>
+        <div class="flex gap-1 flex-wrap">
+            <button class="btn btn-info btn-xs"
+                    hx-get="{% url 'cards:card_detail_modal' card.pk %}"
+                    hx-target="body"
+                    hx-swap="beforeend">詳細</button>
+            <button class="btn btn-ghost btn-xs"
+                    hx-get="{% url 'cards:card_edit' card.pk %}"
+                    hx-target="#dialog-target">編集</button>
+            <button class="btn btn-ghost btn-xs text-error"
+                    hx-get="{% url 'cards:card_delete' card.pk %}"
+                    hx-target="#dialog-target">削除</button>
+        </div>
+    </td>
+</tr>

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST, require_http_methods
@@ -17,15 +17,24 @@ def card_create(request):
             ).prefetch_related(
                 'types', 'special_features', 'move_types'
             ).get(pk=card.pk)
-            response = render(request, 'cards/_card_item.html', {'card': card})
+
+            # 表示モードに応じて適切なテンプレートを返す
+            view_mode = request.session.get('view_mode', 'card')
+            if view_mode == 'table':
+                response = render(request, 'cards/_card_table_row.html', {'card': card})
+            else:
+                response = render(request, 'cards/_card_item.html', {'card': card})
+
             response['HX-Trigger'] = 'closeModal'
             return response
         else:
             # バリデーション失敗時はフォームを再描画
-            return render(request, 'cards/_card_form.html', {'form': form})
+            view_mode = request.session.get('view_mode', 'card')
+            return render(request, 'cards/_card_form.html', {'form': form, 'view_mode': view_mode})
     else: # GET request
         form = PokemonCardForm()
-        return render(request, 'cards/_card_form.html', {'form': form})
+        view_mode = request.session.get('view_mode', 'card')
+        return render(request, 'cards/_card_form.html', {'form': form, 'view_mode': view_mode})
 
 @require_http_methods(["GET", "POST"])
 def card_edit(request, pk):
@@ -40,15 +49,24 @@ def card_edit(request, pk):
             ).prefetch_related(
                 'types', 'special_features', 'move_types'
             ).get(pk=card.pk)
-            response = render(request, 'cards/_card_item.html', {'card': card})
+
+            # 表示モードに応じて適切なテンプレートを返す
+            view_mode = request.session.get('view_mode', 'card')
+            if view_mode == 'table':
+                response = render(request, 'cards/_card_table_row.html', {'card': card})
+            else:
+                response = render(request, 'cards/_card_item.html', {'card': card})
+
             response['HX-Trigger'] = 'closeModal'
             return response
         else:
             # バリデーション失敗時はフォームを再描画
-            return render(request, 'cards/_card_form.html', {'form': form, 'card': card})
+            view_mode = request.session.get('view_mode', 'card')
+            return render(request, 'cards/_card_form.html', {'form': form, 'card': card, 'view_mode': view_mode})
     else: # GET request
         form = PokemonCardForm(instance=card)
-        return render(request, 'cards/_card_form.html', {'form': form, 'card': card})
+        view_mode = request.session.get('view_mode', 'card')
+        return render(request, 'cards/_card_form.html', {'form': form, 'card': card, 'view_mode': view_mode})
 
 
 class CardListView(ListView):
@@ -68,6 +86,7 @@ class CardListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter'] = self.filterset
+        context['view_mode'] = self.request.session.get('view_mode', 'card')
         return context
 
     def get_template_names(self):
@@ -77,18 +96,38 @@ class CardListView(ListView):
 
 @require_POST
 def increase_card_quantity(request, pk):
-    card = get_object_or_404(PokemonCard, pk=pk)
+    card = get_object_or_404(
+        PokemonCard.objects.select_related('evolution_stage')
+        .prefetch_related('types', 'special_features', 'move_types'),
+        pk=pk
+    )
     card.quantity += 1
     card.save()
-    return render(request, 'cards/_card_item.html', {'card': card})
+
+    # 表示モードに応じて適切なテンプレートを返す
+    view_mode = request.session.get('view_mode', 'card')
+    if view_mode == 'table':
+        return render(request, 'cards/_card_table_row.html', {'card': card})
+    else:
+        return render(request, 'cards/_card_item.html', {'card': card})
 
 @require_POST
 def decrease_card_quantity(request, pk):
-    card = get_object_or_404(PokemonCard, pk=pk)
+    card = get_object_or_404(
+        PokemonCard.objects.select_related('evolution_stage')
+        .prefetch_related('types', 'special_features', 'move_types'),
+        pk=pk
+    )
     if card.quantity > 0:
         card.quantity -= 1
         card.save()
-    return render(request, 'cards/_card_item.html', {'card': card})
+
+    # 表示モードに応じて適切なテンプレートを返す
+    view_mode = request.session.get('view_mode', 'card')
+    if view_mode == 'table':
+        return render(request, 'cards/_card_table_row.html', {'card': card})
+    else:
+        return render(request, 'cards/_card_item.html', {'card': card})
 
 @require_http_methods(["GET", "DELETE"])
 def card_delete(request, pk):
@@ -112,3 +151,20 @@ def card_name_suggestions(request):
     suggestions = PokemonCard.objects.filter(name__icontains=query).order_by('name')[:5]
     context = {'suggestions': [s.name for s in suggestions]}
     return render(request, 'cards/_card_suggestions.html', context)
+
+@require_POST
+def toggle_view_mode(request):
+    """表示モード(card/table)を切り替える"""
+    current_mode = request.session.get('view_mode', 'card')
+    new_mode = 'table' if current_mode == 'card' else 'card'
+    request.session['view_mode'] = new_mode
+    return redirect('cards:card_list')
+
+def card_detail_modal(request, pk):
+    """カード詳細をモーダルで表示"""
+    card = get_object_or_404(
+        PokemonCard.objects.select_related('evolution_stage')
+        .prefetch_related('types', 'special_features', 'move_types'),
+        pk=pk
+    )
+    return render(request, 'cards/_card_detail_modal.html', {'card': card})
