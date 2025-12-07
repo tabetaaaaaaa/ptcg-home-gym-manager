@@ -1,3 +1,5 @@
+{% load widget_tweaks %}
+
 <dialog id="modal-form" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
         <h3 class="font-bold text-lg mb-4">{% if card %}カードを編集{% else %}新しいカードを登録{% endif %}</h3>
@@ -17,22 +19,156 @@
         >
             {% csrf_token %}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                {% for field in form %}
+                {# name #}
                 <div class="form-control w-full mb-2">
-                    <label for="{{ field.id_for_label }}" class="label">
-                        <span class="label-text">{{ field.label }}</span>
-                    </label>
-                    
-                    {# widgetに設定したclassがここで使われる #}
-                    {{ field }}
-                    
-                    {% for error in field.errors %}
+                    {% render_field form.name class="input input-bordered border-secondary w-full text-sm" placeholder=form.name.label %}
+                    {% for error in form.name.errors %}
                         <div class="label">
                             <span class="label-text-alt text-error">{{ error }}</span>
                         </div>
                     {% endfor %}
                 </div>
-                {% endfor %}
+
+                {# quantity #}
+                <div class="form-control w-full mb-2">
+                    <div class="join w-full">
+                        {% render_field form.quantity type="number" min="0" class="input input-bordered border-secondary text-sm validator join-item"%}
+                        <span class="join-item text-sm pointer-events-none">枚</span>
+                    </div>
+                    {% for error in form.quantity.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# types #}
+                <div class="form-control w-full mb-2 md:col-span-2">
+                    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
+                        <input type="checkbox" checked />
+                        <div class="collapse-title text-sm">
+                            <span class="label-text">{{ form.types.label }}</span>
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
+                                {% for choice in form.types %}
+                                <label class="label cursor-pointer justify-start gap-2">
+                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
+                                    <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% for error in form.types.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# evolution_stage #}
+                <div class="form-control w-full mb-2">
+                    <select name="{{ form.evolution_stage.html_name }}" id="{{ form.evolution_stage.id_for_label }}" class="select select-bordered border-secondary w-full">
+                        <option value="" disabled selected>進化段階を選択</option>
+                        {% for choice_value, choice_label in form.evolution_stage.field.choices %}
+                            {% if choice_value %}
+                                <option value="{{ choice_value }}" {% if choice_value == form.evolution_stage.value %}selected{% endif %}>{{ choice_label }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    {% for error in form.evolution_stage.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# evolves_from #}
+                <div class="form-control w-full mb-2">
+                    {% render_field form.evolves_from class="input input-bordered border-secondary w-full text-sm" placeholder=form.evolves_from.label %}
+                    {% for error in form.evolves_from.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# special_features #}
+                <div class="form-control w-full mb-2 md:col-span-2">
+                    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
+                        <input type="checkbox" />
+                        <div class="collapse-title text-sm">
+                            <span class="label-text">{{ form.special_features.label }}</span>
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
+                                {% for choice in form.special_features %}
+                                <label class="label cursor-pointer justify-start gap-2">
+                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
+                                    <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% for error in form.special_features.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# move_types #}
+                <div class="form-control w-full mb-2 md:col-span-2">
+                    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
+                        <input type="checkbox" />
+                        <div class="collapse-title text-sm">
+                            <span class="label-text">{{ form.move_types.label }}</span>
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
+                                {% for choice in form.move_types %}
+                                <label class="label cursor-pointer justify-start gap-2">
+                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
+                                    <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% for error in form.move_types.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# image #}
+                <div class="form-control w-full mb-2">
+                    <label for="{{ form.image.id_for_label }}" class="label">
+                        <span class="label-text">{{ form.image.label }}</span>
+                    </label>
+                    {% render_field form.image class="file-input file-input-bordered file-input-sm file-input-secondary w-full" %}
+                    {% for error in form.image.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# memo #}
+                <div class="form-control w-full mb-2">
+                    <label for="{{ form.memo.id_for_label }}" class="label">
+                        <span class="label-text">{{ form.memo.label }}</span>
+                    </label>
+                    {% render_field form.memo class="textarea textarea-bordered border-secondary w-full" %}
+                    {% for error in form.memo.errors %}
+                        <div class="label">
+                            <span class="label-text-alt text-error">{{ error }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
 
             <div class="modal-action mt-6">
@@ -40,11 +176,14 @@
                     <span class="loading loading-spinner"></span>
                     処理中...
                 </span>
-                <button type="submit" class="btn btn-primary">{% if card %}更新する{% else %}登録する{% endif %}</button>
+                <button type="submit" class="btn btn-warning">{% if card %}更新する{% else %}登録する{% endif %}</button>
                 <button type="button" class="btn" onclick="document.getElementById('modal-form').close()">キャンセル</button>
             </div>
         </form>
     </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
 </dialog>
 
 <script>
@@ -72,6 +211,22 @@
                 }
             }
         }, { once: true });
+
+        // 進化段階の選択肢の色を動的に変更
+        const evolutionStageSelect = document.getElementById('{{ form.evolution_stage.id_for_label }}');
+
+        function updateEvolutionStageColor() {
+            if (evolutionStageSelect.value === "") {
+                evolutionStageSelect.classList.add('text-gray-500'); // 薄い色を適用
+            } else {
+                evolutionStageSelect.classList.remove('text-gray-500'); // 通常の色に戻す
+            }
+        }
+
+        // 初期状態を設定
+        updateEvolutionStageColor();
+
+        // 変更時に色を更新
+        evolutionStageSelect.addEventListener('change', updateEvolutionStageColor);
     })();
 </script>
-

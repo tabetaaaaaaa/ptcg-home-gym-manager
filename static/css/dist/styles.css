@@ -2986,6 +2986,24 @@ details.collapse summary::-webkit-details-marker {
   outline-color: var(--fallback-bc,oklch(var(--bc)/0.2));
 }
 
+.file-input-secondary {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-s,oklch(var(--s)/var(--tw-border-opacity)));
+}
+
+.file-input-secondary:focus {
+  outline-color: var(--fallback-s,oklch(var(--s)/1));
+}
+
+.file-input-secondary::file-selector-button {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-s,oklch(var(--s)/var(--tw-border-opacity)));
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-s,oklch(var(--s)/var(--tw-bg-opacity)));
+  --tw-text-opacity: 1;
+  color: var(--fallback-sc,oklch(var(--sc)/var(--tw-text-opacity)));
+}
+
 .file-input-disabled,
   .file-input[disabled] {
   cursor: not-allowed;
@@ -3166,6 +3184,16 @@ details.collapse summary::-webkit-details-marker {
   .modal::backdrop {
   background-color: #0006;
   animation: modal-pop 0.2s ease-out;
+}
+
+.modal-backdrop {
+  z-index: -1;
+  grid-column-start: 1;
+  grid-row-start: 1;
+  display: grid;
+  align-self: stretch;
+  justify-self: stretch;
+  color: transparent;
 }
 
 .modal-open .modal-box,
@@ -3364,6 +3392,19 @@ details.collapse summary::-webkit-details-marker {
   width: 2rem;
   border-radius: 9999px;
   padding: 0px;
+}
+
+.file-input-sm {
+  height: 2rem;
+  padding-inline-end: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  line-height: 2;
+}
+
+.file-input-sm::file-selector-button {
+  margin-right: 0.75rem;
+  font-size: 0.875rem;
 }
 
 .input-md {
@@ -3587,6 +3628,10 @@ details.collapse summary::-webkit-details-marker {
   grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
 }
 
+.grid-cols-\[repeat\(auto-fit\2c minmax\(150px\2c 1fr\)\)\] {
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+}
+
 .grid-cols-\[repeat\(auto-fit\2c minmax\(180px\2c 1fr\)\)\] {
   grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
 }
@@ -3640,6 +3685,10 @@ details.collapse summary::-webkit-details-marker {
        column-gap: 1rem;
 }
 
+.gap-y-1 {
+  row-gap: 0.25rem;
+}
+
 .gap-y-2 {
   row-gap: 0.5rem;
 }
@@ -3648,12 +3697,21 @@ details.collapse summary::-webkit-details-marker {
   border-radius: var(--rounded-box, 1rem);
 }
 
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
 .rounded-xl {
   border-radius: 0.75rem;
 }
 
 .border {
   border-width: 1px;
+}
+
+.border-base-300 {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-border-opacity, 1)));
 }
 
 .border-secondary {
@@ -3711,6 +3769,10 @@ details.collapse summary::-webkit-details-marker {
 
 .p-2 {
   padding: 0.5rem;
+}
+
+.p-3 {
+  padding: 0.75rem;
 }
 
 .p-4 {
@@ -3823,8 +3885,8 @@ details.collapse summary::-webkit-details-marker {
 }
 
 /*
-  カスタムCSS: .collapse-compact
-  DaisyUIのcollapseコンポーネントをよりコンパクトにするためのスタイル
+カスタムCSS: .collapse-compact
+DaisyUIのcollapseコンポーネントをよりコンパクトにするためのスタイル
 */
 
 .collapse-compact > .collapse-title,
@@ -3865,6 +3927,10 @@ details.collapse summary::-webkit-details-marker {
 }
 
 @media (min-width: 768px) {
+  .md\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+
   .md\:w-1\/4 {
     width: 25%;
   }
