@@ -85,13 +85,29 @@
                 </div>
 
                 {# evolves_from #}
-                <div class="form-control w-full mb-2">
-                    {% render_field form.evolves_from class="input input-bordered border-secondary w-full text-sm" placeholder=form.evolves_from.label %}
+                <div class="form-control w-full mb-2 relative">
+                    <input type="text"
+                           name="{{ form.evolves_from.html_name }}"
+                           id="{{ form.evolves_from.id_for_label }}"
+                           value="{{ form.evolves_from.value|default_if_none:'' }}"
+                           class="input input-bordered border-secondary w-full text-sm"
+                           placeholder="{{ form.evolves_from.label }}"
+                           hx-get="{% url 'cards:card_name_suggestions' %}"
+                           hx-trigger="keyup changed delay:500ms"
+                           hx-target="#suggestions-container"
+                           hx-swap="innerHTML"
+                           hx-params='{"q": this.value}'
+                           hx-indicator="#loading-indicator"
+                    >
                     {% for error in form.evolves_from.errors %}
                         <div class="label">
                             <span class="label-text-alt text-error">{{ error }}</span>
                         </div>
                     {% endfor %}
+                    <div id="suggestions-container" class="relative">
+                        <!-- Suggestions will be loaded here -->
+                    </div>
+                    <div id="loading-indicator" class="htmx-indicator loading loading-spinner loading-xs absolute bottom-1 right-1 z-20"></div>
                 </div>
 
                 {# special_features #}
@@ -228,5 +244,85 @@
 
         // 変更時に色を更新
         evolutionStageSelect.addEventListener('change', updateEvolutionStageColor);
+
+        // --- evolves_from フィールドのサジェスチョン機能（キーボードナビゲーション） ---
+        const evolvesFromInput = document.getElementById('{{ form.evolves_from.id_for_label }}');
+        const suggestionsContainer = document.getElementById('suggestions-container');
+        let currentFocus = -1; // -1 means no item is focused
+
+        function removeActive(items) {
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove("bg-base-300"); // アクティブ状態のスタイルを削除
+            }
+        }
+
+        function addActive(items) {
+            if (!items || items.length === 0) return false;
+            removeActive(items);
+            if (currentFocus >= items.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (items.length - 1);
+            items[currentFocus].classList.add("bg-base-300"); // アクティブ状態のスタイルを追加
+            items[currentFocus].scrollIntoView({ block: "nearest" }); // 要素をビューポート内にスクロール
+            return true;
+        }
+
+        function closeAllSuggestions() {
+            suggestionsContainer.innerHTML = '';
+            currentFocus = -1;
+        }
+
+        evolvesFromInput.addEventListener("keydown", function(e) {
+            const suggestions = suggestionsContainer.querySelectorAll("button");
+            if (e.key === "ArrowDown") {
+                currentFocus++;
+                addActive(suggestions);
+                e.preventDefault(); // カーソル移動を防ぐ
+            } else if (e.key === "ArrowUp") {
+                currentFocus--;
+                addActive(suggestions);
+                e.preventDefault(); // カーソル移動を防ぐ
+            } else if (e.key === "Enter") {
+                e.preventDefault(); // フォーム送信を防ぐ
+                if (currentFocus > -1 && suggestions[currentFocus]) {
+                    evolvesFromInput.value = suggestions[currentFocus].innerText;
+                    closeAllSuggestions();
+                } else {
+                    // フォーカスされたサジェスチョンがない場合は何もしない（フォーム送信も行わない）
+                    // 必要であれば、ここでサジェスチョンを非表示にする
+                    closeAllSuggestions();
+                }
+            } else if (e.key === "Escape") {
+                closeAllSuggestions();
+            }
+        });
+
+        // htmxが新しいサジェスチョンをロードした後にフォーカスをリセットし、クリックイベントを再登録
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target && evt.detail.target.id === 'suggestions-container') {
+                currentFocus = -1; // サジェスチョンが更新されたらフォーカスをリセット
+
+                // サジェスチョン要素が再作成されるため、イベントリスナーを再登録
+                const suggestions = suggestionsContainer.querySelectorAll("button");
+                suggestions.forEach(button => {
+                    button.onclick = function() {
+                        evolvesFromInput.value = this.innerText;
+                        closeAllSuggestions();
+                    };
+                });
+            }
+        });
+        
+        // 入力フィールドからフォーカスが外れたらサジェスチョンを非表示にする
+        evolvesFromInput.addEventListener('blur', function() {
+            setTimeout(closeAllSuggestions, 100); // クリックイベントが発火する時間を考慮して少し遅延させる
+        });
+
+        // サジェスチョンコンテナの外部をクリックした際に閉じる
+        document.addEventListener('click', function(e) {
+            if (e.target !== evolvesFromInput && !suggestionsContainer.contains(e.target)) {
+                closeAllSuggestions();
+            }
+        });
+
     })();
 </script>

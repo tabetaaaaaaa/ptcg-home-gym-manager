@@ -106,3 +106,9 @@ def card_delete(request, pk):
         response = HttpResponse("")
         response['HX-Trigger'] = 'closeModal'
         return response
+
+def card_name_suggestions(request):
+    query = request.GET.get('q', '')
+    suggestions = PokemonCard.objects.filter(name__icontains=query).order_by('name')[:5]
+    context = {'suggestions': [s.name for s in suggestions]}
+    return render(request, 'cards/_card_suggestions.html', context)
