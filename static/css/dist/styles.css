@@ -3394,19 +3394,6 @@ details.collapse summary::-webkit-details-marker {
   padding: 0px;
 }
 
-.file-input-sm {
-  height: 2rem;
-  padding-inline-end: 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  line-height: 2;
-}
-
-.file-input-sm::file-selector-button {
-  margin-right: 0.75rem;
-  font-size: 0.875rem;
-}
-
 .input-md {
   height: 3rem;
   padding-left: 1rem;
@@ -3697,21 +3684,12 @@ details.collapse summary::-webkit-details-marker {
   border-radius: var(--rounded-box, 1rem);
 }
 
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
 .rounded-xl {
   border-radius: 0.75rem;
 }
 
 .border {
   border-width: 1px;
-}
-
-.border-base-300 {
-  --tw-border-opacity: 1;
-  border-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-border-opacity, 1)));
 }
 
 .border-secondary {
@@ -3885,8 +3863,8 @@ details.collapse summary::-webkit-details-marker {
 }
 
 /*
-カスタムCSS: .collapse-compact
-DaisyUIのcollapseコンポーネントをよりコンパクトにするためのスタイル
+  カスタムCSS: .collapse-compact
+  DaisyUIのcollapseコンポーネントをよりコンパクトにするためのスタイル
 */
 
 .collapse-compact > .collapse-title,
@@ -3927,10 +3905,6 @@ DaisyUIのcollapseコンポーネントをよりコンパクトにするため�
 }
 
 @media (min-width: 768px) {
-  .md\:col-span-2 {
-    grid-column: span 2 / span 2;
-  }
-
   .md\:w-1\/4 {
     width: 25%;
   }

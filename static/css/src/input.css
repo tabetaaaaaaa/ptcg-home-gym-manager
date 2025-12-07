@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /*
-カスタムCSS: .collapse-compact
-DaisyUIのcollapseコンポーネントをよりコンパクトにするためのスタイル
+  カスタムCSS: .collapse-compact
+  DaisyUIのcollapseコンポーネントをよりコンパクトにするためのスタイル
 */
 .collapse-compact > .collapse-title,
 .collapse-compact > input[type="checkbox"] {
