@@ -13,7 +13,7 @@ def card_create(request):
             card = form.save()
             # データベースからリレーションを再取得
             card = PokemonCard.objects.select_related(
-                'evolution_stage', 'evolves_from'
+                'evolution_stage'
             ).prefetch_related(
                 'types', 'special_features', 'move_types'
             ).get(pk=card.pk)
@@ -36,7 +36,7 @@ def card_edit(request, pk):
             card = form.save()
             # データベースからリレーションを再取得
             card = PokemonCard.objects.select_related(
-                'evolution_stage', 'evolves_from'
+                'evolution_stage'
             ).prefetch_related(
                 'types', 'special_features', 'move_types'
             ).get(pk=card.pk)
@@ -58,7 +58,7 @@ class CardListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().select_related(
-            'evolution_stage', 'evolves_from'
+            'evolution_stage'
         ).prefetch_related(
             'types', 'special_features', 'move_types'
         )
