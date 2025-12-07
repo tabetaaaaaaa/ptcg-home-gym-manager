@@ -4552,6 +4552,18 @@ details.collapse summary::-webkit-details-marker {
   /* (親要素の高さ2.5rem - アイコンの高さ0.5rem) / 2 = 1rem */
 }
 
+/*
+  カスタムバッジスタイル
+*/
+
+/* 破線スタイルのバッジ */
+
+.badge-dashed {
+  border: 1.5px dashed currentColor;
+  color: hsl(var(--nc));
+  background-color: transparent;
+}
+
 .hover\:-translate-y-1:hover {
   --tw-translate-y: -0.25rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));

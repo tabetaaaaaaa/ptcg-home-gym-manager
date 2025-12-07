@@ -15,8 +15,8 @@ class EvolutionStageAdmin(admin.ModelAdmin):
 @admin.register(Type)
 class TypeAdmin(admin.ModelAdmin):
     """Typeモデルの管理画面設定"""
-    list_display = ('name', 'display_order')
-    list_editable = ('display_order',)
+    list_display = ('name', 'display_order', 'bg_color', 'text_color')
+    list_editable = ('display_order', 'bg_color', 'text_color')
 
 @admin.register(SpecialFeature)
 class SpecialFeatureAdmin(admin.ModelAdmin):
@@ -27,7 +27,7 @@ class SpecialFeatureAdmin(admin.ModelAdmin):
 @admin.register(MoveType)
 class MoveTypeAdmin(admin.ModelAdmin):
     """MoveTypeモデルの管理画面設定"""
-    list_display = ('name', 'display_order')
-    list_editable = ('display_order',)
+    list_display = ('name', 'display_order', 'bg_color', 'text_color')
+    list_editable = ('display_order', 'bg_color', 'text_color')
 
 admin.site.register(PokemonCard, PokemonCardAdmin)

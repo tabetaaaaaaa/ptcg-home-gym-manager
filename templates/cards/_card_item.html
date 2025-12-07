@@ -2,16 +2,16 @@
 <div id="card-{{ card.pk }}" class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1 relative">
     <div class="absolute top-3 right-3 z-10"> {# ボタンをカードの右上に配置するためのdiv #}
         <button
-          class="btn btn-ghost btn-sm"
-          hx-get="{% url 'cards:card_edit' card.pk %}"
-          hx-target="#dialog-target">
-          編集
+            class="btn btn-ghost btn-sm"
+            hx-get="{% url 'cards:card_edit' card.pk %}"
+            hx-target="#dialog-target">
+            編集
         </button>
         <button
-          class="btn btn-ghost btn-sm text-error"
-          hx-get="{% url 'cards:card_delete' card.pk %}"
-          hx-target="#dialog-target">
-          削除
+            class="btn btn-ghost btn-sm text-error"
+            hx-get="{% url 'cards:card_delete' card.pk %}"
+            hx-target="#dialog-target">
+            削除
         </button>
     </div>
     <figure class="px-10 pt-10">
@@ -24,28 +24,30 @@
             <span class="mr-2">枚数:</span>
             <span class="font-bold text-lg">{{ card.quantity }}</span>
             <div class="btn-group ml-4">
-              <button
+            <button
                 class="btn btn-secondary btn-sm"
                 hx-post="{% url 'cards:decrease_card_quantity' card.pk %}"
                 hx-target="#card-{{ card.pk }}"
                 hx-swap="outerHTML"
-              >-</button>
-              <button
+            >-</button>
+            <button
                 class="btn btn-primary btn-sm"
                 hx-post="{% url 'cards:increase_card_quantity' card.pk %}"
                 hx-target="#card-{{ card.pk }}"
                 hx-swap="outerHTML"
-              >+</button>
+            >+</button>
             </div>
         </div>
         
         <div class="flex flex-wrap justify-center gap-1 my-2">
-            <span class="badge badge-primary">{{ card.evolution_stage.name }}</span>
+            <span class="badge badge-neutral badge-outline">{{ card.evolution_stage.name }}</span>
             {% for type in card.types.all %}
-                <span class="badge badge-secondary">{{ type.name }}</span>
+                <span class="badge" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">
+                    {{ type.name }}
+            </span>
             {% endfor %}
             {% for feature in card.special_features.all %}
-                <span class="badge badge-accent">{{ feature.name }}</span>
+                <span class="badge badge-neutral badge-dashed">{{ feature.name }}</span>
             {% endfor %}
         </div>
 
@@ -60,9 +62,9 @@
                         <li>進化元: {{ card.evolves_from }}</li>
                     {% endif %}
                     {% if card.move_types.all %}
-                        <li>わざのタイプ: 
+                        <li>わざのタイプ:
                             {% for move_type in card.move_types.all %}
-                                <span class="badge badge-outline badge-sm">{{ move_type.name }}</span>
+                                <span class="badge badge-outline badge-sm" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.bg_color }};">{{ move_type.name }}</span>
                             {% endfor %}
                         </li>
                     {% endif %}

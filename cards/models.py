@@ -4,6 +4,8 @@ class Type(models.Model):
     """カードのタイプ (例: 炎, 水)"""
     name = models.CharField("属性名", max_length=50, unique=True)
     display_order = models.PositiveIntegerField("表示順", default=0)
+    bg_color = models.CharField("背景色", max_length=7, default="#6b7280", help_text="例: #ff0000")
+    text_color = models.CharField("文字色", max_length=7, default="#ffffff", help_text="例: #000000")
 
     class Meta:
         ordering = ['display_order']
@@ -37,6 +39,8 @@ class MoveType(models.Model):
     """わざのタイプ (例: 炎, 水, 無色)"""
     name = models.CharField("わざのエネルギータイプ", max_length=50, unique=True)
     display_order = models.PositiveIntegerField("表示順", default=0)
+    bg_color = models.CharField("背景色", max_length=7, default="#6b7280", help_text="例: #ff0000")
+    text_color = models.CharField("文字色", max_length=7, default="#ffffff", help_text="例: #000000")
 
     class Meta:
         ordering = ['display_order']

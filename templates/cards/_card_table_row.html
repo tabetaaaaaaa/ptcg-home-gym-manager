@@ -10,20 +10,20 @@
     <td class="font-semibold">{{ card.name }}</td>
     <td>
         {% if card.evolution_stage %}
-            <span class="badge badge-primary whitespace-nowrap">{{ card.evolution_stage.name }}</span>
+            <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ card.evolution_stage.name }}</span>
         {% endif %}
     </td>
     <td>
         <div class="flex flex-wrap gap-1">
             {% for type in card.types.all %}
-                <span class="badge badge-secondary badge-sm whitespace-nowrap">{{ type.name }}</span>
+                <span class="badge badge-sm whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
             {% endfor %}
         </div>
     </td>
     <td>
         <div class="flex flex-wrap gap-1">
             {% for feature in card.special_features.all %}
-                <span class="badge badge-accent badge-sm whitespace-nowrap">{{ feature.name }}</span>
+                <span class="badge badge-neutral badge-dashed badge-sm whitespace-nowrap">{{ feature.name }}</span>
             {% endfor %}
         </div>
     </td>

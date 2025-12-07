@@ -11,8 +11,8 @@
         <div class="card bg-base-100 shadow-xl">
             <figure class="px-10 pt-10">
                 <img src="{% if card.image %}{{ card.image.url }}{% else %}{% static 'images/nonepic.png' %}{% endif %}"
-                     alt="{{ card.name }}"
-                     class="rounded-xl h-32 w-full object-contain" />
+                    alt="{{ card.name }}"
+                    class="rounded-xl h-32 w-full object-contain" />
             </figure>
             <div class="card-body items-center text-center">
                 <h2 class="card-title">{{ card.name }}</h2>
@@ -23,12 +23,12 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center gap-1 my-2">
-                    <span class="badge badge-primary whitespace-nowrap">{{ card.evolution_stage.name }}</span>
+                    <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ card.evolution_stage.name }}</span>
                     {% for type in card.types.all %}
-                        <span class="badge badge-secondary whitespace-nowrap">{{ type.name }}</span>
+                        <span class="badge whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
                     {% endfor %}
                     {% for feature in card.special_features.all %}
-                        <span class="badge badge-accent whitespace-nowrap">{{ feature.name }}</span>
+                        <span class="badge badge-neutral badge-dashed whitespace-nowrap">{{ feature.name }}</span>
                     {% endfor %}
                 </div>
 
@@ -42,7 +42,7 @@
                         {% if card.move_types.all %}
                             <li>わざのタイプ:
                                 {% for move_type in card.move_types.all %}
-                                    <span class="badge badge-outline badge-sm whitespace-nowrap">{{ move_type.name }}</span>
+                                    <span class="badge badge-outline badge-sm whitespace-nowrap" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.bg_color }};">{{ move_type.name }}</span>
                                 {% endfor %}
                             </li>
                         {% endif %}

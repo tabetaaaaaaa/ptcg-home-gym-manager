@@ -23,3 +23,12 @@
 .collapse-compact.collapse-plus .collapse-title::after {
     top: 0.5rem; /* (親要素の高さ2.5rem - アイコンの高さ0.5rem) / 2 = 1rem */
 }
+
+/*
+  カスタムバッジスタイル
+*/
+/* 破線スタイルのバッジ */
+.badge-dashed {
+    border: 1.5px dashed currentColor;
+    background-color: transparent;
+}
