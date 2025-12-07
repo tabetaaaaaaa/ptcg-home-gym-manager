@@ -73,6 +73,7 @@ class CardListView(ListView):
     model = PokemonCard
     template_name = 'cards/card_list.html'
     context_object_name = 'card_list'
+    paginate_by = 20
 
     def get_queryset(self):
         queryset = super().get_queryset().select_related(

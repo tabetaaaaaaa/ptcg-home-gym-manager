@@ -3,16 +3,16 @@
 
 {# フィルター結果件数表示 #}
 <div class="mb-1 text-left">
-    <span class="text-sm text-gray-600">検索結果: <strong class="text-gray-800">{{ filter.qs|length }}</strong> 件</span>
+    <span class="text-sm text-gray-600">検索結果: <strong class="text-gray-800">{{ paginator.count }}</strong> 件</span>
 </div>
 
 {% if view_mode == 'table' %}
     {# テーブル表示モード #}
-    {% include 'cards/_card_table.html' with cards=filter.qs %}
+    {% include 'cards/_card_table.html' with cards=page_obj %}
 {% else %}
     {# カード表示モード(デフォルト) #}
     <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {% for card in filter.qs %}
+        {% for card in page_obj %}
             {% include 'cards/_card_item.html' with card=card %}
         {% endfor %}
     </div>
@@ -22,5 +22,44 @@
 <div id="empty-card-message" class="text-center py-16">
     <p class="text-xl text-gray-500">対象のカードが見つかりません。</p>
     <a href="{% url 'cards:card_list' %}" class="btn btn-primary mt-4">検索条件をリセットする</a>
+</div>
+{% endif %}
+
+{# ページネーション #}
+{% if is_paginated %}
+<div class="flex justify-center mt-6">
+    <div class="btn-group">
+        {% if page_obj.has_previous %}
+        <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           class="btn btn-sm"
+           hx-get="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           hx-target="#card-list-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">最初</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           class="btn btn-sm"
+           hx-get="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           hx-target="#card-list-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">前へ</a>
+        {% endif %}
+
+        <span class="btn btn-sm btn-active">{{ page_obj.number }} / {{ paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           class="btn btn-sm"
+           hx-get="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           hx-target="#card-list-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">次へ</a>
+        <a href="?page={{ paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           class="btn btn-sm"
+           hx-get="?page={{ paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+           hx-target="#card-list-container"
+           hx-swap="innerHTML"
+           hx-push-url="true">最後</a>
+        {% endif %}
+    </div>
 </div>
 {% endif %}
