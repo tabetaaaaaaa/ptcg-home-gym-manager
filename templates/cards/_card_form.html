@@ -1,3 +1,5 @@
+{% load widget_tweaks %}
+
 <dialog id="modal-form" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
 
@@ -252,6 +254,9 @@
             </div>
         </form>
     </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
 </dialog>
 
 <script>
@@ -279,6 +284,102 @@
                 }
             }
         }, { once: true });
+
+        // 進化段階の選択肢の色を動的に変更
+        const evolutionStageSelect = document.getElementById('{{ form.evolution_stage.id_for_label }}');
+
+        function updateEvolutionStageColor() {
+            if (evolutionStageSelect.value === "") {
+                evolutionStageSelect.classList.add('text-gray-500'); // 薄い色を適用
+            } else {
+                evolutionStageSelect.classList.remove('text-gray-500'); // 通常の色に戻す
+            }
+        }
+
+        // 初期状態を設定
+        updateEvolutionStageColor();
+
+        // 変更時に色を更新
+        evolutionStageSelect.addEventListener('change', updateEvolutionStageColor);
+
+        // --- evolves_from フィールドのサジェスチョン機能（キーボードナビゲーション） ---
+        const evolvesFromInput = document.getElementById('{{ form.evolves_from.id_for_label }}');
+        const suggestionsContainer = document.getElementById('suggestions-container');
+        let currentFocus = -1; // -1 means no item is focused
+
+        function removeActive(items) {
+            for (let i = 0; i < items.length; i++) {
+                items[i].classList.remove("bg-base-300"); // アクティブ状態のスタイルを削除
+            }
+        }
+
+        function addActive(items) {
+            if (!items || items.length === 0) return false;
+            removeActive(items);
+            if (currentFocus >= items.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (items.length - 1);
+            items[currentFocus].classList.add("bg-base-300"); // アクティブ状態のスタイルを追加
+            items[currentFocus].scrollIntoView({ block: "nearest" }); // 要素をビューポート内にスクロール
+            return true;
+        }
+
+        function closeAllSuggestions() {
+            suggestionsContainer.innerHTML = '';
+            currentFocus = -1;
+        }
+
+        evolvesFromInput.addEventListener("keydown", function(e) {
+            const suggestions = suggestionsContainer.querySelectorAll("button");
+            if (e.key === "ArrowDown") {
+                currentFocus++;
+                addActive(suggestions);
+                e.preventDefault(); // カーソル移動を防ぐ
+            } else if (e.key === "ArrowUp") {
+                currentFocus--;
+                addActive(suggestions);
+                e.preventDefault(); // カーソル移動を防ぐ
+            } else if (e.key === "Enter") {
+                e.preventDefault(); // フォーム送信を防ぐ
+                if (currentFocus > -1 && suggestions[currentFocus]) {
+                    evolvesFromInput.value = suggestions[currentFocus].innerText;
+                    closeAllSuggestions();
+                } else {
+                    // フォーカスされたサジェスチョンがない場合は何もしない（フォーム送信も行わない）
+                    // 必要であれば、ここでサジェスチョンを非表示にする
+                    closeAllSuggestions();
+                }
+            } else if (e.key === "Escape") {
+                closeAllSuggestions();
+            }
+        });
+
+        // htmxが新しいサジェスチョンをロードした後にフォーカスをリセットし、クリックイベントを再登録
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            if (evt.detail.target && evt.detail.target.id === 'suggestions-container') {
+                currentFocus = -1; // サジェスチョンが更新されたらフォーカスをリセット
+
+                // サジェスチョン要素が再作成されるため、イベントリスナーを再登録
+                const suggestions = suggestionsContainer.querySelectorAll("button");
+                suggestions.forEach(button => {
+                    button.onclick = function() {
+                        evolvesFromInput.value = this.innerText;
+                        closeAllSuggestions();
+                    };
+                });
+            }
+        });
+        
+        // 入力フィールドからフォーカスが外れたらサジェスチョンを非表示にする
+        evolvesFromInput.addEventListener('blur', function() {
+            setTimeout(closeAllSuggestions, 100); // クリックイベントが発火する時間を考慮して少し遅延させる
+        });
+
+        // サジェスチョンコンテナの外部をクリックした際に閉じる
+        document.addEventListener('click', function(e) {
+            if (e.target !== evolvesFromInput && !suggestionsContainer.contains(e.target)) {
+                closeAllSuggestions();
+            }
+        });
+
     })();
 </script>
-
