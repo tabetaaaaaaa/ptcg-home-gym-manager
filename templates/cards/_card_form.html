@@ -2,9 +2,8 @@
 
 <dialog id="modal-form" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
-        <h3 class="font-bold text-lg mb-4">{% if card %}カードを編集{% else %}新しいカードを登録{% endif %}</h3>
-        
-        <form 
+
+        <form
             {% if card %}
             hx-post="{% url 'cards:card_edit' card.pk %}"
             hx-target="#card-{{ card.pk }}"
@@ -18,176 +17,234 @@
             hx-indicator=".htmx-indicator"
         >
             {% csrf_token %}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                {# name #}
-                <div class="form-control w-full mb-2">
-                    {% render_field form.name class="input input-bordered border-secondary w-full text-sm" placeholder=form.name.label %}
-                    {% for error in form.name.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
 
-                {# quantity #}
-                <div class="form-control w-full mb-2">
-                    <div class="join w-full">
-                        {% render_field form.quantity type="number" min="0" class="input input-bordered border-secondary text-sm validator join-item"%}
-                        <span class="join-item text-sm pointer-events-none">枚</span>
-                    </div>
-                    {% for error in form.quantity.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                {# types #}
-                <div class="form-control w-full mb-2 md:col-span-2">
-                    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
-                        <input type="checkbox" checked />
-                        <div class="collapse-title text-sm">
-                            <span class="label-text">{{ form.types.label }}</span>
-                        </div>
-                        <div class="collapse-content">
-                            <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
-                                {% for choice in form.types %}
-                                <label class="label cursor-pointer justify-start gap-2">
-                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
-                                    <span class="label-text text-sm">{{ choice.choice_label }}</span>
-                                </label>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                    {% for error in form.types.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                {# evolution_stage #}
-                <div class="form-control w-full mb-2">
-                    <select name="{{ form.evolution_stage.html_name }}" id="{{ form.evolution_stage.id_for_label }}" class="select select-bordered border-secondary w-full">
-                        <option value="" disabled selected>進化段階を選択</option>
-                        {% for choice_value, choice_label in form.evolution_stage.field.choices %}
-                            {% if choice_value %}
-                                <option value="{{ choice_value }}" {% if choice_value == form.evolution_stage.value %}selected{% endif %}>{{ choice_label }}</option>
+            {# 基本情報セクション #}
+            <div class="mb-3">
+                <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span class="badge badge-primary badge-sm">基本情報</span>
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                    <div class="form-control w-full mb-2">
+                        <label for="{{ form.name.id_for_label }}" class="label py-1">
+                            <span class="label-text text-sm">{{ form.name.label }}</span>
+                            {% if form.name.field.required %}
+                                <span class="label-text-alt text-error text-xs">*必須</span>
                             {% endif %}
-                        {% endfor %}
-                    </select>
-                    {% for error in form.evolution_stage.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                {# evolves_from #}
-                <div class="form-control w-full mb-2 relative">
-                    <input type="text"
-                           name="{{ form.evolves_from.html_name }}"
-                           id="{{ form.evolves_from.id_for_label }}"
-                           value="{{ form.evolves_from.value|default_if_none:'' }}"
-                           class="input input-bordered border-secondary w-full text-sm"
-                           placeholder="{{ form.evolves_from.label }}"
-                           hx-get="{% url 'cards:card_name_suggestions' %}"
-                           hx-trigger="keyup changed delay:500ms"
-                           hx-target="#suggestions-container"
-                           hx-swap="innerHTML"
-                           hx-params='{"q": this.value}'
-                           hx-indicator="#loading-indicator"
-                    >
-                    {% for error in form.evolves_from.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                    <div id="suggestions-container" class="relative">
-                        <!-- Suggestions will be loaded here -->
-                    </div>
-                    <div id="loading-indicator" class="htmx-indicator loading loading-spinner loading-xs absolute bottom-1 right-1 z-20"></div>
-                </div>
-
-                {# special_features #}
-                <div class="form-control w-full mb-2 md:col-span-2">
-                    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
-                        <input type="checkbox" />
-                        <div class="collapse-title text-sm">
-                            <span class="label-text">{{ form.special_features.label }}</span>
-                        </div>
-                        <div class="collapse-content">
-                            <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
-                                {% for choice in form.special_features %}
-                                <label class="label cursor-pointer justify-start gap-2">
-                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
-                                    <span class="label-text text-sm">{{ choice.choice_label }}</span>
-                                </label>
-                                {% endfor %}
+                        </label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="alert alert-error shadow-lg mt-1 py-2">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="text-sm">{{ form.name.errors.0 }}</span>
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
-                    {% for error in form.special_features.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
 
-                {# move_types #}
-                <div class="form-control w-full mb-2 md:col-span-2">
-                    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
-                        <input type="checkbox" />
-                        <div class="collapse-title text-sm">
-                            <span class="label-text">{{ form.move_types.label }}</span>
-                        </div>
-                        <div class="collapse-content">
-                            <div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-x-4 gap-y-1 p-3 rounded-lg border border-base-300 bg-base-200">
-                                {% for choice in form.move_types %}
-                                <label class="label cursor-pointer justify-start gap-2">
-                                    <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}">
-                                    <span class="label-text text-sm">{{ choice.choice_label }}</span>
-                                </label>
-                                {% endfor %}
+                    <div class="form-control w-full mb-2">
+                        <label for="{{ form.quantity.id_for_label }}" class="label py-1">
+                            <span class="label-text text-sm">{{ form.quantity.label }}</span>
+                            {% if form.quantity.field.required %}
+                                <span class="label-text-alt text-error text-xs">*必須</span>
+                            {% endif %}
+                        </label>
+                        {{ form.quantity }}
+                        {% if form.quantity.errors %}
+                            <div class="alert alert-error shadow-lg mt-1 py-2">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="text-sm">{{ form.quantity.errors.0 }}</span>
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
-                    {% for error in form.move_types.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                {# image #}
-                <div class="form-control w-full mb-2">
-                    <label for="{{ form.image.id_for_label }}" class="label">
-                        <span class="label-text">{{ form.image.label }}</span>
-                    </label>
-                    {% render_field form.image class="file-input file-input-bordered file-input-sm file-input-secondary w-full" %}
-                    {% for error in form.image.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                {# memo #}
-                <div class="form-control w-full mb-2">
-                    <label for="{{ form.memo.id_for_label }}" class="label">
-                        <span class="label-text">{{ form.memo.label }}</span>
-                    </label>
-                    {% render_field form.memo class="textarea textarea-bordered border-secondary w-full" %}
-                    {% for error in form.memo.errors %}
-                        <div class="label">
-                            <span class="label-text-alt text-error">{{ error }}</span>
-                        </div>
-                    {% endfor %}
                 </div>
             </div>
 
-            <div class="modal-action mt-6">
+            <div class="divider my-2"></div>
+
+            {# 進化情報セクション #}
+            <div class="mb-3">
+                <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span class="badge badge-secondary badge-sm">進化情報</span>
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                    <div class="form-control w-full mb-2">
+                        <label for="{{ form.evolution_stage.id_for_label }}" class="label py-1">
+                            <span class="label-text text-sm">{{ form.evolution_stage.label }}</span>
+                            {% if form.evolution_stage.field.required %}
+                                <span class="label-text-alt text-error text-xs">*必須</span>
+                            {% endif %}
+                        </label>
+                        {{ form.evolution_stage }}
+                        {% if form.evolution_stage.errors %}
+                            <div class="alert alert-error shadow-lg mt-1 py-2">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="text-sm">{{ form.evolution_stage.errors.0 }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-control w-full mb-2">
+                        <label for="{{ form.evolves_from.id_for_label }}" class="label py-1">
+                            <span class="label-text text-sm">{{ form.evolves_from.label }}</span>
+                        </label>
+                        {{ form.evolves_from }}
+                        {% if form.evolves_from.errors %}
+                            <div class="alert alert-error shadow-lg mt-1 py-2">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="text-sm">{{ form.evolves_from.errors.0 }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider my-2"></div>
+
+            {# タイプと特性セクション #}
+            <div class="mb-3">
+                <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span class="badge badge-accent badge-sm">タイプと特性</span>
+                </h4>
+
+                <div class="form-control w-full mb-2">
+                    <div class="collapse collapse-arrow bg-base-200 border border-base-300">
+                        <input type="checkbox" checked="checked" />
+                        <div class="collapse-title text-sm min-h-0 py-2">
+                            {{ form.types.label }}
+                            {% if form.types.field.required %}
+                                <span class="label-text-alt text-error ml-2 text-xs">*必須</span>
+                            {% endif %}
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+                                {% for choice in form.types %}
+                                    <label class="label cursor-pointer justify-start gap-2 py-1">
+                                        {{ choice.tag }}
+                                        <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.types.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-2">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span class="text-sm">{{ form.types.errors.0 }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-control w-full mb-2">
+                    <div class="collapse collapse-arrow bg-base-200 border border-base-300">
+                        <input type="checkbox" />
+                        <div class="collapse-title text-sm min-h-0 py-2">
+                            {{ form.special_features.label }}
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                                {% for choice in form.special_features %}
+                                    <label class="label cursor-pointer justify-start gap-2 py-1">
+                                        {{ choice.tag }}
+                                        <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.special_features.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-2">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span class="text-sm">{{ form.special_features.errors.0 }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-control w-full mb-2">
+                    <div class="collapse collapse-arrow bg-base-200 border border-base-300">
+                        <input type="checkbox" />
+                        <div class="collapse-title text-sm min-h-0 py-2">
+                            {{ form.move_types.label }}
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                                {% for choice in form.move_types %}
+                                    <label class="label cursor-pointer justify-start gap-2 py-1">
+                                        {{ choice.tag }}
+                                        <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.move_types.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-2">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span class="text-sm">{{ form.move_types.errors.0 }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="divider my-2"></div>
+
+            {# その他の情報セクション #}
+            <div class="mb-3">
+                <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span class="badge badge-neutral badge-sm">その他</span>
+                </h4>
+
+                <div class="form-control w-full mb-2">
+                    <label for="{{ form.memo.id_for_label }}" class="label py-1">
+                        <span class="label-text text-sm">{{ form.memo.label }}</span>
+                    </label>
+                    {{ form.memo }}
+                    {% if form.memo.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-2">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span class="text-sm">{{ form.memo.errors.0 }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-control w-full mb-2">
+                    <label for="{{ form.image.id_for_label }}" class="label py-1">
+                        <span class="label-text text-sm">{{ form.image.label }}</span>
+                    </label>
+                    {% if card and card.image %}
+                        <div class="avatar mb-1">
+                            <div class="w-20 rounded-lg ring ring-primary ring-offset-base-100 ring-offset-1">
+                                <img src="{{ card.image.url }}" alt="現在の画像">
+                            </div>
+                        </div>
+                    {% endif %}
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-2">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="text-sm">{{ form.image.errors.0 }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            <div class="modal-action mt-4">
                 <span class="htmx-indicator">
                     <span class="loading loading-spinner"></span>
                     処理中...

@@ -50,10 +50,9 @@ class PokemonCard(models.Model):
     quantity = models.PositiveIntegerField("所持枚数", default=0)
     image = models.ImageField("画像", upload_to='cards/', null=True, blank=True)
     memo = models.TextField("メモ", null=True, blank=True)
-    
+    evolves_from = models.CharField("進化元カード", max_length=100, null=True, blank=True)
     # 外部キー (Foreign Key)
     evolution_stage = models.ForeignKey(EvolutionStage, on_delete=models.PROTECT, verbose_name="進化段階")
-    evolves_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="進化元カード")
 
     # 多対多 (Many-to-Many)
     types = models.ManyToManyField(Type, verbose_name="タイプ")

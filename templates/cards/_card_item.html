@@ -57,7 +57,7 @@
             <div class="collapse-content text-left"> 
                 <ul class="list-disc list-inside text-sm">
                     {% if card.evolves_from %}
-                        <li>進化元: {{ card.evolves_from.name }}</li>
+                        <li>進化元: {{ card.evolves_from }}</li>
                     {% endif %}
                     {% if card.move_types.all %}
                         <li>わざのタイプ: 
