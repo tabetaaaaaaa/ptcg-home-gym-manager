@@ -271,12 +271,38 @@
 <script>
     (function() {
         const modal = document.getElementById('modal-form');
-        
+
+        // --- evolves_from フィールドのサジェスチョン用の要素を取得 ---
+        const evolvesFromInput = document.getElementById('{{ form.evolves_from.id_for_label }}');
+        const suggestionsContainer = document.getElementById('suggestions-container');
+        let currentFocus = -1; // -1 means no item is focused
+
+        // サジェスチョン関連の関数を上部で定義
+        function closeAllSuggestions() {
+            if (suggestionsContainer) {
+                suggestionsContainer.innerHTML = '';
+                currentFocus = -1;
+            }
+        }
+
+        // サジェスチョンコンテナの外部をクリックした際に閉じる（名前付き関数）
+        function handleOutsideClick(e) {
+            // suggestionsContainerが存在するかチェック
+            if (suggestionsContainer && evolvesFromInput) {
+                if (e.target !== evolvesFromInput && !suggestionsContainer.contains(e.target)) {
+                    closeAllSuggestions();
+                }
+            }
+        }
+
         // モーダルを表示
         modal.showModal();
 
         // モーダルが閉じられたときに自身をDOMから削除する
         modal.addEventListener('close', () => {
+            // イベントリスナーをクリーンアップ
+            document.removeEventListener('click', handleOutsideClick);
+
             // dialog-target の中身を空にする方が安全
             const dialogTarget = document.getElementById('dialog-target');
             if (dialogTarget) {
@@ -312,9 +338,7 @@
         evolutionStageSelect.addEventListener('change', updateEvolutionStageColor);
 
         // --- evolves_from フィールドのサジェスチョン機能（キーボードナビゲーション） ---
-        const evolvesFromInput = document.getElementById('{{ form.evolves_from.id_for_label }}');
-        const suggestionsContainer = document.getElementById('suggestions-container');
-        let currentFocus = -1; // -1 means no item is focused
+        // evolvesFromInput, suggestionsContainer, currentFocus, closeAllSuggestions は上部で既に定義済み
 
         function removeActive(items) {
             for (let i = 0; i < items.length; i++) {
@@ -330,11 +354,6 @@
             items[currentFocus].classList.add("bg-base-300"); // アクティブ状態のスタイルを追加
             items[currentFocus].scrollIntoView({ block: "nearest" }); // 要素をビューポート内にスクロール
             return true;
-        }
-
-        function closeAllSuggestions() {
-            suggestionsContainer.innerHTML = '';
-            currentFocus = -1;
         }
 
         evolvesFromInput.addEventListener("keydown", function(e) {
@@ -383,12 +402,9 @@
             setTimeout(closeAllSuggestions, 100); // クリックイベントが発火する時間を考慮して少し遅延させる
         });
 
-        // サジェスチョンコンテナの外部をクリックした際に閉じる
-        document.addEventListener('click', function(e) {
-            if (e.target !== evolvesFromInput && !suggestionsContainer.contains(e.target)) {
-                closeAllSuggestions();
-            }
-        });
+        // handleOutsideClick は上部で既に定義済み
+        // イベントリスナーを登録
+        document.addEventListener('click', handleOutsideClick);
 
     })();
 </script>
