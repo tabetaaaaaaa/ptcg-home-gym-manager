@@ -1,34 +1,34 @@
 {% load static %}
 <tr id="card-{{ card.pk }}">
-    <td>
+    <td class="text-center">
         {% if card.image %}
-            <img src="{{ card.image.url }}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded">
+            <img src="{{ card.image.url }}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded mx-auto">
         {% else %}
-            <img src="{% static 'images/nonepic.png' %}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded">
+            <img src="{% static 'images/nonepic.png' %}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded mx-auto">
         {% endif %}
     </td>
     <td class="font-semibold">{{ card.name }}</td>
-    <td>
+    <td class="text-center">
         {% if card.evolution_stage %}
             <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ card.evolution_stage.name }}</span>
         {% endif %}
     </td>
-    <td>
-        <div class="flex flex-wrap gap-1">
+    <td class="text-center">
+        <div class="flex flex-wrap gap-1 justify-center">
             {% for type in card.types.all %}
                 <span class="badge badge-sm whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
             {% endfor %}
         </div>
     </td>
-    <td>
-        <div class="flex flex-wrap gap-1">
+    <td class="text-center">
+        <div class="flex flex-wrap gap-1 justify-center">
             {% for feature in card.special_features.all %}
                 <span class="badge badge-neutral badge-dashed badge-sm whitespace-nowrap">{{ feature.name }}</span>
             {% endfor %}
         </div>
     </td>
-    <td>
-        <div class="flex items-center gap-2">
+    <td class="text-center">
+        <div class="flex items-center gap-2 justify-center">
             <span class="font-bold text-lg">{{ card.quantity }}</span>
             <div class="btn-group btn-group-vertical">
                 <button class="btn btn-primary btn-xs"
@@ -42,12 +42,14 @@
             </div>
         </div>
     </td>
-    <td>
-        <div class="flex gap-1 flex-wrap">
-            <button class="btn btn-info btn-xs"
-                    hx-get="{% url 'cards:card_detail_modal' card.pk %}"
-                    hx-target="body"
-                    hx-swap="beforeend">詳細</button>
+    <td class="text-center">
+        <button class="btn btn-neutral btn-xs"
+                hx-get="{% url 'cards:card_detail_modal' card.pk %}"
+                hx-target="body"
+                hx-swap="beforeend">詳細</button>
+    </td>
+    <td class="text-center">
+        <div class="flex gap-1 flex-wrap justify-center">
             <button class="btn btn-ghost btn-xs"
                     hx-get="{% url 'cards:card_edit' card.pk %}"
                     hx-target="#dialog-target">編集</button>

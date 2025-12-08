@@ -2219,18 +2219,6 @@ html {
     }
   }
 
-  .btn-outline.btn-info:hover {
-    --tw-text-opacity: 1;
-    color: var(--fallback-inc,oklch(var(--inc)/var(--tw-text-opacity)));
-  }
-
-  @supports (color: color-mix(in oklab, black, black)) {
-    .btn-outline.btn-info:hover {
-      background-color: color-mix(in oklab, var(--fallback-in,oklch(var(--in)/1)) 90%, black);
-      border-color: color-mix(in oklab, var(--fallback-in,oklch(var(--in)/1)) 90%, black);
-    }
-  }
-
   .btn-outline.btn-warning:hover {
     --tw-text-opacity: 1;
     color: var(--fallback-wac,oklch(var(--wac)/var(--tw-text-opacity)));
@@ -2765,8 +2753,8 @@ html {
     --btn-color: var(--fallback-s);
   }
 
-  .btn-info {
-    --btn-color: var(--fallback-in);
+  .btn-neutral {
+    --btn-color: var(--fallback-n);
   }
 
   .btn-warning {
@@ -2849,8 +2837,8 @@ html {
     --btn-color: var(--s);
   }
 
-  .btn-info {
-    --btn-color: var(--in);
+  .btn-neutral {
+    --btn-color: var(--n);
   }
 
   .btn-warning {
@@ -2868,10 +2856,10 @@ html {
   outline-color: var(--fallback-s,oklch(var(--s)/1));
 }
 
-.btn-info {
+.btn-neutral {
   --tw-text-opacity: 1;
-  color: var(--fallback-inc,oklch(var(--inc)/var(--tw-text-opacity)));
-  outline-color: var(--fallback-in,oklch(var(--in)/1));
+  color: var(--fallback-nc,oklch(var(--nc)/var(--tw-text-opacity)));
+  outline-color: var(--fallback-n,oklch(var(--n)/1));
 }
 
 .btn-warning {
@@ -2957,11 +2945,6 @@ html {
 .btn-outline.btn-success.btn-active {
   --tw-text-opacity: 1;
   color: var(--fallback-suc,oklch(var(--suc)/var(--tw-text-opacity)));
-}
-
-.btn-outline.btn-info {
-  --tw-text-opacity: 1;
-  color: var(--fallback-in,oklch(var(--in)/var(--tw-text-opacity)));
 }
 
 .btn-outline.btn-info.btn-active {
@@ -4227,6 +4210,10 @@ details.collapse summary::-webkit-details-marker {
 
 .w-32 {
   width: 8rem;
+}
+
+.w-44 {
+  width: 11rem;
 }
 
 .w-5 {
