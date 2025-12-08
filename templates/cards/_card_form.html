@@ -1,7 +1,18 @@
 {% load widget_tweaks %}
 
+<div id="dialog-target" hx-swap-oob="true">
 <dialog id="modal-form" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
+
+        {# 成功メッセージ #}
+        {% if show_success %}
+        <div class="alert alert-success shadow-lg mb-4">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>カードを登録しました。続けて次のカードを登録できます。</span>
+            </div>
+        </div>
+        {% endif %}
 
         <form
             {% if card %}
@@ -10,12 +21,6 @@
             hx-swap="outerHTML"
             {% else %}
             hx-post="{% url 'cards:card_create' %}"
-            {% if view_mode == 'table' %}
-            hx-target="#card-table-body"
-            {% else %}
-            hx-target="#card-grid"
-            {% endif %}
-            hx-swap="afterbegin"
             {% endif %}
             enctype="multipart/form-data"
             hx-indicator=".htmx-indicator"
@@ -279,7 +284,7 @@
             }
         });
 
-        // htmxによるフォーム送信が完了する前に、成功ならモーダルを閉じる
+        // htmxによるフォーム送信が完了する前に、成功ならモーダルを閉じる（編集時のみ）
         document.body.addEventListener('htmx:beforeSwap', function(evt) {
             // このモーダル内のフォームからのリクエストであるかを確認
             if(evt.detail.requestConfig.elt.closest('#modal-form')) {
@@ -387,3 +392,4 @@
 
     })();
 </script>
+</div>

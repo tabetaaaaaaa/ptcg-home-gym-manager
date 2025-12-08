@@ -56,7 +56,7 @@ class PokemonCard(models.Model):
     memo = models.TextField("メモ", null=True, blank=True)
     evolves_from = models.CharField("進化元カード", max_length=100, null=True, blank=True)
     # 外部キー (Foreign Key)
-    evolution_stage = models.ForeignKey(EvolutionStage, on_delete=models.PROTECT, verbose_name="進化段階")
+    evolution_stage = models.ForeignKey(EvolutionStage, on_delete=models.PROTECT, verbose_name="進化段階", default=1)
 
     # 多対多 (Many-to-Many)
     types = models.ManyToManyField(Type, verbose_name="タイプ", blank=False)

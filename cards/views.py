@@ -21,11 +21,24 @@ def card_create(request):
             # 表示モードに応じて適切なテンプレートを返す
             view_mode = request.session.get('view_mode', 'card')
             if view_mode == 'table':
-                response = render(request, 'cards/_card_table_row.html', {'card': card})
+                card_html = render(request, 'cards/_card_table_row.html', {'card': card}).content.decode('utf-8')
+                # <tr>要素を一時的なdivでラップしてHTMLとして有効にする
+                card_html = f'<div id="temp-card-container" style="display:none;">{card_html}</div>'
             else:
-                response = render(request, 'cards/_card_item.html', {'card': card})
+                card_html = render(request, 'cards/_card_item.html', {'card': card}).content.decode('utf-8')
 
-            response['HX-Trigger'] = 'closeModal'
+            # 空のフォームを生成してOOBスワップで返す
+            new_form = PokemonCardForm()
+            form_html = render(request, 'cards/_card_form.html', {
+                'form': new_form,
+                'view_mode': view_mode,
+                'show_success': True
+            }).content.decode('utf-8')
+
+            # カードのHTMLとフォームのHTMLを結合して返す
+            response = HttpResponse(card_html + form_html)
+            # カスタムイベントでリスト更新をトリガー
+            response['HX-Trigger'] = 'cardCreated'
             return response
         else:
             # バリデーション失敗時はフォームを再描画

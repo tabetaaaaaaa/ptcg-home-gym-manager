@@ -67,6 +67,49 @@
                 event.detail.headers['X-CSRFToken'] = csrftoken;
             }
         });
+
+        // カード作成成功時のリスト更新処理
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            // cardCreated イベントをトリガーとしてリスト更新を行う
+            if (evt.detail.xhr && evt.detail.xhr.getResponseHeader("HX-Trigger") === 'cardCreated') {
+                console.log('cardCreated event detected');
+
+                // カードモードまたはテーブルモードを判定してターゲットを決定
+                const cardGrid = document.getElementById('card-grid');
+                const cardTableBody = document.getElementById('card-table-body');
+
+                console.log('cardGrid:', cardGrid, 'cardTableBody:', cardTableBody);
+
+                if (cardGrid) {
+                    // カードモード: レスポンスから<div id="card-xxx">を抽出
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(evt.detail.xhr.response, 'text/html');
+                    const newCardItem = doc.querySelector('[id^="card-"]');
+                    console.log('Card mode - newCardItem:', newCardItem);
+                    if (newCardItem) {
+                        cardGrid.insertAdjacentElement('afterbegin', newCardItem);
+                        console.log('Card inserted into grid');
+                    }
+                } else if (cardTableBody) {
+                    // テーブルモード: レスポンスから<tr>を抽出
+                    const responseText = evt.detail.xhr.response;
+                    console.log('Response text:', responseText);
+
+                    // temp-card-containerの内容を正規表現で抽出
+                    const tempContainerMatch = responseText.match(/<div id="temp-card-container"[^>]*>([\s\S]*?)<\/div>/);
+                    console.log('tempContainerMatch:', tempContainerMatch);
+
+                    if (tempContainerMatch && tempContainerMatch[1]) {
+                        const trHtml = tempContainerMatch[1];
+                        console.log('Extracted TR HTML:', trHtml);
+
+                        // テーブルのbodyに直接HTMLを挿入
+                        cardTableBody.insertAdjacentHTML('afterbegin', trHtml);
+                        console.log('Row inserted into table');
+                    }
+                }
+            }
+        });
     </script>
 
 </body>
