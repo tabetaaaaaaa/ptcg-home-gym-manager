@@ -118,7 +118,7 @@ class PokemonCardListView(ListView):
 
 
 class TrainersCardListView(PokemonCardListView):
-    template_name = 'cards/trainer_card_list.html'
+    template_name = 'cards/trainers_card_list.html'
 
     def get_queryset(self):
         queryset = super(PokemonCardListView, self).get_queryset().filter(
@@ -134,7 +134,7 @@ class TrainersCardListView(PokemonCardListView):
     def get_template_names(self):
         if self.request.htmx:
             return ['cards/_card_list_content.html']
-        return ['cards/trainer_card_list.html']
+        return ['cards/trainers_card_list.html']
 
 @require_POST
 def increase_card_quantity(request, pk):
@@ -206,7 +206,7 @@ def toggle_view_mode(request):
     # リファラをチェックして、適切なリストビューにリダイレクトする
     referer = request.META.get('HTTP_REFERER')
     if referer and 'trainers' in referer:
-        return redirect('cards:trainer_card_list')
+        return redirect('cards:trainers_card_list')
     return redirect('cards:pokemon_card_list')
 
 def card_detail_modal(request, pk):
@@ -222,5 +222,5 @@ def card_detail_modal(request, pk):
     if card.category.slug == 'pokemon':
         template_name = 'cards/_pokemon_card_detail_modal.html'
     else:
-        template_name = 'cards/_trainer_card_detail_modal.html'
+        template_name = 'cards/_trainers_card_detail_modal.html'
     return render(request, template_name, {'card': card})

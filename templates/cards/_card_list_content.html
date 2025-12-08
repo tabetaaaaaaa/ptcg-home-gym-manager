@@ -9,7 +9,7 @@
 {% if view_mode == 'table' %}
     {# テーブル表示モード #}
     {% if 'trainer_card_list' in request.resolver_match.url_name %}
-        {% include 'cards/_trainer_card_table.html' with cards=page_obj %}
+        {% include 'cards/_trainers_card_table.html' with cards=page_obj %}
     {% else %}
         {% include 'cards/_pokemon_card_table.html' with cards=page_obj %}
     {% endif %}

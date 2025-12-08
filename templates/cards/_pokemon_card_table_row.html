@@ -10,35 +10,21 @@
     <td class="font-semibold">{{ card.name }}</td>
     <td class="text-center">
         <div class="flex flex-wrap gap-1 justify-center">
-            {% if card.category.slug == 'pokemon' %}
-                {% for type in card.types.all %}
-                    <span class="badge badge-sm whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
-                {% endfor %}
-            {% elif card.category.slug == 'trainers' %}
-                {% for st in card.special_trainers.all %}
-                    <span class="badge badge-sm whitespace-nowrap" style="background-color: {{ st.bg_color }}; color: {{ st.text_color }};">{{ st.name }}</span>
-                {% endfor %}
-            {% endif %}
+            {% for type in card.types.all %}
+                <span class="badge badge-sm whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
+            {% endfor %}
         </div>
     </td>
     <td class="text-center">
-        {% if card.category.slug == 'pokemon' %}
-            {% if card.evolution_stage %}
-                <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ card.evolution_stage.name }}</span>
-            {% endif %}
-        {% elif card.category.slug == 'trainers' %}
-            {% if card.trainer_type %}
-                <span class="badge whitespace-nowrap" style="background-color: {{ card.trainer_type.bg_color }}; color: {{ card.trainer_type.text_color }};">{{ card.trainer_type.name }}</span>
-            {% endif %}
+        {% if card.evolution_stage %}
+            <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ card.evolution_stage.name }}</span>
         {% endif %}
     </td>
     <td class="text-center">
         <div class="flex flex-wrap gap-1 justify-center">
-            {% if card.category.slug == 'pokemon' %}
-                {% for feature in card.special_features.all %}
-                    <span class="badge badge-neutral badge-dashed badge-sm whitespace-nowrap">{{ feature.name }}</span>
-                {% endfor %}
-            {% endif %}
+            {% for feature in card.special_features.all %}
+                <span class="badge badge-neutral badge-dashed badge-sm whitespace-nowrap">{{ feature.name }}</span>
+            {% endfor %}
         </div>
     </td>
     <td class="text-center">
