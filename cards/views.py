@@ -206,7 +206,7 @@ def toggle_view_mode(request):
     # リファラをチェックして、適切なリストビューにリダイレクトする
     referer = request.META.get('HTTP_REFERER')
     if referer and 'trainers' in referer:
-        return redirect('cards:trainers_card_list')
+        return redirect('cards:trainer_card_list')
     return redirect('cards:pokemon_card_list')
 
 def card_detail_modal(request, pk):
