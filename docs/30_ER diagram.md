@@ -45,6 +45,8 @@ erDiagram
         string name UK "カテゴリ名 (例: ポケモン, トレーナーズ)"
         string slug UK "URL用スラッグ (例: pokemon, trainers)"
         int display_order "表示順"
+        string bg_color "背景色"
+        string text_color "文字色"
     }
 
     Type {
@@ -85,6 +87,8 @@ erDiagram
         int id PK "ユニークID"
         string name UK "レアリティ名 (例: ACE, 通常)"
         int display_order "表示順"
+        string bg_color "背景色"
+        string text_color "文字色"
     }
 
     CardType {
