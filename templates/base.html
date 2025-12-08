@@ -88,24 +88,26 @@
                     console.log('Card mode - newCardItem:', newCardItem);
                     if (newCardItem) {
                         cardGrid.insertAdjacentElement('afterbegin', newCardItem);
-                        console.log('Card inserted into grid');
+                        // HTMXの属性を有効化
+                        htmx.process(newCardItem);
+                        console.log('Card inserted into grid and HTMX processed');
                     }
                 } else if (cardTableBody) {
-                    // テーブルモード: レスポンスから<tr>を抽出
-                    const responseText = evt.detail.xhr.response;
-                    console.log('Response text:', responseText);
+                    // テーブルモード: DOMParserでレスポンスをパース
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(evt.detail.xhr.response, 'text/html');
+                    const tempContainer = doc.getElementById('temp-card-container');
+                    console.log('Table mode - tempContainer:', tempContainer);
 
-                    // temp-card-containerの内容を正規表現で抽出
-                    const tempContainerMatch = responseText.match(/<div id="temp-card-container"[^>]*>([\s\S]*?)<\/div>/);
-                    console.log('tempContainerMatch:', tempContainerMatch);
-
-                    if (tempContainerMatch && tempContainerMatch[1]) {
-                        const trHtml = tempContainerMatch[1];
-                        console.log('Extracted TR HTML:', trHtml);
-
-                        // テーブルのbodyに直接HTMLを挿入
-                        cardTableBody.insertAdjacentHTML('afterbegin', trHtml);
-                        console.log('Row inserted into table');
+                    if (tempContainer) {
+                        const newRow = tempContainer.querySelector('tbody tr');
+                        console.log('Table mode - newRow:', newRow);
+                        if (newRow) {
+                            cardTableBody.insertAdjacentElement('afterbegin', newRow);
+                            // HTMXの属性を有効化
+                            htmx.process(newRow);
+                            console.log('Row inserted into table and HTMX processed');
+                        }
                     }
                 }
             }

@@ -22,8 +22,8 @@ def card_create(request):
             view_mode = request.session.get('view_mode', 'card')
             if view_mode == 'table':
                 card_html = render(request, 'cards/_card_table_row.html', {'card': card}).content.decode('utf-8')
-                # <tr>要素を一時的なdivでラップしてHTMLとして有効にする
-                card_html = f'<div id="temp-card-container" style="display:none;">{card_html}</div>'
+                # <tr>要素を正しいHTML構造でラップ
+                card_html = f'<table id="temp-card-container" style="display:none;"><tbody>{card_html}</tbody></table>'
             else:
                 card_html = render(request, 'cards/_card_item.html', {'card': card}).content.decode('utf-8')
 
@@ -160,11 +160,6 @@ def card_delete(request, pk):
         response['HX-Trigger'] = 'closeModal'
         return response
 
-def card_name_suggestions(request):
-    query = request.GET.get('q', '')
-    suggestions = PokemonCard.objects.filter(name__icontains=query).order_by('name')[:5]
-    context = {'suggestions': [s.name for s in suggestions]}
-    return render(request, 'cards/_card_suggestions.html', context)
 
 @require_POST
 def toggle_view_mode(request):

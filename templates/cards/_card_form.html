@@ -272,37 +272,11 @@
     (function() {
         const modal = document.getElementById('modal-form');
 
-        // --- evolves_from フィールドのサジェスチョン用の要素を取得 ---
-        const evolvesFromInput = document.getElementById('{{ form.evolves_from.id_for_label }}');
-        const suggestionsContainer = document.getElementById('suggestions-container');
-        let currentFocus = -1; // -1 means no item is focused
-
-        // サジェスチョン関連の関数を上部で定義
-        function closeAllSuggestions() {
-            if (suggestionsContainer) {
-                suggestionsContainer.innerHTML = '';
-                currentFocus = -1;
-            }
-        }
-
-        // サジェスチョンコンテナの外部をクリックした際に閉じる（名前付き関数）
-        function handleOutsideClick(e) {
-            // suggestionsContainerが存在するかチェック
-            if (suggestionsContainer && evolvesFromInput) {
-                if (e.target !== evolvesFromInput && !suggestionsContainer.contains(e.target)) {
-                    closeAllSuggestions();
-                }
-            }
-        }
-
         // モーダルを表示
         modal.showModal();
 
         // モーダルが閉じられたときに自身をDOMから削除する
         modal.addEventListener('close', () => {
-            // イベントリスナーをクリーンアップ
-            document.removeEventListener('click', handleOutsideClick);
-
             // dialog-target の中身を空にする方が安全
             const dialogTarget = document.getElementById('dialog-target');
             if (dialogTarget) {
@@ -336,75 +310,6 @@
 
         // 変更時に色を更新
         evolutionStageSelect.addEventListener('change', updateEvolutionStageColor);
-
-        // --- evolves_from フィールドのサジェスチョン機能（キーボードナビゲーション） ---
-        // evolvesFromInput, suggestionsContainer, currentFocus, closeAllSuggestions は上部で既に定義済み
-
-        function removeActive(items) {
-            for (let i = 0; i < items.length; i++) {
-                items[i].classList.remove("bg-base-300"); // アクティブ状態のスタイルを削除
-            }
-        }
-
-        function addActive(items) {
-            if (!items || items.length === 0) return false;
-            removeActive(items);
-            if (currentFocus >= items.length) currentFocus = 0;
-            if (currentFocus < 0) currentFocus = (items.length - 1);
-            items[currentFocus].classList.add("bg-base-300"); // アクティブ状態のスタイルを追加
-            items[currentFocus].scrollIntoView({ block: "nearest" }); // 要素をビューポート内にスクロール
-            return true;
-        }
-
-        evolvesFromInput.addEventListener("keydown", function(e) {
-            const suggestions = suggestionsContainer.querySelectorAll("button");
-            if (e.key === "ArrowDown") {
-                currentFocus++;
-                addActive(suggestions);
-                e.preventDefault(); // カーソル移動を防ぐ
-            } else if (e.key === "ArrowUp") {
-                currentFocus--;
-                addActive(suggestions);
-                e.preventDefault(); // カーソル移動を防ぐ
-            } else if (e.key === "Enter") {
-                e.preventDefault(); // フォーム送信を防ぐ
-                if (currentFocus > -1 && suggestions[currentFocus]) {
-                    evolvesFromInput.value = suggestions[currentFocus].innerText;
-                    closeAllSuggestions();
-                } else {
-                    // フォーカスされたサジェスチョンがない場合は何もしない（フォーム送信も行わない）
-                    // 必要であれば、ここでサジェスチョンを非表示にする
-                    closeAllSuggestions();
-                }
-            } else if (e.key === "Escape") {
-                closeAllSuggestions();
-            }
-        });
-
-        // htmxが新しいサジェスチョンをロードした後にフォーカスをリセットし、クリックイベントを再登録
-        document.body.addEventListener('htmx:afterSwap', function(evt) {
-            if (evt.detail.target && evt.detail.target.id === 'suggestions-container') {
-                currentFocus = -1; // サジェスチョンが更新されたらフォーカスをリセット
-
-                // サジェスチョン要素が再作成されるため、イベントリスナーを再登録
-                const suggestions = suggestionsContainer.querySelectorAll("button");
-                suggestions.forEach(button => {
-                    button.onclick = function() {
-                        evolvesFromInput.value = this.innerText;
-                        closeAllSuggestions();
-                    };
-                });
-            }
-        });
-        
-        // 入力フィールドからフォーカスが外れたらサジェスチョンを非表示にする
-        evolvesFromInput.addEventListener('blur', function() {
-            setTimeout(closeAllSuggestions, 100); // クリックイベントが発火する時間を考慮して少し遅延させる
-        });
-
-        // handleOutsideClick は上部で既に定義済み
-        // イベントリスナーを登録
-        document.addEventListener('click', handleOutsideClick);
 
     })();
 </script>
