@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    CardListView, card_create, card_edit, increase_card_quantity,
+    PokemonCardListView, TrainersCardListView, card_create, card_edit, increase_card_quantity,
     decrease_card_quantity, card_delete,
     toggle_view_mode, card_detail_modal
 )
@@ -8,8 +8,9 @@ from .views import (
 app_name = 'cards'
 
 urlpatterns = [
-    path('', CardListView.as_view(), name='card_list'),
-    path('new/', card_create, name='card_create'),
+    path('', PokemonCardListView.as_view(), name='pokemon_card_list'),
+    path('trainers/', TrainersCardListView.as_view(), name='trainer_card_list'),
+    path('new/<str:category_slug>/', card_create, name='card_create'),
     path('<int:pk>/edit/', card_edit, name='card_edit'),
     path('<int:pk>/increase/', increase_card_quantity, name='increase_card_quantity'),
     path('<int:pk>/decrease/', decrease_card_quantity, name='decrease_card_quantity'),

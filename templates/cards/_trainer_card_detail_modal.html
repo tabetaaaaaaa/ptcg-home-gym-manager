@@ -1,0 +1,58 @@
+{% load static %}
+
+<dialog id="modal-detail" class="modal modal-open">
+    <div class="modal-box max-w-2xl">
+        <button class="btn btn-sm btn-circle absolute right-2 top-2"
+                onclick="this.closest('.modal').remove()">✕</button>
+
+        <h3 class="font-bold text-lg mb-4">カード詳細</h3>
+
+        {# カード情報を表示 #}
+        <div class="card bg-base-100 shadow-xl">
+            <figure class="px-10 pt-10">
+                <img src="{% if card.image %}{{ card.image.url }}{% else %}{% static 'images/nonepic.png' %}{% endif %}"
+                    alt="{{ card.name }}"
+                    class="rounded-xl h-32 w-full object-contain" />
+            </figure>
+            <div class="card-body items-center text-center">
+                <h2 class="card-title">{{ card.name }}</h2>
+
+                <div class="card-actions justify-center items-center my-2 w-full">
+                    <span class="mr-2">枚数:</span>
+                    <span class="font-bold text-lg">{{ card.quantity }}</span>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-1 my-2">
+                    {% if card.trainer_type %}
+                        <span class="badge whitespace-nowrap" style="background-color: {{ card.trainer_type.bg_color }}; color: {{ card.trainer_type.text_color }}; border-color: {{ card.trainer_type.text_color }};">{{ card.trainer_type.name }}</span>
+                    {% endif %}
+                    {% for special in card.special_trainers.all %}
+                    <span class="badge badge-sm whitespace-nowrap" style="background-color: {{ special.bg_color }}; color: {{ special.text_color }};">{{ special.name }}</span>
+                    {% endfor %}
+                </div>
+
+                {# 詳細情報を常に展開表示 #}
+                <div class="bg-base-200 rounded-lg p-4 mt-4 w-full">
+                    <h4 class="text-sm font-medium mb-2">詳細情報</h4>
+                    <ul class="list-disc list-inside text-sm text-left">
+                        {% if card.memo %}
+                            <li>メモ: {{ card.memo|linebreaksbr }}</li>
+                        {% endif %}
+                        <li>登録日時: {{ card.created_at|date:"Y/m/d H:i" }}</li>
+                        <li>更新日時: {{ card.updated_at|date:"Y/m/d H:i" }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop" onclick="this.parentElement.remove()"></div>
+</dialog>
+
+<script>
+    (function() {
+        const modal = document.getElementById('modal-detail');
+
+        // モーダルを表示
+        modal.showModal();
+    })();
+</script>

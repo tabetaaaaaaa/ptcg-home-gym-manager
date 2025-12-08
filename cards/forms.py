@@ -13,6 +13,9 @@ class PokemonCardForm(forms.ModelForm):
             'types': forms.CheckboxSelectMultiple(attrs={'class': 'checkbox checkbox-primary'}),
             'special_features': forms.CheckboxSelectMultiple(attrs={'class': 'checkbox checkbox-secondary'}),
             'move_types': forms.CheckboxSelectMultiple(attrs={'class': 'checkbox checkbox-accent'}),
+            'trainer_type': forms.Select(attrs={'class': 'select select-bordered w-full'}),
+            'special_trainers': forms.CheckboxSelectMultiple(attrs={'class': 'checkbox checkbox-secondary'}),
             'memo': forms.Textarea(attrs={'class': 'textarea textarea-bordered textarea-primary w-full', 'rows': 3}),
             'image': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered file-input-primary w-full'}),
+            'category': forms.HiddenInput(),
         }

@@ -15,8 +15,14 @@
         </div>
         <div class="navbar-end">
             {# ヘッダー用の新規登録ボタン #}
+            {# 表示中のタブに応じて、新規登録ボタンが参照するカテゴリを決定する #}
+            {% if 'trainer_card_list' in request.resolver_match.url_name %}
+                {% url 'cards:card_create' category_slug='trainers' as create_url %}
+            {% else %}
+                {% url 'cards:card_create' category_slug='pokemon' as create_url %}
+            {% endif %}
             <button 
-                hx-get="{% url 'cards:card_create' %}" 
+                hx-get="{{ create_url }}" 
                 hx-target="#dialog-target"
                 class="btn btn-warning">
                 新規カード登録
@@ -24,8 +30,20 @@
         </div>
     </div>
 
+    {# タブUI #}
+    <div class="container mx-auto px-4 mt-4">
+        <div role="tablist" class="tabs tabs-lifted">
+            <a role="tab" href="{% url 'cards:pokemon_card_list' %}" class="tab {% if request.resolver_match.url_name == 'pokemon_card_list' %}tab-active font-bold{% endif %}">
+                ポケモンカード
+            </a>
+            <a role="tab" href="{% url 'cards:trainer_card_list' %}" class="tab {% if request.resolver_match.url_name == 'trainer_card_list' %}tab-active font-bold{% endif %}">
+                トレーナーズカード
+            </a>
+        </div>
+    </div>
+
     {# メインコンテンツ #}
-    <main class="container mx-auto p-4">
+    <main class="container mx-auto p-4 pt-0">
         {% block content %}{% endblock %}
     </main>
 

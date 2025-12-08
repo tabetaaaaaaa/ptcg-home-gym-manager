@@ -8,7 +8,11 @@
 
 {% if view_mode == 'table' %}
     {# テーブル表示モード #}
-    {% include 'cards/_card_table.html' with cards=page_obj %}
+    {% if 'trainer_card_list' in request.resolver_match.url_name %}
+        {% include 'cards/_trainer_card_table.html' with cards=page_obj %}
+    {% else %}
+        {% include 'cards/_pokemon_card_table.html' with cards=page_obj %}
+    {% endif %}
 {% else %}
     {# カード表示モード(デフォルト) #}
     <div id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -21,7 +25,11 @@
 {% if not filter.qs %}
 <div id="empty-card-message" class="text-center py-16">
     <p class="text-xl text-gray-500">対象のカードが見つかりません。</p>
-    <a href="{% url 'cards:card_list' %}" class="btn btn-primary mt-4">検索条件をリセットする</a>
+    {% if 'trainer_card_list' in request.resolver_match.url_name %}
+        <a href="{% url 'cards:trainer_card_list' %}" class="btn btn-primary mt-4">検索条件をリセットする</a>
+    {% else %}
+        <a href="{% url 'cards:pokemon_card_list' %}" class="btn btn-primary mt-4">検索条件をリセットする</a>
+    {% endif %}
 </div>
 {% endif %}
 

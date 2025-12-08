@@ -20,12 +20,13 @@
             hx-target="#card-{{ card.pk }}"
             hx-swap="outerHTML"
             {% else %}
-            hx-post="{% url 'cards:card_create' %}"
+            hx-post="{% url 'cards:card_create' category_slug=category_slug %}"
             {% endif %}
             enctype="multipart/form-data"
             hx-indicator=".htmx-indicator"
         >
             {% csrf_token %}
+            {{ form.category }}
 
             {# 基本情報セクション #}
             <div class="mb-3">
@@ -73,6 +74,7 @@
 
             <div class="divider my-2"></div>
 
+            {% if category_slug == 'pokemon' %}
             {# 進化情報セクション #}
             <div class="mb-3">
                 <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
@@ -206,6 +208,59 @@
                     {% endif %}
                 </div>
             </div>
+            {% elif category_slug == 'trainers' %}
+            {# トレーナーズ情報セクション #}
+            <div class="mb-3">
+                <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span class="badge badge-secondary badge-sm">トレーナーズ情報</span>
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                    <div class="form-control w-full mb-2">
+                        <label for="{{ form.trainer_type.id_for_label }}" class="label py-1">
+                            <span class="label-text text-sm">{{ form.trainer_type.label }}</span>
+                            {% if form.trainer_type.field.required %}
+                                <span class="label-text-alt text-error text-xs">*必須</span>
+                            {% endif %}
+                        </label>
+                        {{ form.trainer_type }}
+                        {% if form.trainer_type.errors %}
+                            <div class="alert alert-error shadow-lg mt-1 py-2">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="text-sm">{{ form.trainer_type.errors.0 }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-control w-full mb-2">
+                    <div class="collapse collapse-plus bg-base-200 border border-base-300 collapse-compact">
+                        <input type="checkbox" />
+                        <div class="collapse-title text-sm min-h-0 py-2">
+                            {{ form.special_trainers.label }}
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 pt-1">
+                                {% for choice in form.special_trainers %}
+                                    <label class="label cursor-pointer justify-start gap-2 py-1">
+                                        {{ choice.tag }}
+                                        <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.special_trainers.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-2">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span class="text-sm">{{ form.special_trainers.errors.0 }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
 
             <div class="divider my-2"></div>
 

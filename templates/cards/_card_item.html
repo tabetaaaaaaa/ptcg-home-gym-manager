@@ -39,16 +39,31 @@
             </div>
         </div>
         
-        <div class="flex flex-wrap justify-center gap-1 my-2">
-            <span class="badge badge-neutral badge-outline">{{ card.evolution_stage.name }}</span>
-            {% for type in card.types.all %}
-                <span class="badge" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">
-                    {{ type.name }}
-            </span>
-            {% endfor %}
-            {% for feature in card.special_features.all %}
-                <span class="badge badge-neutral badge-dashed">{{ feature.name }}</span>
-            {% endfor %}
+        <div class="flex flex-wrap justify-center gap-1 my-2 min-h-[24px]">
+            {% if card.category.slug == 'pokemon' %}
+                {% if card.evolution_stage %}
+                <span class="badge badge-neutral badge-outline">{{ card.evolution_stage.name }}</span>
+                {% endif %}
+                {% for type in card.types.all %}
+                    <span class="badge" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">
+                        {{ type.name }}
+                    </span>
+                {% endfor %}
+                {% for feature in card.special_features.all %}
+                    <span class="badge badge-neutral badge-dashed">{{ feature.name }}</span>
+                {% endfor %}
+            {% elif card.category.slug == 'trainers' %}
+                {% if card.trainer_type %}
+                    <span class="badge" style="background-color: {{ card.trainer_type.bg_color }}; color: {{ card.trainer_type.text_color }}; border-color: {{ card.trainer_type.text_color }};">
+                        {{ card.trainer_type.name }}
+                    </span>
+                {% endif %}
+                {% for st in card.special_trainers.all %}
+                    <span class="badge" style="background-color: {{ st.bg_color }}; color: {{ st.text_color }};">
+                        {{ st.name }}
+                    </span>
+                {% endfor %}
+            {% endif %}
         </div>
 
         <div class="collapse collapse-arrow bg-base-200 mt-4">
@@ -58,15 +73,17 @@
             </div>
             <div class="collapse-content text-left"> 
                 <ul class="list-disc list-inside text-sm">
-                    {% if card.evolves_from %}
-                        <li>進化元: {{ card.evolves_from }}</li>
-                    {% endif %}
-                    {% if card.move_types.all %}
-                        <li>わざのタイプ:
-                            {% for move_type in card.move_types.all %}
-                                <span class="badge badge-outline badge-sm" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.bg_color }};">{{ move_type.name }}</span>
-                            {% endfor %}
-                        </li>
+                    {% if card.category.slug == 'pokemon' %}
+                        {% if card.evolves_from %}
+                            <li>進化元: {{ card.evolves_from }}</li>
+                        {% endif %}
+                        {% if card.move_types.all %}
+                            <li>わざのタイプ:
+                                {% for move_type in card.move_types.all %}
+                                    <span class="badge badge-outline badge-sm" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.bg_color }};">{{ move_type.name }}</span>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
                     {% endif %}
                     {% if card.memo %}
                         <li>メモ: {{ card.memo|linebreaksbr }}</li>

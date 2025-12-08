@@ -23,7 +23,9 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center gap-1 my-2">
-                    <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ card.evolution_stage.name }}</span>
+                    {% if card.evolution_stage %}
+                        <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ card.evolution_stage.name }}</span>
+                    {% endif %}
                     {% for type in card.types.all %}
                         <span class="badge whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
                     {% endfor %}
