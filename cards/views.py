@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType, CardCategory
 from .filters import PokemonCardFilter, TrainersCardFilter
 from .forms import PokemonCardForm
+from .utils import find_evolution_root, collect_evolution_line
 
 def card_create(request, category_slug):
     category = get_object_or_404(CardCategory, slug=category_slug)
@@ -224,3 +225,43 @@ def card_detail_modal(request, pk):
     else:
         template_name = 'cards/_trainers_card_detail_modal.html'
     return render(request, template_name, {'card': card})
+
+def related_cards_modal(request, pk):
+    """関連カード（進化系統）をモーダルで表示"""
+    # 起点となるカードを取得
+    card = get_object_or_404(PokemonCard, pk=pk, category__slug='pokemon')
+
+    # 進化系統の根元を探す
+    root_name = find_evolution_root(card.name)
+
+    # 進化系統の全カード名を収集
+    evolution_line_names = collect_evolution_line(root_name)
+
+    # カード名リストからPokemonCardオブジェクトを取得
+    related_cards = PokemonCard.objects.filter(
+        name__in=evolution_line_names,
+        category__slug='pokemon'
+    ).select_related(
+        'evolution_stage'
+    ).prefetch_related(
+        'types', 'special_features'
+    )
+
+    # 進化段階ごとにグルーピング
+    evolution_stages = EvolutionStage.objects.all().order_by('display_order')
+
+    # 各進化段階ごとのカードリストを作成
+    stages_with_cards = []
+    for stage in evolution_stages:
+        cards_in_stage = [c for c in related_cards if c.evolution_stage == stage]
+        stages_with_cards.append({
+            'stage': stage,
+            'cards': cards_in_stage
+        })
+
+    context = {
+        'origin_card': card,
+        'stages_with_cards': stages_with_cards
+    }
+
+    return render(request, 'cards/_related_cards_modal.html', context)

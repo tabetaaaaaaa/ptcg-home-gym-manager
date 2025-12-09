@@ -43,10 +43,16 @@
         </div>
     </td>
     <td class="text-center">
-        <button class="btn btn-neutral btn-xs"
-                hx-get="{% url 'cards:card_detail_modal' card.pk %}"
-                hx-target="body"
-                hx-swap="beforeend">詳細</button>
+        <div class="flex flex-col gap-1">
+            <button class="btn btn-neutral btn-xs"
+                    hx-get="{% url 'cards:card_detail_modal' card.pk %}"
+                    hx-target="body"
+                    hx-swap="beforeend">詳細</button>
+            <button class="btn btn-neutral btn-xs h-auto min-h-[2rem] py-1 whitespace-normal leading-tight text-[0.625rem]"
+                    hx-get="{% url 'cards:related_cards_modal' card.pk %}"
+                    hx-target="body"
+                    hx-swap="beforeend">関連<br>サーチ</button>
+        </div>
     </td>
     <td class="text-center">
         <div class="flex gap-1 flex-wrap justify-center">
