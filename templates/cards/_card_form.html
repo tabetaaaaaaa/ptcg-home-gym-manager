@@ -291,7 +291,10 @@
                     </label>
 
                     {# 画像プレビューエリア #}
-                    <div id="image-preview-area" class="mb-2" {% if not card or not card.image %}style="display: none;"{% endif %}>
+                    <div id="image-preview-area"
+                         class="mb-2"
+                         {% if not card or not card.image %}style="display: none;"{% endif %}
+                         data-original-image-url="{% if card and card.image %}{{ card.image.url }}{% endif %}">
                         <div class="avatar">
                             <div class="w-32 rounded-lg ring ring-primary ring-offset-base-100 ring-offset-2">
                                 <img id="image-preview" src="{% if card and card.image %}{{ card.image.url }}{% endif %}" alt="画像プレビュー">
@@ -311,6 +314,16 @@
                         <div id="django-file-input-wrapper" class="mt-2">
                             {{ form.image }}
                         </div>
+                    </div>
+
+                    {# 画像クリアボタン(常に表示、編集時・新規作成時共通) #}
+                    <div id="custom-clear-wrapper" class="mt-2">
+                        <button type="button" id="custom-clear-btn" class="btn btn-xs btn-error btn-outline gap-1" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            <span class="whitespace-nowrap">画像クリア</span>
+                        </button>
                     </div>
 
                     {% if form.image.errors %}
@@ -401,11 +414,14 @@
             fileInput.style.opacity = '0';
             fileInput.style.pointerEvents = 'none';
 
-            // Djangoが生成する「現在: xxx.jpg」テキストとリンクを非表示
+            // Djangoが生成する「現在: xxx.jpg」「変更：」テキストとリンクを非表示
             const fileInputParent = fileInput.parentElement;
             Array.from(fileInputParent.childNodes).forEach(node => {
-                if (node.nodeType === Node.TEXT_NODE && node.textContent.includes('現在:')) {
-                    node.textContent = '';
+                if (node.nodeType === Node.TEXT_NODE) {
+                    // 「現在:」「変更：」などのテキストを削除
+                    if (node.textContent.includes('現在:') || node.textContent.includes('変更：') || node.textContent.trim() === '変更:') {
+                        node.textContent = '';
+                    }
                 }
                 if (node.tagName === 'A' && node.href) {
                     node.style.display = 'none';
@@ -415,21 +431,27 @@
                 }
             });
 
-            // Djangoが生成するクリアチェックボックスにDaisyUIスタイルを適用
+            // クリアボタンの管理
             const imageClearCheckbox = fileInputParent.querySelector('input[type="checkbox"][name="image-clear"]');
-            if (imageClearCheckbox) {
-                // チェックボックスにDaisyUIクラスを追加
-                imageClearCheckbox.classList.add('checkbox', 'checkbox-error', 'checkbox-sm');
+            const customClearBtn = document.getElementById('custom-clear-btn');
+            const hasInitialImage = imagePreviewArea.dataset.originalImageUrl;
 
-                // ラベルを整形
+            // Djangoが生成したチェックボックスとラベルを完全に非表示
+            if (imageClearCheckbox) {
+                imageClearCheckbox.style.display = 'none';
                 const clearLabel = fileInputParent.querySelector(`label[for="${imageClearCheckbox.id}"]`);
                 if (clearLabel) {
-                    clearLabel.classList.add('label', 'cursor-pointer', 'justify-start', 'gap-2', 'py-1');
-                    const labelSpan = clearLabel.querySelector('span') || clearLabel;
-                    if (labelSpan.tagName === 'SPAN') {
-                        labelSpan.classList.add('label-text', 'text-sm');
-                    }
+                    clearLabel.style.display = 'none';
                 }
+            }
+
+            // カスタムボタンの初期状態を設定
+            if (hasInitialImage) {
+                // 編集時で既に画像がある場合は有効化
+                customClearBtn.disabled = false;
+            } else {
+                // 新規作成時は無効化
+                customClearBtn.disabled = true;
             }
 
             // ドロップゾーンクリックでファイル選択ダイアログを開く
@@ -509,34 +531,33 @@
                         imagePreview.src = e.target.result;
                         imagePreviewArea.style.display = 'block';
 
-                        // クリアチェックボックスがあれば自動的にオフにする
-                        const clearCheckbox = fileInputParent.querySelector('input[type="checkbox"][name="image-clear"]');
-                        if (clearCheckbox) {
-                            clearCheckbox.checked = false;
+                        // クリアボタンを有効化
+                        customClearBtn.disabled = false;
+
+                        // Djangoのチェックボックスがある場合(編集時)は、チェックを外す
+                        if (imageClearCheckbox) {
+                            imageClearCheckbox.checked = false;
                         }
                     };
                     reader.readAsDataURL(file);
                 }
             }
 
-            // クリアチェックボックスの動作を設定
-            const clearCheckbox = fileInputParent.querySelector('input[type="checkbox"][name="image-clear"]');
-            if (clearCheckbox) {
-                clearCheckbox.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        // チェックされたらプレビューを非表示
-                        imagePreviewArea.style.display = 'none';
-                        // ファイル選択もクリア
-                        fileInput.value = '';
-                    } else {
-                        // チェック解除されたら元の画像を表示
-                        {% if card and card.image %}
-                        imagePreview.src = '{{ card.image.url }}';
-                        imagePreviewArea.style.display = 'block';
-                        {% endif %}
-                    }
-                });
-            }
+            // カスタムクリアボタンのクリックイベント
+            customClearBtn.addEventListener('click', () => {
+                // プレビューを非表示
+                imagePreviewArea.style.display = 'none';
+                // ファイル選択をクリア
+                fileInput.value = '';
+
+                // 編集時でDjangoのチェックボックスがある場合はチェックを入れる
+                if (imageClearCheckbox) {
+                    imageClearCheckbox.checked = true;
+                }
+
+                // カスタムボタンを無効化
+                customClearBtn.disabled = true;
+            });
         }
 
     })();

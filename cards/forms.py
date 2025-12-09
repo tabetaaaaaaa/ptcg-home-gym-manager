@@ -1,6 +1,9 @@
 from django import forms
 from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType
 
+class CustomClearableFileInput(forms.ClearableFileInput):
+    clear_checkbox_label = '画像クリア'
+
 class PokemonCardForm(forms.ModelForm):
     class Meta:
         model = PokemonCard
@@ -16,6 +19,6 @@ class PokemonCardForm(forms.ModelForm):
             'trainer_type': forms.Select(attrs={'class': 'select select-bordered w-full'}),
             'special_trainers': forms.CheckboxSelectMultiple(attrs={'class': 'checkbox checkbox-secondary'}),
             'memo': forms.Textarea(attrs={'class': 'textarea textarea-bordered textarea-neutral w-full', 'rows': 3}),
-            'image': forms.ClearableFileInput(attrs={'class': 'file-input file-input-bordered file-input-secondary w-full'}),
+            'image': CustomClearableFileInput(attrs={'class': 'file-input file-input-bordered file-input-secondary w-full'}),
             'category': forms.HiddenInput(),
         }
