@@ -26,9 +26,9 @@
 <div id="empty-card-message" class="text-center py-16">
     <p class="text-xl text-gray-500">対象のカードが見つかりません。</p>
     {% if 'trainer_card_list' in request.resolver_match.url_name %}
-        <a href="{% url 'cards:trainer_card_list' %}" class="btn btn-primary mt-4">検索条件をリセットする</a>
+        <a href="{% url 'cards:trainer_card_list' %}" class="btn btn-secondary mt-4">検索条件をリセットする</a>
     {% else %}
-        <a href="{% url 'cards:pokemon_card_list' %}" class="btn btn-primary mt-4">検索条件をリセットする</a>
+        <a href="{% url 'cards:pokemon_card_list' %}" class="btn btn-secondary mt-4">検索条件をリセットする</a>
     {% endif %}
 </div>
 {% endif %}
