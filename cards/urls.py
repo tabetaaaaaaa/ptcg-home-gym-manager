@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     PokemonCardListView, TrainersCardListView, card_create, card_edit, increase_card_quantity,
     decrease_card_quantity, card_delete,
-    toggle_view_mode, card_detail_modal
+    toggle_view_mode, card_detail_modal, related_cards_modal
 )
 
 app_name = 'cards'
@@ -16,5 +16,6 @@ urlpatterns = [
     path('<int:pk>/decrease/', decrease_card_quantity, name='decrease_card_quantity'),
     path('<int:pk>/delete/', card_delete, name='card_delete'),
     path('<int:pk>/detail/', card_detail_modal, name='card_detail_modal'),
+    path('<int:pk>/related/', related_cards_modal, name='related_cards_modal'),
     path('toggle-view-mode/', toggle_view_mode, name='toggle_view_mode'),
 ]
