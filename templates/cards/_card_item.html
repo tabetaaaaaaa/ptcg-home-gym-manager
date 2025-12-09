@@ -2,20 +2,29 @@
 <div id="card-{{ card.pk }}" class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1 relative">
     <div class="absolute top-3 right-3 z-10 flex flex-col gap-1"> {# ボタンをカードの右上に配置するためのdiv #}
         <div class="flex gap-1">
+            {% if card.category.slug == 'pokemon' %}
             <button
-                class="btn btn-ghost btn-sm"
+                class="btn btn-neutral btn-xs"
+                hx-get="{% url 'cards:related_cards_modal' card.pk %}"
+                hx-target="body"
+                hx-swap="beforeend">
+                関連サーチ
+            </button>
+            {% endif %}
+            <button
+                class="btn btn-ghost btn-xs"
                 hx-get="{% url 'cards:card_edit' card.pk %}"
                 hx-target="#dialog-target">
                 編集
             </button>
             <button
-                class="btn btn-ghost btn-sm text-error"
+                class="btn btn-ghost btn-xs text-error"
                 hx-get="{% url 'cards:card_delete' card.pk %}"
                 hx-target="#dialog-target">
                 削除
             </button>
         </div>
-        {% if card.category.slug == 'pokemon' %}
+        <!-- {% if card.category.slug == 'pokemon' %}
         <button
             class="btn btn-neutral btn-sm w-full"
             hx-get="{% url 'cards:related_cards_modal' card.pk %}"
@@ -23,7 +32,7 @@
             hx-swap="beforeend">
             関連サーチ
         </button>
-        {% endif %}
+        {% endif %} -->
     </div>
     <figure class="px-10 pt-10">
         <img src="{% if card.image %}{{ card.image.url }}{% else %}{% static 'images/nonepic.png' %}{% endif %}" alt="{{ card.name }}" class="rounded-xl h-48 w-full object-contain" />

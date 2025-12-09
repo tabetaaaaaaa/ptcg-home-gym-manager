@@ -26,6 +26,7 @@
                                     <th class="w-32 text-center">タイプ</th>
                                     <th class="w-32 text-center">特別な分類</th>
                                     <th class="w-20 text-center">枚数</th>
+                                    <th class="w-20 text-center">詳細</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,6 +56,12 @@
                                     </td>
                                     <td class="text-center">
                                         <span class="font-bold">{{ card.quantity }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-neutral btn-xs"
+                                                hx-get="{% url 'cards:card_detail_modal' card.pk %}"
+                                                hx-target="body"
+                                                hx-swap="beforeend">詳細</button>
                                     </td>
                                 </tr>
                                 {% endfor %}
