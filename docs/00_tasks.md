@@ -271,3 +271,246 @@ DaisyUI の導入に伴い、Step4を以下の4フェーズに分けて段階的
   - テンプレート (`_card_item.html`, `_card_form.html`) を修正し、お気に入りフラグをバッジとして表示する。
   - 一覧画面で、お気に入りフラグのオン/オフを非同期で切り替えられるUI（例: クリックでトグル）を検討する。
 - **ゴール**: ユーザーが管理画面にアクセスせず、メイン画面の設定ページから自由に名称を設定できる5つのフラグを使って、デッキ構築や用途別のカード管理が効率的に行えるようになること。
+
+### 運用開始後の追加実装における留意点調査
+
+本セクションでは、Step13完了後に家庭内運用を開始し、データ登録が進んだ状態でStep16を実装する際の懸念事項を、MECE（Mutually Exclusive, Collectively Exhaustive）に整理します。
+
+#### A. データ整合性への影響: **影響なし ✅**
+
+**懸念:** 新しいフィールド追加時に既存レコードが破損するのでは？
+
+**調査結果:**
+- ManyToManyフィールド（`favorite_flags`）の追加は、`blank=True` で定義すれば既存データに**影響ゼロ**
+- 既存の `types`, `special_features`, `move_types` 等と同じパターンで実装されており、過去のマイグレーション（0011: `CardCategory`追加時）でも問題なし
+- 中間テーブル（例: `cards_pokemoncard_favorite_flags`）が自動生成されるが、既存データは何も変更されない
+
+#### B. デフォルト値の強制設定: **該当なし ✅**
+
+**懸念:** 全カードに自動的に何らかのフラグが立つのでは？
+
+**調査結果:**
+- ManyToManyリレーションは「関連なし」がデフォルト状態
+- BooleanField方式（`is_favorite = models.BooleanField(default=False)`）の場合でも、`False`（未選択）が初期値で問題なし
+- **ユーザーが明示的に設定するまで、フラグは立たない**
+
+#### C. 既存データの参照破壊: **影響なし ✅**
+
+**懸念:** ForeignKeyやManyToManyの追加で、既存の関連データが壊れるのでは？
+
+**調査結果:**
+- 新しいテーブル（`FavoriteFlag`）と中間テーブルが追加されるだけ
+- 既存の `PokemonCard.types`, `PokemonCard.special_features` などは**完全に独立**して動作継続
+- クエリ最適化パターン（`prefetch_related`）に `'favorite_flags'` を追加するだけで対応可能
+
+#### D. クエリ性能への影響: **影響軽微 ⚠️**
+
+**懸念:** 新しいManyToManyリレーションでN+1問題が発生するのでは？
+
+**調査結果:**
+- `prefetch_related('favorite_flags')` を追加すれば、既存の最適化パターンと同等
+- 現在の実装に1行追加するだけで対応可能:
+
+```python
+PokemonCard.objects.select_related(
+    'evolution_stage', 'trainer_type', 'category'
+).prefetch_related(
+    'types', 'special_features', 'move_types', 'special_trainers',
+    'favorite_flags'  # ← 追加
+)
+```
+
+**注意点:** フラグでのフィルタリングが頻繁に行われる場合、中間テーブルにインデックスが必要になる可能性あり（Django自動生成で通常は問題なし）
+
+#### E. マイグレーション失敗のリスク: **低リスク ✅**
+
+**懸念:** 何百件データがある状態でマイグレーションが失敗するのでは？
+
+**調査結果:**
+- 過去のマイグレーション履歴（特に0011: `CardCategory`追加時）で、同様の追加が成功している
+- ManyToManyフィールドの追加は**非破壊的操作**（既存テーブルの変更なし）
+- マイグレーション0011の実績例:
+
+```python
+migrations.AddField(
+    model_name='pokemoncard',
+    name='category',
+    field=models.ForeignKey(default=1, ...)
+)
+```
+
+**推奨対策:** マイグレーション前に必ずバックアップ
+
+```bash
+docker-compose exec db pg_dump -U pokeapp_user pokeapp_db > backup.sql
+```
+
+#### F. UI/UX一貫性の維持: **実装次第 ⚠️**
+
+**懸念:** 既存の表示レイアウトが崩れるのでは？
+
+**調査結果:**
+- テンプレートファイル（`_card_item.html`, `_card_form.html`）の修正が必要
+- 既存のバッジ表示パターン（types, special_features）と同じスタイルで実装すれば違和感なし
+
+**推奨実装:**
+
+```html
+<!-- 既存パターン (special_features) -->
+{% for feature in card.special_features.all %}
+  <div class="badge badge-secondary badge-sm">{{ feature.name }}</div>
+{% endfor %}
+
+<!-- 新規実装 (favorite_flags) -->
+{% for flag in card.favorite_flags.all %}
+  <div class="badge badge-accent badge-sm">{{ flag.name }}</div>
+{% endfor %}
+```
+
+**注意点:** 5つのフラグを全て表示する場合、画面の横幅に注意が必要
+
+#### G. フィルタリング機能の整合性: **実装次第 ⚠️**
+
+**懸念:** 既存の検索/フィルタ機能と干渉するのでは？
+
+**調査結果:**
+- `cards/filters.py` の `PokemonCardFilter` に追加するだけで対応可能
+- 既存パターン:
+
+```python
+types = django_filters.ModelMultipleChoiceFilter(
+    queryset=Type.objects.all(),
+    widget=forms.CheckboxSelectMultiple
+)
+```
+
+- Step16実装後:
+
+```python
+favorite_flags = django_filters.ModelMultipleChoiceFilter(
+    queryset=FavoriteFlag.objects.all(),
+    widget=forms.CheckboxSelectMultiple
+)
+```
+
+**注意点:** フィルタUIが縦長になる場合、アコーディオンやタブ分割を検討
+
+#### H. 管理画面の互換性: **影響なし ✅**
+
+**懸念:** Django Admin画面で既存データが操作できなくなるのでは？
+
+**調査結果:**
+- `cards/admin.py` に `FavoriteFlagAdmin` を追加
+- 既存の `PokemonCardAdmin` に `filter_horizontal = ('favorite_flags',)` を追加するだけで対応可能
+
+```python
+class PokemonCardAdmin(admin.ModelAdmin):
+    filter_horizontal = ('types', 'special_features', 'move_types',
+                        'special_trainers', 'favorite_flags')  # ← 追加
+```
+
+#### I. CSV入出力機能への影響: **実装調整必要 ⚠️**
+
+**懸念:** Step15のCSV入出力機能に影響するのでは？
+
+**調査結果:**
+- ManyToManyフィールドはCSVでの表現方法を検討する必要あり
+- `django-import-export` を使用している場合、`widgets.ManyToManyWidget` で対応可能
+
+**推奨実装:**
+
+```python
+from import_export import resources, fields, widgets
+
+class PokemonCardResource(resources.ModelResource):
+    favorite_flags = fields.Field(
+        column_name='フラグ',
+        attribute='favorite_flags',
+        widget=widgets.ManyToManyWidget(FavoriteFlag, field='name', separator='|')
+    )
+```
+
+**CSV例:**
+
+```csv
+名前,枚数,フラグ
+ピカチュウ,3,デッキA|お気に入り
+リザードン,1,デッキB
+```
+
+#### J. HTMX動作の互換性: **実装次第 ⚠️**
+
+**懸念:** モーダル内でのフラグ設定がうまく動作しないのでは？
+
+**調査結果:**
+- 既存のHTMX実装パターン（枚数増減、編集モーダル）と同じ方式で対応可能
+- フラグのオン/オフ切り替えを非同期で実装する場合、新しいビュー追加が必要
+
+**推奨実装案:**
+
+```python
+# views.py
+def toggle_favorite_flag(request, pk, flag_id):
+    card = get_object_or_404(PokemonCard, pk=pk)
+    flag = get_object_or_404(FavoriteFlag, pk=flag_id)
+
+    if flag in card.favorite_flags.all():
+        card.favorite_flags.remove(flag)
+    else:
+        card.favorite_flags.add(flag)
+
+    # 更新後のカードHTMLを返す
+    return render(request, 'cards/_card_item.html', {'card': card})
+```
+
+#### 総合リスク評価マトリクス
+
+| 懸念カテゴリ | リスク度 | 対策必要度 | 備考 |
+|------------|---------|-----------|------|
+| A. データ整合性 | ⭐☆☆ | 不要 | ManyToMany追加は非破壊的 |
+| B. デフォルト値強制 | ⭐☆☆ | 不要 | blank=Trueで関連なし状態が初期値 |
+| C. 参照破壊 | ⭐☆☆ | 不要 | 独立したテーブル追加のみ |
+| D. クエリ性能 | ⭐⭐☆ | 低 | prefetch_related追加で対応 |
+| E. マイグレーション失敗 | ⭐☆☆ | 低 | バックアップ推奨 |
+| F. UI/UX一貫性 | ⭐⭐☆ | 中 | 既存パターン踏襲が重要 |
+| G. フィルタ整合性 | ⭐⭐☆ | 低 | 既存パターンで実装可能 |
+| H. 管理画面互換性 | ⭐☆☆ | 不要 | filter_horizontal追加のみ |
+| I. CSV入出力 | ⭐⭐⭐ | 中～高 | ManyToManyWidget設定必要 |
+| J. HTMX動作 | ⭐⭐☆ | 中 | 新ビュー追加が必要 |
+
+**全体評価: 低～中リスク** （既存データ保護は確実、UI実装に注意が必要）
+
+#### 推奨実装順序
+
+**フェーズ1: 基盤構築（既存データ保護重視）**
+
+1. `FavoriteFlag` モデル作成
+2. マイグレーション実行（**バックアップ必須**）
+3. 管理画面で5つのフラグを手動登録（デッキA～E等）
+
+**フェーズ2: UI統合（段階的リリース）**
+
+4. フォーム（`_card_form.html`）にチェックボックス追加
+5. カード表示（`_card_item.html`）にバッジ表示追加
+6. フィルタ（`filters.py`）にフラグ絞り込み追加
+
+**フェーズ3: 高度な機能（オプション）**
+
+7. HTMXによるフラグトグル機能
+8. CSV入出力対応（Step15実装時に同時対応推奨）
+9. 設定画面でのフラグ名/色カスタマイズ
+
+#### 結論
+
+**安心してStep16を実装して問題ありません。** 主な理由：
+
+1. **データ上書きなし**: ManyToManyフィールド追加は既存レコードに影響しない
+2. **自動フラグ設定なし**: ユーザーが明示的に設定するまでフラグは立たない
+3. **マイグレーション実績**: 同様のパターンで過去に成功している（0011: CardCategory追加時）
+4. **段階的実装可能**: 基盤→UI→高度機能の順で、リスクを分散できる
+
+**唯一の必須対策:** マイグレーション前のデータベースバックアップ
+
+```bash
+docker-compose exec db pg_dump -U pokeapp_user pokeapp_db > backup_$(date +%Y%m%d_%H%M%S).sql
+```
