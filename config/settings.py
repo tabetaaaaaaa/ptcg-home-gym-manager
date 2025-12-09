@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'tailwind', # django-tailwind の追加
     'django_htmx', # django-htmx の追加
     'widget_tweaks', # django-widget-tweaks の追加
+    'django_cleanup.apps.CleanupConfig', # django-cleanup の追加（必ず最後に配置）
 ]
 
 MIDDLEWARE = [

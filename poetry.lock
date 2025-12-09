@@ -64,6 +64,18 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-cleanup"
+version = "9.0.0"
+description = "Deletes old files."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "django_cleanup-9.0.0-py3-none-any.whl", hash = "sha256:19f8b0e830233f9f0f683b17181f414672a0f48afe3ea3cc80ba47ae40ad880c"},
+    {file = "django_cleanup-9.0.0.tar.gz", hash = "sha256:bb9fb560aaf62959c81e31fa40885c36bbd5854d5aa21b90df2c7e4ba633531e"},
+]
+
+[[package]]
 name = "django-filter"
 version = "23.5"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
@@ -558,4 +570,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "afdbf522f1b6489abbdd3f04a0abfd9ca2b3708abcebb79284820686d03781a5"
+content-hash = "003fe330fa9b0033cdefe262a52528ac108b00e5421641d21c37fd25b9a02c58"
