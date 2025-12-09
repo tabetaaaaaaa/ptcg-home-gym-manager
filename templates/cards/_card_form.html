@@ -289,23 +289,39 @@
                     <label for="{{ form.image.id_for_label }}" class="label py-1">
                         <span class="label-text text-sm">{{ form.image.label }}</span>
                     </label>
-                    {% if card and card.image %}
-                        <div class="avatar mb-1">
-                            <div class="w-20 rounded-lg ring ring-primary ring-offset-base-100 ring-offset-1">
-                                <img src="{{ card.image.url }}" alt="現在の画像">
+
+                    {# 画像プレビューエリア #}
+                    <div id="image-preview-area" class="mb-2" {% if not card or not card.image %}style="display: none;"{% endif %}>
+                        <div class="avatar">
+                            <div class="w-32 rounded-lg ring ring-primary ring-offset-base-100 ring-offset-2">
+                                <img id="image-preview" src="{% if card and card.image %}{{ card.image.url }}{% endif %}" alt="画像プレビュー">
                             </div>
                         </div>
-                    {% endif %}
-                    {{ form.image }}
+                    </div>
+
+                    {# ファイル入力エリア #}
+                    <div id="image-upload-wrapper" class="relative">
+                        <div id="drop-zone" class="border-2 border-dashed border-base-300 rounded-lg p-4 text-center hover:border-secondary transition-colors cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 text-base-content opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p class="text-sm text-base-content opacity-70 mb-1">クリックして画像を選択、またはドラッグ&ドロップ</p>
+                            <p class="text-xs text-base-content opacity-50">Ctrl+V (⌘+V) でクリップボードから貼り付けも可能</p>
+                        </div>
+                        <div id="django-file-input-wrapper" class="mt-2">
+                            {{ form.image }}
+                        </div>
+                    </div>
+
                     {% if form.image.errors %}
                         <div class="alert alert-error shadow-lg mt-1 py-2">
                             <div>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    <span class="text-sm">{{ form.image.errors.0 }}</span>
-                                </div>
+                                <span class="text-sm">{{ form.image.errors.0 }}</span>
                             </div>
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% endif %}
+                </div>
                 </div>
 
             <div class="modal-action mt-4">
@@ -352,19 +368,176 @@
         // 進化段階の選択肢の色を動的に変更
         const evolutionStageSelect = document.getElementById('{{ form.evolution_stage.id_for_label }}');
 
-        function updateEvolutionStageColor() {
-            if (evolutionStageSelect.value === "") {
-                evolutionStageSelect.classList.add('text-gray-500'); // 薄い色を適用
-            } else {
-                evolutionStageSelect.classList.remove('text-gray-500'); // 通常の色に戻す
+        if (evolutionStageSelect) {
+            function updateEvolutionStageColor() {
+                if (evolutionStageSelect.value === "") {
+                    evolutionStageSelect.classList.add('text-gray-500'); // 薄い色を適用
+                } else {
+                    evolutionStageSelect.classList.remove('text-gray-500'); // 通常の色に戻す
+                }
             }
+
+            // 初期状態を設定
+            updateEvolutionStageColor();
+
+            // 変更時に色を更新
+            evolutionStageSelect.addEventListener('change', updateEvolutionStageColor);
         }
 
-        // 初期状態を設定
-        updateEvolutionStageColor();
+        // ========================================
+        // 画像アップロード機能の強化
+        // ========================================
+        const fileInput = document.querySelector('input[type="file"][name="image"]');
+        const dropZone = document.getElementById('drop-zone');
+        const imagePreview = document.getElementById('image-preview');
+        const imagePreviewArea = document.getElementById('image-preview-area');
+        const djangoInputWrapper = document.getElementById('django-file-input-wrapper');
 
-        // 変更時に色を更新
-        evolutionStageSelect.addEventListener('change', updateEvolutionStageColor);
+        if (fileInput && dropZone) {
+            // Djangoが生成するデフォルトの要素を整形
+            fileInput.style.position = 'absolute';
+            fileInput.style.width = '1px';
+            fileInput.style.height = '1px';
+            fileInput.style.opacity = '0';
+            fileInput.style.pointerEvents = 'none';
+
+            // Djangoが生成する「現在: xxx.jpg」テキストとリンクを非表示
+            const fileInputParent = fileInput.parentElement;
+            Array.from(fileInputParent.childNodes).forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE && node.textContent.includes('現在:')) {
+                    node.textContent = '';
+                }
+                if (node.tagName === 'A' && node.href) {
+                    node.style.display = 'none';
+                }
+                if (node.tagName === 'BR') {
+                    node.style.display = 'none';
+                }
+            });
+
+            // Djangoが生成するクリアチェックボックスにDaisyUIスタイルを適用
+            const imageClearCheckbox = fileInputParent.querySelector('input[type="checkbox"][name="image-clear"]');
+            if (imageClearCheckbox) {
+                // チェックボックスにDaisyUIクラスを追加
+                imageClearCheckbox.classList.add('checkbox', 'checkbox-error', 'checkbox-sm');
+
+                // ラベルを整形
+                const clearLabel = fileInputParent.querySelector(`label[for="${imageClearCheckbox.id}"]`);
+                if (clearLabel) {
+                    clearLabel.classList.add('label', 'cursor-pointer', 'justify-start', 'gap-2', 'py-1');
+                    const labelSpan = clearLabel.querySelector('span') || clearLabel;
+                    if (labelSpan.tagName === 'SPAN') {
+                        labelSpan.classList.add('label-text', 'text-sm');
+                    }
+                }
+            }
+
+            // ドロップゾーンクリックでファイル選択ダイアログを開く
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // ファイル選択時の処理
+            fileInput.addEventListener('change', (e) => {
+                handleFileSelect(e.target.files);
+            });
+
+            // ドラッグ&ドロップ機能
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('border-secondary', 'bg-secondary', 'bg-opacity-10');
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-secondary', 'bg-secondary', 'bg-opacity-10');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('border-secondary', 'bg-secondary', 'bg-opacity-10');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    // DataTransferオブジェクトのファイルをinput要素に設定
+                    const dt = new DataTransfer();
+                    dt.items.add(files[0]);
+                    fileInput.files = dt.files;
+                    handleFileSelect(files);
+                }
+            });
+
+            // クリップボードから画像を貼り付け
+            document.addEventListener('paste', (e) => {
+                // モーダル内でのみ動作させる
+                if (!modal.open) return;
+
+                const items = e.clipboardData.items;
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        e.preventDefault();
+                        const blob = items[i].getAsFile();
+
+                        // Blobをinput要素に設定
+                        const dt = new DataTransfer();
+                        dt.items.add(new File([blob], 'pasted-image.png', { type: blob.type }));
+                        fileInput.files = dt.files;
+
+                        handleFileSelect([blob]);
+                        break;
+                    }
+                }
+            });
+
+            // ファイル選択処理
+            function handleFileSelect(files) {
+                if (files && files.length > 0) {
+                    const file = files[0];
+
+                    // 画像ファイルのみ受け入れ
+                    if (!file.type.match('image.*')) {
+                        alert('画像ファイルを選択してください。');
+                        return;
+                    }
+
+                    // プレビュー表示
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreview.src = e.target.result;
+                        imagePreviewArea.style.display = 'block';
+
+                        // クリアチェックボックスがあれば自動的にオフにする
+                        const clearCheckbox = fileInputParent.querySelector('input[type="checkbox"][name="image-clear"]');
+                        if (clearCheckbox) {
+                            clearCheckbox.checked = false;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // クリアチェックボックスの動作を設定
+            const clearCheckbox = fileInputParent.querySelector('input[type="checkbox"][name="image-clear"]');
+            if (clearCheckbox) {
+                clearCheckbox.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        // チェックされたらプレビューを非表示
+                        imagePreviewArea.style.display = 'none';
+                        // ファイル選択もクリア
+                        fileInput.value = '';
+                    } else {
+                        // チェック解除されたら元の画像を表示
+                        {% if card and card.image %}
+                        imagePreview.src = '{{ card.image.url }}';
+                        imagePreviewArea.style.display = 'block';
+                        {% endif %}
+                    }
+                });
+            }
+        }
 
     })();
 </script>
