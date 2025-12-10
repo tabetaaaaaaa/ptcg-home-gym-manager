@@ -100,7 +100,7 @@ class PokemonCard(models.Model):
     """ポケモンカード・トレーナーズカード統合モデル"""
     # === 共通フィールド ===
     name = models.CharField("カード名称", max_length=100)
-    quantity = models.PositiveIntegerField("所持枚数", default=0)
+    quantity = models.PositiveIntegerField("所持枚数", default=1)
     image = models.ImageField("画像", upload_to='cards/', null=True, blank=True)
     memo = models.TextField("メモ", null=True, blank=True)
 
