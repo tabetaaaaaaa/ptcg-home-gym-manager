@@ -36,24 +36,59 @@ class CardAnalyzer:
     # Geminiへのシステムプロンプト
     GEMINI_PROMPT = """
     あなたはポケモンカードの専門家です。
-    提供された画像には、グリッド状に並べられたポケモンカードが含まれています。
-    各カードの情報を解析し、以下のJSON形式のリストで出力してください。
-    
-    各カードについて、以下のフィールドを抽出してください：
-    - category: "pokemon" または "trainers" (必須)
-    - name: カード名 (必須)
-    - hp: HP (ポケモンの場合、数値のみ)
-    - type: タイプ (例: 炎, 水, 草, 雷, 超, 闘, 悪, 鋼, ドラゴン, 無色, フェアリー)
-    - evolution_stage: 進化段階 (例: たね, 1進化, 2進化, V, VMAX, VSTAR, ex)
-    - evolves_from: 進化元ポケモン名 (もしあれば)
-    - trainer_type: トレーナーズの種類 (例: グッズ, サポート, スタジアム, ポケモンのどうぐ)
-    - special_rules: 特別なルール (例: かがやくポケモン, ACE SPECなど)
-    - card_number: カード番号 (例: 001/100)
-    
-    注意点:
-    - 画像が不鮮明で読み取れない場合は、読み取れる範囲で出力してください。
-    - JSON形式以外のテキストは出力しないでください。
-    - 必ずJSONの配列形式で返してください: [{"name": ...}, {"name": ...}]
+    画像内の要素を左上から順に読み取り、以下のJSON配列形式のみを出力してください。
+    画像品質が悪くても推測して補完し、Markdown記法は一切含めないでください。
+
+    # データ定義
+    - 全ての項目は必須です。値がない場合は `null` (文字列) または `[]` (配列)、`false` (真偽値) を使用してください。
+    - `category`: "pokemon", "trainers", "Other" (カード以外の場合)
+    - `trainer_type`: "グッズ", "サポート", "スタジアム", "ポケモンのどうぐ" (pokemon/Otherの場合は null)
+    - `special_trainers`: ACE SPECカードの場合のみ "ACE SPEC"
+    - `special_features`: Pokemonの特殊分類("ポケモンex", "テラスタル"等)。trainers/Otherの場合は null
+    - `type`, `move_types`, `weakness`: Pokemonの属性。trainers/Otherの場合は [] (空配列)。同一タイプは一度のみ記載。
+
+    # 出力例
+    [
+    {
+        "id": 1,
+        "category": "pokemon",
+        "name": "リザードンex",
+        "trainer_type": null,
+        "special_trainers": false,
+        "evolves_from": "リザード",
+        "evolution_stage": "2進化",
+        "special_features": ["ポケモンex", "テラスタル"],
+        "type": ["悪"],
+        "move_types": ["炎", "無色"],
+        "weakness": ["草"]
+    },
+    {
+        "id": 2,
+        "category": "trainers",
+        "name": "プライムキャッチャー",
+        "trainer_type": "グッズ",
+        "is_ace_spec": true,
+        "evolves_from": null,
+        "evolves_stage": null,
+        "special_features": null,
+        "type": [],
+        "move_types": [],
+        "weakness": []
+    },
+    {
+        "id": 3,
+        "category": "Other",
+        "name": null,
+        "trainer_type": null,
+        "special_trainers": false,
+        "evolves_from": null,
+        "evolves_stage": null,
+        "special_features": null,
+        "type": [],
+        "move_types": [],
+        "weakness": []
+    }
+    ]
     """
 
     def __init__(self):
