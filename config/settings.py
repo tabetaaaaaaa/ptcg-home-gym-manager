@@ -148,3 +148,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # django-tailwind の設定
 TAILWIND_APP_NAME = 'theme'
+
+# Gemini API設定
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+
+# セッション設定（一括登録機能用）
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'

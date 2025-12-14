@@ -1,9 +1,9 @@
 # study
-docs/study/
-docs/00_tasks.md
+# docs/study/
+# docs/00_tasks.md
 
 # Environments
-.env*
+.env
 
 # Python
 __pycache__/

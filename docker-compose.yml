@@ -8,6 +8,8 @@ services:
       - .:/app
       - media_data:/app/media
       - /app/node_modules
+      - yolo_models:/root/.cache/ultralytics
+      - bulk_register_data:/app/media/bulk_register
     ports:
       - "8000:8000"
     depends_on:
@@ -25,3 +27,5 @@ services:
 volumes:
   postgres_data:
   media_data:
+  yolo_models:
+  bulk_register_data:
