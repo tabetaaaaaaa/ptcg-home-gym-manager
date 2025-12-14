@@ -1,3 +1,7 @@
+import os
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.core.files.base import ContentFile
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
 from django.http import HttpResponse
@@ -8,6 +12,7 @@ from .forms import PokemonCardForm
 from .utils import find_evolution_root, collect_evolution_line
 from .ai_analyzer import CardAnalyzer
 from .data_mapper import CardDataMapper
+from google.api_core.exceptions import ResourceExhausted
 from django.http import JsonResponse
 import json
 import logging
@@ -308,6 +313,7 @@ def bulk_register_analyze(request):
     ext = os.path.splitext(image_file.name)[1]
     filename = f"{uuid.uuid4().hex}{ext}"
     file_path = os.path.join(save_dir, filename)
+    file_url = os.path.join(settings.MEDIA_URL, 'bulk_register', 'originals', filename)
     
     # ファイル保存
     with open(file_path, 'wb+') as destination:
@@ -375,19 +381,47 @@ def bulk_register_analyze(request):
                 mapped['image_url'] = None # 画像がない場合
                 
             mapped_items.append(mapped)
-
+            
         # セッションに保存
         request.session['bulk_register_items'] = mapped_items
         
-        # プレビュー画面を描画
         return render(request, 'cards/_bulk_register_preview.html', {
             'items': mapped_items,
-            'original_image_url': f"{settings.MEDIA_URL}bulk_register/originals/{filename}"
+            'original_image_url': file_url
         })
 
+    except ResourceExhausted:
+        logger.error("Gemini API Quota Exceeded")
+        # エラーメッセージを含めてモーダルを再表示（またはエラー専用テンプレート）
+        # ここでは簡易的にHTTPレスポンスでエラーを返す（HTMXがエラーハンドリングできる形にするのが理想だが、
+        # モーダル内を置換するターゲット設定になっているため、エラーメッセージ付きのDIVを返すのがUX的に良い）
+        error_html = """
+        <div class="alert alert-error shadow-lg my-4">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>AIサービスが混雑しており利用制限にかかりました。申し訳ありませんが、しばらく時間を置いてから再試行してください。</span>
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn" onclick="document.getElementById('bulk-modal-form').close()">閉じる</button>
+        </div>
+        """
+        return HttpResponse(error_html)
+
     except Exception as e:
-        logger.exception("Bulk Analyze Error")
-        return HttpResponse(f"解析中にエラーが発生しました: {str(e)}", status=500)
+        logger.error(f"Bulk Register Analyze Error: {e}", exc_info=True)
+        error_html = f"""
+        <div class="alert alert-error shadow-lg my-4">
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span>エラーが発生しました: {str(e)}</span>
+            </div>
+        </div>
+        <div class="text-center">
+             <button class="btn" onclick="document.getElementById('bulk-modal-form').close()">閉じる</button>
+        </div>
+        """
+        return HttpResponse(error_html)
 
 def bulk_register_edit_item(request, item_id):
     """
@@ -483,52 +517,85 @@ def bulk_register_submit(request):
         return HttpResponse("登録するデータがありません", status=400)
     
     registered_count = 0
-    try:
-        for item_data in items:
-            # バリデーション: 必須項目チェックなど
-            if not item_data.get('name') or not item_data.get('category'):
-                continue # 名前かカテゴリがないものはスキップ
+    
+    for item in items:
+        # バリデーション: 必須項目チェックなど
+        if not item.get('name') or not item.get('category'):
+            continue # 名前かカテゴリがないものはスキップ
+
+        # 画像の処理 (一時URLから保存)
+        image_content = None
+        filename = None
+        if item.get('image_url'):
+            # 相対パスを取得 (/media/bulk_register/cropped/xxx.jpg -> bulk_register/cropped/xxx.jpg)
+            relative_path = item['image_url'].replace(settings.MEDIA_URL, '')
+            full_path = settings.MEDIA_ROOT / relative_path
             
-            # モデルインスタンス作成
+            if full_path.exists():
+                try:
+                    with open(full_path, 'rb') as f:
+                        image_content = ContentFile(f.read())
+                        filename = full_path.name
+                except Exception as e:
+                    logger.warning(f"Failed to load image for saving: {e}")
+
+        try:
+            # ForeignKeyはIDで指定するために _id サフィックスを使用
             card = PokemonCard(
-                name=item_data['name'],
-                category=item_data['category'], # CardDataMapperですでにモデルインスタンス化されているかIDになっている前提
-                evolution_stage=item_data.get('evolution_stage'),
-                evolves_from=item_data.get('evolves_from'),
-                trainer_type=item_data.get('trainer_type'),
-                memo=item_data.get('memo', ''),
-                quantity=1
+                name=item.get('name') or "名称不明",
+                quantity=item.get('quantity', 1),
+                memo=item.get('memo', ''),
+                # ForeignKey fields (pass IDs directly)
+                category_id=item.get('category'),
+                evolution_stage_id=item.get('evolution_stage'),
+                trainer_type_id=item.get('trainer_type'),
+                # CharFields
+                evolves_from=item.get('evolves_from'),
             )
+            
+            if image_content and filename:
+                card.image.save(filename, image_content, save=False)
+            
             card.save()
             
             # ManyToManyフィールドの設定
-            if item_data.get('types'):
-                card.types.set(item_data['types'])
+            if item.get('types'):
+                card.types.set(item['types'])
                 
-            if item_data.get('special_features'):
-                card.special_features.set(item_data['special_features'])
+            if item.get('special_features'):
+                card.special_features.set(item['special_features'])
                 
-            if item_data.get('special_trainers'):
-                card.special_trainers.set(item_data['special_trainers'])
+            if item.get('move_types'):
+                card.move_types.set(item['move_types'])
                 
-            # move_typesの保存
-            if item_data.get('move_types'):
-                card.move_types.set(item_data['move_types'])
-            
-            # 画像の保存処理 (必要であればクロップ画像を永続化)
-            # 現在は一時ファイルのURLを持っているだけなので、
-            # 本格実装ではFileFieldに保存し直す処理が必要
-            
-            registered_count += 1
-            
-        # セッションクリア
-        del request.session['bulk_register_items']
-        
-        # 成功メッセージと共にモーダルを閉じる等のアクション
-        response = HttpResponse(f"<div class='alert alert-success'>{registered_count}件のカードを登録しました</div>")
-        response['HX-Trigger'] = 'cardCreated' # リスト更新
-        return response
+            if item.get('special_trainers'):
+                card.special_trainers.set(item['special_trainers'])
 
-    except Exception as e:
-        logger.exception("Bulk Submit Error")
-        return HttpResponse(f"登録中にエラーが発生しました: {str(e)}", status=500)
+            registered_count += 1
+
+        except Exception as e:
+            logger.error(f"Failed to save card: {item.get('name')}, Error: {e}")
+            continue # エラーが出ても他のカードは保存を試みる
+
+    # セッションクリア (全ての処理が終わった後)
+    if 'bulk_register_items' in request.session:
+        del request.session['bulk_register_items']
+    
+    # 成功メッセージと共にモーダルを閉じる等のアクション
+    # モーダルを閉じるためのJSを含める
+    response = HttpResponse(f"""
+        <div class='alert alert-success shadow-lg'>
+            <div>
+                <svg xmlns='http://www.w3.org/2000/svg' class='stroke-current flex-shrink-0 h-6 w-6' fill='none' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
+                <span>{registered_count}件のカードを登録しました</span>
+            </div>
+        </div>
+        <script>
+            setTimeout(function() {{
+                const modal = document.getElementById('bulk-preview-modal');
+                if(modal) modal.close();
+            }}, 1500);
+        </script>
+    """)
+    response['HX-Trigger'] = 'cardCreated' # リスト更新
+    return response

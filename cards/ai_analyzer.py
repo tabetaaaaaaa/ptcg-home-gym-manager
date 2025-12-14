@@ -31,7 +31,7 @@ class CardAnalyzer:
     IMG_SIZE = 640
 
     # Gemini設定
-    GEMINI_MODEL_NAME = 'gemini-2.0-flash-exp' # 実装計画に基づく
+    GEMINI_MODEL_NAME = 'gemini-2.5-flash' 
     
     # Geminiへのシステムプロンプト
     GEMINI_PROMPT = """
