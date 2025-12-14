@@ -224,7 +224,117 @@ DaisyUI の導入に伴い、Step4を以下の4フェーズに分けて段階的
       3. **カードの取得**: リストアップされた名前を持つ `PokemonCard` をすべてデータベースから取得して表示する。
 - **ゴール**: ユーザーが任意のカードから、その進化ライン全体をワンクリックで確認できるようになること。
 
-## Step 14: 接続URL固定 (Network)
+## Step 14: まとめて登録機能の実装 (Bulk Registration)
+
+- **目的**: YOLO-World画像認識を使用して、複数のポケモンカードを一度に登録できる機能を実装する。ユーザーが複数カードの写真をアップロードすると、YOLO-World → OpenCV → Gemini AIで画像解析を行い、解析結果をテーブル形式で表示して編集・一括登録できるようにする。
+
+### 計画詳細化
+
+YOLO-World、OpenCV、Gemini AIを統合した画像解析機能の実装に伴い、Step14を以下の9フェーズに分けて段階的に実装します。
+
+#### フェーズ1: 依存パッケージと環境設定
+
+- **目的**: 画像解析に必要なライブラリをインストールし、APIキーやモデル永続化、画像・原文保存用のVolume設定を行う。
+- **やること**:
+  - `pyproject.toml`に以下の3パッケージを追加: `ultralytics` (YOLO-World)、`opencv-python-headless` (画像処理)、`google-generativeai` (Gemini API)
+  - `docker-compose exec web poetry add ultralytics opencv-python-headless google-generativeai` を実行し、Dockerコンテナを再ビルドする。
+  - `.env`ファイルに`GEMINI_API_KEY=your_api_key_here`を追加する。
+  - `config/settings.py`に`GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')`を追加する。
+  - `docker-compose.yml`の`web`サービスに以下のvolumeマウントを追加する:
+    - `yolo_models:/root/.cache/ultralytics`: YOLO-Worldモデルファイル（初回ダウンロード約20MB）の永続化
+    - `bulk_register_data:/app/media/bulk_register`: オリジナル画像、YOLO解析後のグリッド画像、Gemini出力原文の永続保存用（タイムスタンプ付きファイル名で管理）
+  - `volumes`セクションに`yolo_models:`と`bulk_register_data:`を追加する。
+
+#### フェーズ2: バリデーションモジュールの実装
+
+- **目的**: Gemini APIの出力を検証し、不正なデータを除外するモジュールを作成する。
+- **やること**:
+  - `cards/validation.py`を新規作成し、`GeminiResponseValidator`クラスを実装する。
+  - `validate_and_parse_json()`メソッドを実装: Markdownコードブロックを除去し、JSON形式をチェックしてパースする。JSON形式でない場合は、ユーザーに再実行を促すメッセージと共に`ValueError`を投げる。
+  - `filter_valid_categories()`メソッドを実装: `category="pokemon"`または`category="trainers"`のみを抽出し、`category="Other"`は除外する。フィルタ後のアイテムリストとクロップ画像パスのリストを返す。
+
+#### フェーズ3: 画像解析モジュールの実装
+
+- **目的**: YOLO-World、OpenCV、Gemini AIを統合した画像解析ロジックを実装し、オリジナル画像・YOLO解析結果画像・Gemini出力原文を永続保存する。
+- **やること**:
+  - `cards/ai_analyzer.py`を新規作成し、`CardAnalyzer`クラスを実装する。PoCのNotebook（`docs/study/画像認識検証/testing_YOLO-World.ipynb`）のロジックを移植する。
+  - `__init__()`メソッドでYOLO-WorldモデルとGeminiモデルを初期化する。
+  - `analyze_image(image_path, session_key)`メソッドを実装: 画像からカード情報をJSON配列で返す。処理フローは、YOLO検出（カード領域の矩形検出）→ OpenCVでクロップ&個別画像保存（プレビュー表示用）→ グリッド化（Gemini解析用）→ Gemini解析（グリッド画像 → JSON、選択肢をプロンプトに含める）。タイムスタンプ（例: `YYYYMMDD_HHMMSS`）を生成し、ファイル名に含める。
+  - `_save_original_image()`メソッドを実装: オリジナル画像を`/app/media/bulk_register/original_{timestamp}_{original_filename}`として永続保存する。
+  - `_save_grid_image()`メソッドを実装: YOLO解析直後のグリッド化する前の画像を`/app/media/bulk_register/grid_{timestamp}.jpg`として永続保存する。
+  - `_save_gemini_response()`メソッドを実装: Gemini APIの出力原文（JSON文字列）を`/app/media/bulk_register/gemini_response_{timestamp}.json`として永続保存する。タイムスタンプにより、オリジナル画像・グリッド画像・Gemini出力原文を紐づけられるようにする。
+  - `_get_choice_options()`メソッドを実装: DBから選択肢（Type, EvolutionStage, SpecialFeature等）を取得してプロンプトに含める文字列を生成する。選択肢部分以外はプロンプトに変更を絶対に加えない。
+  - `_create_grid_and_save_crops()`メソッドを実装: クロップ画像を個別保存しつつグリッド画像を作成する。YOLO解析直後のグリッド化する前の画像は`_save_grid_image()`で永続保存する。
+  - `_analyze_with_gemini()`メソッドを実装: Gemini APIでカード情報抽出を行う（選択肢をプロンプトに含める）。APIレスポンスの原文は`_save_gemini_response()`で永続保存する。
+
+#### フェーズ4: データマッピングモジュールの実装
+
+- **目的**: バリデーション済みのGemini出力をDjangoモデル用データに変換するモジュールを作成する。
+- **やること**:
+  - `cards/data_mapper.py`を新規作成し、`CardDataMapper`クラスを実装する。
+  - `map_to_model_data(gemini_item)`クラスメソッドを実装: Gemini出力1件をDjangoモデル保存用辞書に変換する。選択肢モデル（Type, EvolutionStage等）は名前でルックアップする。存在しない場合は、選択肢を作成せず、プレビュー時にその値を表示しユーザーに修正を促す動線を作る。カテゴリ判定（pokemon/trainers）を行う。
+
+#### フェーズ5: ビュー関数の実装
+
+- **目的**: 画像アップロード、解析、編集、一括登録の各処理を行うビュー関数を実装する。
+- **やること**:
+  - `cards/views.py`に4つのビュー関数を追加する:
+    - `bulk_register_upload`: アップロードモーダル表示（GET）
+    - `bulk_register_analyze`: 画像解析実行 → バリデーション → セッション保存 → プレビューテーブル返却（POST）。処理フローは、画像受信・一時保存 → `CardAnalyzer.analyze_image()`実行 → `GeminiResponseValidator`でバリデーション → `category="Other"`を除外 → セッション保存（カードデータ + クロップ画像パス + オリジナル画像パス） → プレビューテーブル返却。エラー時は`ValueError`や`RuntimeError`をキャッチしてアラート表示する。
+    - `bulk_register_edit_item(session_key, item_id)`: 個別アイテム編集（GET: フォーム表示、POST: セッション更新）。編集時もDBには保存せず、セッションを更新する。
+    - `bulk_register_submit`: セッションからデータ取得 → 一括DB保存 → 画像削除（POST）。DB登録完了直後にクロップ画像（プレビュー表示用の一時画像）のみをトリガー削除する（cron不要）。オリジナル画像、YOLO解析直後のグリッド化する前の画像、Gemini出力原文は名前付きVolume（`bulk_register_data`）に永続保存されており、削除しない。成功時は`HX-Trigger: cardCreated`で既存のリスト更新機構と連携する。一括登録時は部分的な成功を許容し、成功した件数とエラー件数を表示する。
+  - `cards/urls.py`に以下のURLを追加する:
+    - `path('bulk-register/', bulk_register_upload, name='bulk_register_upload')`
+    - `path('bulk-register/analyze/', bulk_register_analyze, name='bulk_register_analyze')`
+    - `path('bulk-register/edit/<str:session_key>/<int:item_id>/', bulk_register_edit_item, name='bulk_register_edit_item')`
+    - `path('bulk-register/submit/', bulk_register_submit, name='bulk_register_submit')`
+
+#### フェーズ6: アップロードモーダルの実装
+
+- **目的**: ドラッグ&ドロップ対応の画像アップロードUIを作成する。
+- **やること**:
+  - `templates/cards/_bulk_register_modal.html`を新規作成する。
+  - ドラッグ&ドロップ対応のファイルアップロード機能を実装する。
+  - ローディング表示（`htmx-indicator`）を追加する。
+  - プレビューエリア（HTMX `hx-target`で動的置換）を配置する。
+  - JavaScript処理を実装: ドロップゾーンクリック → ファイル選択ダイアログ、ファイル選択 → 自動送信（`htmx.trigger(form, 'submit')`）、ドラッグ&ドロップ → ファイル設定 → 自動送信。
+
+#### フェーズ7: プレビューテーブルの実装
+
+- **目的**: 解析結果をテーブル形式で一覧表示し、編集・一括登録できるUIを作成する。
+- **やること**:
+  - `templates/cards/_bulk_register_preview.html`を新規作成する。
+  - 解析結果をテーブル形式で一覧表示する。全てのGemini出力フィールドを表示: 
+    - カテゴリごとにセクションを分ける。 `templates/cards/_related_cards_modal.html` を参照。
+    - カラムはカテゴリ問わず共通で、クロップ画像、操作ボタン、カード名、進化元、進化段階、タイプ、特別分類、わざタイプ、弱点、トレーナーズ種別、ACE SPEC。
+  - 各行の先頭にクロップ画像のサムネイルを表示する。
+  - 各行に「編集」ボタンを追加し、既存の編集フォーム（`_card_form.html`）を呼び出すようにHTMX連携を設定する（`hx-get`でモーダル表示）。
+  - 下部に「すべて登録」ボタンを追加し、`hx-post`で一括登録実行 → `HX-Trigger: cardCreated, closeModal`を設定する。
+
+#### フェーズ8: ヘッダーボタンの追加
+
+- **目的**: メイン画面からまとめて登録機能にアクセスできるボタンを追加する。
+- **やること**:
+  - `templates/base.html`のnavbar-endセクションに「まとめて登録」ボタンを追加する。
+  - ボタンに`hx-get="{% url 'cards:bulk_register_upload' %}"`と`hx-target="#dialog-target"`を設定する。
+
+#### フェーズ9: 統合テストと動作確認
+
+- **目的**: エンドツーエンドのフローが正常に動作することを確認する。
+- **やること**:
+  - エンドツーエンドフロー確認: 画像アップロード → 解析 → プレビュー表示 → 編集 → 一括登録の一連の流れをテストする。
+  - 例外処理動作確認: YOLO未検出、Gemini API失敗、JSON不正、選択肢不一致、DB保存エラーなどの各エラーケースで適切にエラーメッセージが表示されることを確認する。
+  - 画像削除確認: 一括登録完了後にクロップ画像（プレビュー表示用の一時画像）が正しく削除されることを確認する。オリジナル画像、YOLO解析直後画像、Gemini出力原文がタイムスタンプ付きファイル名で永続保存されていることを確認する。
+
+- **ゴール**: ユーザーが複数カードの写真をアップロードすると、自動的に画像解析が行われ、解析結果を確認・編集してから一括登録できるようになること。管理画面に入らずとも、スマホ用画面だけで効率的にカードを登録できること。
+
+### 技術的注意点
+
+- **セッションストレージの容量**: 解析結果をセッションに保存するため、大量のカード（30枚以上）ではセッションサイズが大きくなる可能性があります。将来的にはRedisなどのバックエンド使用を推奨します。
+- **Gemini APIの料金**: Gemini 2.0 Flash Experimental（無料枠）を使用しますが、リクエスト数に制限があります。本番環境では有料プランへの移行を検討してください。
+- **画像・原文の永続保存**: オリジナル画像、YOLO解析後画像、Gemini出力原文は名前付きVolume（`bulk_register_data`）にタイムスタンプ付きファイル名で永続保存されます。タイムスタンプにより、同じ解析セッションの画像と原文を紐づけることができます。Volumeの容量管理が必要な場合は、定期的なクリーンアップ処理の実装を検討してください。
+
+## Step 15: 接続URL固定 (Network)
 
 - **目的**: サーバーPCのIPアドレスが変動しても、毎回URLを打ち直すことなく、固定されたURLでアプリケーションにアクセスできるようにする。
 - **やること**: 以下のいずれかの方式を比較検討し選択する。
@@ -233,7 +343,7 @@ DaisyUI の導入に伴い、Step4を以下の4フェーズに分けて段階的
   - (上級者向け) プライベートDNSサーバーの構築を検討する。
 - **ゴール**: ユーザーが、固定された名前やIPアドレスで、より便利にアプリケーションにアクセスできるようになること。
 
-## Step 15: CSV入出力機能の改善 (Usability)
+## Step 16: CSV入出力機能の改善 (Usability)
 
 - **目的**: 現在管理画面でのみ利用可能なCSV入出力機能を一般ユーザー向けに開放し、より使いやすく改善する。
 - **やること**:
@@ -252,7 +362,7 @@ DaisyUI の導入に伴い、Step4を以下の4フェーズに分けて段階的
     - インポート用のCSVフォーマット例（サンプルデータ入り）をダウンロードできる機能を設ける（優先度: 低）。
 - **ゴール**: 非エンジニアでも管理画面にアクセスすることなく、メイン画面からCSVファイルを直感的に編集・利用できるようになり、データメンテナンス性が向上すること。
 
-## Step 16: お気に入りフラグ機能の実装 (Grouping)
+## Step 17: お気に入りフラグ機能の実装 (Grouping)
 
 - **目的**: デッキ構築やユーザーごとのグルーピングに活用できる、カスタマイズ可能なマーカー機能を提供する。
 - **やること**:
