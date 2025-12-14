@@ -1,0 +1,56 @@
+<tr id="item-{{ item.id }}">
+    <td class="text-center">
+        {% if item.image_url %}
+            <img src="{{ item.image_url }}" alt="crop" class="w-16 h-20 object-contain rounded mx-auto border bg-base-200">
+        {% else %}
+            <span class="text-xs text-gray-400">No Image</span>
+        {% endif %}
+    </td>
+    <td class="font-semibold text-center">
+        <div class="tooltip" data-tip="{{ item.name }}">
+            {{ item.name|truncatechars:15 }}
+        </div>
+        {% if not item.name %}
+            <span class="text-error text-xs"><br>(名称不明)</span>
+        {% endif %}
+    </td>
+    <td class="text-center">
+        {% if item.category_name %}
+            <span class="badge badge-sm badge-neutral">{{ item.category_name }}</span>
+        {% else %}
+            <span class="text-warning text-xs">未設定</span>
+        {% endif %}
+        
+        {% if item.trainer_type_name %}
+            <br><span class="text-xs text-gray-500">{{ item.trainer_type_name }}</span>
+        {% endif %}
+    </td>
+    <td class="text-xs">
+        <div class="max-h-20 overflow-y-auto whitespace-pre-wrap text-left pl-2">{{ item.memo|default:"" }}</div>
+        {% if item.types_names %}
+            <div class="mt-1 flex flex-wrap gap-1">
+                {% for tname in item.types_names %}
+                    <span class="badge badge-xs badge-outline">{{ tname }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </td>
+    <td class="text-center">
+        <div class="flex flex-col gap-1 justify-center">
+            <button class="btn btn-ghost btn-xs text-primary"
+                    hx-get="{% url 'cards:bulk_register_edit_item' item.id %}"
+                    hx-target="#bulk-edit-modal-container"
+                    hx-swap="innerHTML">
+                編集
+            </button>
+            <button class="btn btn-ghost btn-xs text-error"
+                    hx-match="closest tr"
+                    hx-swap="outerHTML"
+                    hx-post="{% url 'cards:bulk_register_delete_item' item.id %}"
+                    hx-confirm="本当にこの行を除外しますか？"
+                    >
+                除外
+            </button>
+        </div>
+    </td>
+</tr>

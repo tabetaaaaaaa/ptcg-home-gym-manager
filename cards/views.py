@@ -346,6 +346,28 @@ def bulk_register_analyze(request):
             mapped = mapper.map_item(raw_item)
             mapped['id'] = str(uuid.uuid4()) # 一時ID
             
+            # セッション保存のためにモデルインスタンスをIDに変換しつつ、表示用名称も保存
+            if mapped.get('category'):
+                mapped['category_name'] = mapped['category'].name
+                mapped['category'] = mapped['category'].id
+            else:
+                mapped['category_name'] = '未設定'
+
+            if mapped.get('evolution_stage'):
+                mapped['evolution_stage_name'] = mapped['evolution_stage'].name
+                mapped['evolution_stage'] = mapped['evolution_stage'].id
+            
+            if mapped.get('trainer_type'):
+                mapped['trainer_type_name'] = mapped['trainer_type'].name
+                mapped['trainer_type'] = mapped['trainer_type'].id
+                
+            # ManyToManyのリスト(オブジェクト)をIDのリストに変換 & 名称リスト作成
+            for field in ['types', 'special_features', 'move_types', 'special_trainers']:
+                if mapped.get(field):
+                    # 表示用名称リスト (例: types_names)
+                    mapped[f'{field}_names'] = [obj.name for obj in mapped[field]]
+                    mapped[field] = [obj.id for obj in mapped[field]]
+
             # クロップ画像のURLを紐付ける (インデックスが一致すると仮定)
             if i < len(cropped_images):
                 mapped['image_url'] = cropped_images[i]['media_url']
@@ -370,6 +392,7 @@ def bulk_register_analyze(request):
 def bulk_register_edit_item(request, item_id):
     """
     プレビューアイテムの編集 (GET: フォーム表示, POST: 更新)
+    モーダルでの編集を行います。
     """
     items = request.session.get('bulk_register_items', [])
     target_index = next((i for i, item in enumerate(items) if item['id'] == item_id), None)
@@ -378,29 +401,71 @@ def bulk_register_edit_item(request, item_id):
         return HttpResponse("アイテムが見つかりません", status=404)
         
     item = items[target_index]
-
+    
+    # 既存フォームを利用するために初期データを準備
+    initial_data = item.copy()
+    
     if request.method == 'POST':
-        # フォームからのデータを反映 (簡易的な実装)
-        # 本来はDjango Formを使うのが望ましいが、動的なフィールドが多いため辞書操作で対応
-        item['name'] = request.POST.get('name')
-        item['hp'] = request.POST.get('hp')
-        # ... 他のフィールドの更新処理 ...
+        # フォームバリデーションのためにカテゴリなどの必須フィールドが含まれているか確認
+        form = PokemonCardForm(request.POST)
         
-        # DBルックアップの再実行等のロジックが必要な場合はここに追加
+        # ファイル入力フィールド(image)はセッション編集では扱わないためrequiredから外す等の調整が必要かも知れないが、
+        # ModelFormなのでデフォルトでバリデーションがかかる。
+        # ただし、今回はインスタンスを保存しないので、is_valid()だけ通れば良い。
+        # 画像フィールドのエラーは無視するか、request.FILESを渡さないことで空扱いにする。
         
-        # セッション更新
-        items[target_index] = item
-        request.session['bulk_register_items'] = items
-        request.session.modified = True
-        
-        # 更新された行だけ再描画
-        return render(request, 'cards/_bulk_register_preview_row.html', {'item': item})
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            
+            # セッションデータを更新 (IDと画像URLは維持)
+            for key, value in cleaned_data.items():
+                if key == 'image': continue # 画像は変更しない
+                
+                # ModelオブジェクトはIDに変換、QuerySetはIDリストに変換して保存
+                # 同時に表示用名称(_name)も更新する
+                if hasattr(value, 'id'):
+                    item[key] = value.id
+                    # 表示用名称の更新 (category -> category_name)
+                    if key in ['category', 'evolution_stage', 'trainer_type']:
+                        item[f'{key}_name'] = value.name
+                
+                elif hasattr(value, '__iter__') and not isinstance(value, str):
+                    # ManyToMany (QuerySet or list of objects)
+                    item[key] = [v.id for v in value]
+                    # 表示用名称リストの更新
+                    if key in ['types', 'special_features', 'move_types', 'special_trainers']:
+                        item[f'{key}_names'] = [v.name for v in value]
+                elif value is None:
+                    item[key] = None
+                    # Noneになった場合の名称クリア
+                    if key in ['category', 'evolution_stage', 'trainer_type']:
+                        item[f'{key}_name'] = None
+                else:
+                    item[key] = value
+
+            items[target_index] = item
+            request.session['bulk_register_items'] = items
+            request.session.modified = True
+            
+            # 更新された行をレンダリングして返す
+            response = render(request, 'cards/_bulk_register_preview_row.html', {'item': item})
+            response['HX-Trigger'] = 'closeModal'
+            return response
+        else:
+            return render(request, 'cards/_bulk_edit_modal.html', {
+                'form': form, 
+                'item': item,
+                'item_id': item_id
+            })
 
     else:
-        # 編集フォーム（行内編集用）を返す
-        # ここでは簡易的に、現在の行をinputタグに置き換えたHTMLを返す想定
-        # 実際には _bulk_register_edit_row.html などのテンプレートを使用
-        return render(request, 'cards/_bulk_register_edit_row.html', {'item': item})
+        # GET: 編集モーダルを表示
+        form = PokemonCardForm(initial=initial_data)
+        return render(request, 'cards/_bulk_edit_modal.html', {
+            'form': form, 
+            'item': item,
+            'item_id': item_id
+        })
 
 def bulk_register_delete_item(request, item_id):
     """プレビューアイテムの削除"""

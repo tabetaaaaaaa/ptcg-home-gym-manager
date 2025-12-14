@@ -1,0 +1,173 @@
+{% load widget_tweaks %}
+
+<dialog id="bulk-edit-modal-{{ item_id }}" class="modal">
+    <div class="modal-box w-11/12 max-w-5xl bg-base-100">
+        <h3 class="font-bold text-lg mb-4">カード情報の編集</h3>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {# 左カラム: クロップ画像と元データ情報 #}
+            <div class="lg:col-span-1">
+                <div class="sticky top-4">
+                    <h4 class="font-semibold text-sm mb-2">検出された画像</h4>
+                    <div class="rounded-lg border-2 border-base-300 p-2 bg-base-200 flex justify-center items-center min-h-[200px]">
+                        {% if item.image_url %}
+                            <img src="{{ item.image_url }}" alt="Detected Card" class="max-w-full max-h-[400px] object-contain rounded shadow-md">
+                        {% else %}
+                            <span class="text-gray-400">No Image</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-4 text-xs text-gray-500">
+                         <p class="mb-1">ID: {{ item_id }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {# 右カラム: 編集フォーム #}
+            <div class="lg:col-span-2">
+                <form method="POST"
+                      hx-post="{% url 'cards:bulk_register_edit_item' item_id %}"
+                      hx-target="#item-{{ item_id }}"
+                      hx-swap="outerHTML"
+                      enctype="multipart/form-data">
+                    
+                    {% csrf_token %}
+                    
+                    {# Hidden Fields #}
+                    {{ form.category }}
+                    
+                    {# 基本情報 #}
+                    <div class="mb-4 p-4 bg-base-50 rounded-lg border border-base-200">
+                        <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="badge badge-primary badge-sm">基本情報</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text">{{ form.name.label }}</span></label>
+                                {{ form.name }}
+                                {{ form.name.errors }}
+                            </div>
+                            <!-- quantityは一括登録時はデフォルト1あるいはformに含まれている -->
+                             <div class="form-control w-full">
+                                <label class="label"><span class="label-text">{{ form.quantity.label }}</span></label>
+                                {{ form.quantity }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if form.category.value == 1 or item.category_name == 'ポケモン' %}
+                    {# ポケモン用フィールド #}
+                    <div class="mb-4 p-4 bg-base-50 rounded-lg border border-base-200">
+                        <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="badge badge-secondary badge-sm">進化情報</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text">{{ form.evolution_stage.label }}</span></label>
+                                {{ form.evolution_stage }}
+                            </div>
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text">{{ form.evolves_from.label }}</span></label>
+                                {{ form.evolves_from }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 p-4 bg-base-50 rounded-lg border border-base-200">
+                        <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="badge badge-accent badge-sm">タイプ・特性</span>
+                        </h4>
+                        <div class="form-control mb-3">
+                            <label class="label"><span class="label-text">{{ form.types.label }}</span></label>
+                             <div class="flex flex-wrap gap-4">
+                                {% for checkbox in form.types %}
+                                    <label class="cursor-pointer label gap-2">
+                                        {{ checkbox.tag }}
+                                        <span class="label-text">{{ checkbox.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                         <div class="form-control mb-3">
+                            <label class="label"><span class="label-text">{{ form.special_features.label }}</span></label>
+                             <div class="flex flex-wrap gap-4">
+                                {% for checkbox in form.special_features %}
+                                    <label class="cursor-pointer label gap-2">
+                                        {{ checkbox.tag }}
+                                        <span class="label-text">{{ checkbox.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text">{{ form.move_types.label }}</span></label>
+                             <div class="flex flex-wrap gap-4">
+                                {% for checkbox in form.move_types %}
+                                    <label class="cursor-pointer label gap-2">
+                                        {{ checkbox.tag }}
+                                        <span class="label-text">{{ checkbox.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    {# トレーナーズ用フィールド #}
+                     <div class="mb-4 p-4 bg-base-50 rounded-lg border border-base-200">
+                        <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="badge badge-secondary badge-sm">トレーナーズ情報</span>
+                        </h4>
+                        <div class="form-control w-full mb-3">
+                            <label class="label"><span class="label-text">{{ form.trainer_type.label }}</span></label>
+                            {{ form.trainer_type }}
+                        </div>
+                         <div class="form-control">
+                            <label class="label"><span class="label-text">{{ form.special_trainers.label }}</span></label>
+                             <div class="flex flex-wrap gap-4">
+                                {% for checkbox in form.special_trainers %}
+                                    <label class="cursor-pointer label gap-2">
+                                        {{ checkbox.tag }}
+                                        <span class="label-text">{{ checkbox.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4 p-4 bg-base-50 rounded-lg border border-base-200">
+                         <div class="form-control w-full">
+                            <label class="label"><span class="label-text">{{ form.memo.label }}</span></label>
+                            {{ form.memo }}
+                        </div>
+                    </div>
+
+                    <div class="modal-action">
+                        <button type="submit" class="btn btn-primary">更新を適用</button>
+                        <button type="button" class="btn" onclick="this.closest('dialog').close()">キャンセル</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+    (function(){
+        const modal = document.getElementById('bulk-edit-modal-{{ item_id }}');
+        modal.showModal();
+        modal.addEventListener('close', () => {
+             modal.remove(); // 閉じたら削除
+        });
+        
+        // htmx完了後の処理
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+             if (evt.target.id === 'item-{{ item_id }}') {
+                 modal.close();
+             }
+        });
+    })();
+</script>

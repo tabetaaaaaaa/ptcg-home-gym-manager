@@ -16,9 +16,10 @@ django-tailwind = "^4.4.1"
 django-htmx = "^1.27.0"
 django-widget-tweaks = "^1.5.0"
 django-cleanup = "^9.0.0"
-ultralytics = "^8.0.0"
-opencv-python-headless = "^4.8.0"
-google-generativeai = "^0.3.0"
+ultralytics = "^8.3.49"
+opencv-python-headless = "^4.10.0.84"
+google-generativeai = "^0.8.3"
+openai-clip = "^1.0.1"
 
 [build-system]
 requires = ["poetry-core"]
