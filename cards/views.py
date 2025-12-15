@@ -205,8 +205,12 @@ def card_delete(request, pk):
         card.delete()
         # htmxがこのレスポンスを受け取ると、hx-targetで指定された要素をDOMから削除する
         # さらに、HX-Triggerヘッダーでモーダルを閉じるようフロントエンドに指示する
+        # cardDeletedイベントも発火させてリストを更新させる
         response = HttpResponse("")
-        response['HX-Trigger'] = 'closeModal'
+        response['HX-Trigger'] = json.dumps({
+            'closeModal': '',
+            'cardDeleted': ''
+        })
         return response
 
 
@@ -357,7 +361,8 @@ def bulk_register_analyze(request):
                 mapped['category_name'] = mapped['category'].name
                 mapped['category'] = mapped['category'].id
             else:
-                mapped['category_name'] = '未設定'
+                # ポケモンまたはトレーナーズ以外は除外
+                continue
 
             if mapped.get('evolution_stage'):
                 mapped['evolution_stage_name'] = mapped['evolution_stage'].name
@@ -372,6 +377,27 @@ def bulk_register_analyze(request):
                 if mapped.get(field):
                     # 表示用名称リスト (例: types_names)
                     mapped[f'{field}_names'] = [obj.name for obj in mapped[field]]
+                    
+                    # typesの場合、プレビュー用に色情報も含める
+                    if field == 'types':
+                        mapped['types_preview'] = [
+                            {
+                                'name': obj.name,
+                                'bg_color': obj.bg_color,
+                                'text_color': obj.text_color
+                            } for obj in mapped[field]
+                        ]
+                    
+                    # move_typesの場合も、プレビュー用に色情報を含める
+                    if field == 'move_types':
+                        mapped['move_types_preview'] = [
+                            {
+                                'name': obj.name,
+                                'bg_color': obj.bg_color,
+                                'text_color': obj.text_color
+                            } for obj in mapped[field]
+                        ]
+                    
                     mapped[field] = [obj.id for obj in mapped[field]]
 
             # クロップ画像のURLを紐付ける (インデックスが一致すると仮定)
@@ -392,34 +418,69 @@ def bulk_register_analyze(request):
 
     except ResourceExhausted:
         logger.error("Gemini API Quota Exceeded")
-        # エラーメッセージを含めてモーダルを再表示（またはエラー専用テンプレート）
-        # ここでは簡易的にHTTPレスポンスでエラーを返す（HTMXがエラーハンドリングできる形にするのが理想だが、
-        # モーダル内を置換するターゲット設定になっているため、エラーメッセージ付きのDIVを返すのがUX的に良い）
         error_html = """
-        <div class="alert alert-error shadow-lg my-4">
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>AIサービスが混雑しており利用制限にかかりました。申し訳ありませんが、しばらく時間を置いてから再試行してください。</span>
+        <dialog id="bulk-error-modal" class="modal">
+            <div class="modal-box">
+                <div class="alert alert-error shadow-lg mb-4">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>AIサービスが混雑しており利用制限にかかりました。申し訳ありませんが、しばらく時間を置いてから再試行してください。</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn" onclick="document.getElementById('bulk-error-modal').close()">閉じる</button>
+                </div>
             </div>
-        </div>
-        <div class="text-center">
-            <button class="btn" onclick="document.getElementById('bulk-modal-form').close()">閉じる</button>
-        </div>
+            <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+            </form>
+        </dialog>
+        <script>
+            (function() {
+                const modal = document.getElementById('bulk-error-modal');
+                if(modal) modal.showModal();
+                modal.addEventListener('close', () => {
+                    const dialogTarget = document.getElementById('dialog-target');
+                    if (dialogTarget) {
+                        dialogTarget.innerHTML = '';
+                    }
+                });
+            })();
+        </script>
         """
         return HttpResponse(error_html)
 
     except Exception as e:
         logger.error(f"Bulk Register Analyze Error: {e}", exc_info=True)
         error_html = f"""
-        <div class="alert alert-error shadow-lg my-4">
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>エラーが発生しました: {str(e)}</span>
+        <dialog id="bulk-error-modal" class="modal">
+            <div class="modal-box">
+                <div class="alert alert-error shadow-lg mb-4">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>エラーが発生しました: {str(e)}</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                     <button class="btn" onclick="document.getElementById('bulk-error-modal').close()">閉じる</button>
+                </div>
             </div>
-        </div>
-        <div class="text-center">
-             <button class="btn" onclick="document.getElementById('bulk-modal-form').close()">閉じる</button>
-        </div>
+            <form method="dialog" class="modal-backdrop">
+                <button>close</button>
+            </form>
+        </dialog>
+        <script>
+            (function() {{
+                const modal = document.getElementById('bulk-error-modal');
+                if(modal) modal.showModal();
+                modal.addEventListener('close', () => {{
+                    const dialogTarget = document.getElementById('dialog-target');
+                    if (dialogTarget) {{
+                        dialogTarget.innerHTML = '';
+                    }}
+                }});
+            }})();
+        </script>
         """
         return HttpResponse(error_html)
 
@@ -501,13 +562,25 @@ def bulk_register_edit_item(request, item_id):
             'item_id': item_id
         })
 
-def bulk_register_delete_item(request, item_id):
-    """プレビューアイテムの削除"""
+def bulk_register_toggle_exclude(request, item_id):
+    """プレビューアイテムの除外状態をトグルする"""
     items = request.session.get('bulk_register_items', [])
-    items = [item for item in items if item['id'] != item_id]
-    request.session['bulk_register_items'] = items
-    request.session.modified = True
-    return HttpResponse("") # 行を削除
+    target_item = None
+    
+    for item in items:
+        if item['id'] == str(item_id): # uuidは文字列比較
+            item['is_excluded'] = not item.get('is_excluded', False)
+            target_item = item
+            break
+            
+    if target_item:
+        request.session['bulk_register_items'] = items
+        request.session.modified = True
+        
+        # 行のみを再レンダリングして返す
+        return render(request, 'cards/_bulk_register_preview_row.html', {'item': target_item})
+    
+    return HttpResponse(status=404)
 
 @require_POST
 def bulk_register_submit(request):
@@ -519,6 +592,10 @@ def bulk_register_submit(request):
     registered_count = 0
     
     for item in items:
+        # 除外フラグがある場合はスキップ
+        if item.get('is_excluded'):
+            continue
+
         # バリデーション: 必須項目チェックなど
         if not item.get('name') or not item.get('category'):
             continue # 名前かカテゴリがないものはスキップ
@@ -597,5 +674,18 @@ def bulk_register_submit(request):
             }}, 1500);
         </script>
     """)
-    response['HX-Trigger'] = 'cardCreated' # リスト更新
+    response['HX-Trigger'] = json.dumps({'cardCreated': ''}) # リスト更新
     return response
+
+def search_cards_by_name_modal(request):
+    """名前でカードを検索し、結果をモーダルで表示する"""
+    query = request.GET.get('name', '').strip()
+    cards = []
+    if query:
+        # 名前で部分一致検索
+        cards = PokemonCard.objects.filter(name__icontains=query)
+    
+    return render(request, 'cards/_search_result_modal.html', {
+        'query': query,
+        'cards': cards
+    })

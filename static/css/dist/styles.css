@@ -107,7 +107,7 @@
 }
 
 /*
-! tailwindcss v3.4.18 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -2781,14 +2781,6 @@ input.tab:checked + .tab-content,
     var(--togglehandleborder);
 }
 
-.alert-info {
-  border-color: var(--fallback-in,oklch(var(--in)/0.2));
-  --tw-text-opacity: 1;
-  color: var(--fallback-inc,oklch(var(--inc)/var(--tw-text-opacity)));
-  --alert-bg: var(--fallback-in,oklch(var(--in)/1));
-  --alert-bg-mix: var(--fallback-b1,oklch(var(--b1)/1));
-}
-
 .alert-success {
   border-color: var(--fallback-su,oklch(var(--su)/0.2));
   --tw-text-opacity: 1;
@@ -2847,6 +2839,15 @@ input.tab:checked + .tab-content,
   background-color: var(--fallback-a,oklch(var(--a)/var(--tw-bg-opacity)));
   --tw-text-opacity: 1;
   color: var(--fallback-ac,oklch(var(--ac)/var(--tw-text-opacity)));
+}
+
+.badge-ghost {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-border-opacity)));
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
+  --tw-text-opacity: 1;
+  color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
 }
 
 .badge-outline {
@@ -4249,14 +4250,6 @@ details.collapse summary::-webkit-details-marker {
   }
 }
 
-.badge-xs {
-  height: 0.75rem;
-  font-size: 0.75rem;
-  line-height: .75rem;
-  padding-left: 0.313rem;
-  padding-right: 0.313rem;
-}
-
 .badge-sm {
   height: 1rem;
   font-size: 0.75rem;
@@ -4826,12 +4819,12 @@ details.collapse summary::-webkit-details-marker {
   width: 1rem;
 }
 
-.w-44 {
-  width: 11rem;
+.w-40 {
+  width: 10rem;
 }
 
-.w-48 {
-  width: 12rem;
+.w-44 {
+  width: 11rem;
 }
 
 .w-5 {
@@ -5007,6 +5000,10 @@ details.collapse summary::-webkit-details-marker {
   border-width: 2px;
 }
 
+.border-l-2 {
+  border-left-width: 2px;
+}
+
 .border-dashed {
   border-style: dashed;
 }
@@ -5153,8 +5150,8 @@ details.collapse summary::-webkit-details-marker {
   padding-bottom: 1rem;
 }
 
-.pl-2 {
-  padding-left: 0.5rem;
+.pl-1 {
+  padding-left: 0.25rem;
 }
 
 .pt-0 {
@@ -5179,6 +5176,10 @@ details.collapse summary::-webkit-details-marker {
 
 .text-right {
   text-align: right;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .text-2xl {

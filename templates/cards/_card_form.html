@@ -372,8 +372,29 @@
         document.body.addEventListener('htmx:beforeSwap', function(evt) {
             // このモーダル内のフォームからのリクエストであるかを確認
             if(evt.detail.requestConfig.elt.closest('#modal-form')) {
-                if (evt.detail.xhr.getResponseHeader("HX-Trigger") === 'closeModal') {
-                    modal.close();
+                // サーバーからのレスポンスヘッダーを確認
+                const triggerHeader = evt.detail.xhr.getResponseHeader("HX-Trigger");
+                
+                if (triggerHeader) {
+                    let shouldClose = false;
+                    // 文字列完全一致チェック
+                    if (triggerHeader === 'closeModal') {
+                        shouldClose = true;
+                    } else {
+                        // JSONパースチェック
+                        try {
+                            const triggers = JSON.parse(triggerHeader);
+                            if (triggers.closeModal || Object.keys(triggers).includes('closeModal')) {
+                                shouldClose = true;
+                            }
+                        } catch (e) {
+                            // JSONパースエラーなら無視
+                        }
+                    }
+
+                    if (shouldClose) {
+                        modal.close();
+                    }
                 }
             }
         }, { once: true });

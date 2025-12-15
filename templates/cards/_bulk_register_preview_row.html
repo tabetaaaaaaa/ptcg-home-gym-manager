@@ -1,56 +1,118 @@
-<tr id="item-{{ item.id }}">
-    <td class="text-center">
+<tr id="item-{{ item.id }}" class="{% if item.is_excluded %}bg-red-50 opacity-60{% else %}hover{% endif %} transition-colors duration-200">
+    {# 画像 #}
+    <td class="text-center align-middle">
         {% if item.image_url %}
             <img src="{{ item.image_url }}" alt="crop" class="w-16 h-20 object-contain rounded mx-auto border bg-base-200">
         {% else %}
             <span class="text-xs text-gray-400">No Image</span>
         {% endif %}
     </td>
-    <td class="font-semibold text-center">
-        <div class="tooltip" data-tip="{{ item.name }}">
-            {{ item.name|truncatechars:15 }}
-        </div>
-        {% if not item.name %}
-            <span class="text-error text-xs"><br>(名称不明)</span>
+
+    <td class="text-center align-middle font-bold">
+        {% if item.name %}
+        <span class="link hover:underline cursor-pointer"
+                hx-get="{% url 'cards:search_cards_by_name_modal' %}?name={{ item.name }}"
+                hx-target="#search-modal-container"
+                hx-swap="innerHTML"
+                onclick="event.stopPropagation()">
+            {{ item.name }}
+        </span>
+        {% else %}
+            <span class="text-error text-xs">(名称不明)</span>
         {% endif %}
     </td>
-    <td class="text-center">
+
+    {# カテゴリ #}
+    <td class="text-center align-middle">
         {% if item.category_name %}
-            <span class="badge badge-sm badge-neutral">{{ item.category_name }}</span>
+            <span class="badge badge-neutral whitespace-nowrap">{{ item.category_name }}</span>
         {% else %}
             <span class="text-warning text-xs">未設定</span>
         {% endif %}
-        
-        {% if item.trainer_type_name %}
-            <br><span class="text-xs text-gray-500">{{ item.trainer_type_name }}</span>
-        {% endif %}
     </td>
-    <td class="text-xs">
-        <div class="max-h-20 overflow-y-auto whitespace-pre-wrap text-left pl-2">{{ item.memo|default:"" }}</div>
-        {% if item.types_names %}
-            <div class="mt-1 flex flex-wrap gap-1">
-                {% for tname in item.types_names %}
-                    <span class="badge badge-xs badge-outline">{{ tname }}</span>
+
+    {# 詳細情報 (進化/種別/タイプ等) #}
+    <td class="text-left align-middle">
+        <div class="flex flex-col gap-1">
+            {# トレーナー種別 #}
+            {% if item.trainer_type_name %}
+                <div class="flex flex-wrap gap-1 items-center">
+                    <span class="opacity-70">種別:</span>
+                    <span class="badge badge-ghost">{{ item.trainer_type_name }}</span>
+                </div>
+            {% endif %}
+
+            {# タイプ・進化情報 #}
+            <div class="flex flex-wrap gap-1 items-center">
+                {% if item.types_preview %}
+                    {% for t in item.types_preview %}
+                        <span class="badge whitespace-nowrap" style="background-color: {{ t.bg_color }}; color: {{ t.text_color }};">{{ t.name }}</span>
+                    {% endfor %}
+                {% else %}
+                    {% for t in item.types_names %}
+                        <span class="badge">{{ t }}</span>
+                    {% endfor %}
+                {% endif %}
+                
+                {% if item.evolves_from or item.evolution_stage_name %}
+                    <span class="opacity-70">進化:</span>
+                    {% if item.evolution_stage_name %}
+                        <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ item.evolution_stage_name }}</span>
+                    {% endif %}
+                    {% if item.evolves_from %}
+                        <span class="badge">{{ item.evolves_from }} から進化</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            {# 特性・特徴 #}
+            <div class="flex flex-wrap gap-1 mt-1">
+                {% for s in item.special_features_names %}
+                    <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ s }}</span>
+                {% endfor %}
+                {% for st in item.special_trainers_names %}
+                    <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ st }}</span>
                 {% endfor %}
             </div>
-        {% endif %}
+
+            {# わざタイプ・弱点タイプ・抵抗力タイプ・など #}
+            <div class="flex flex-wrap gap-1 mt-1">
+                {% if item.move_types_preview %}
+                    <span class="opacity-70"> 技:</span>
+                    {% for mt in item.move_types_preview %}
+                        <span class="badge badge-outline" style="border-color: {{ mt.bg_color }}; color: {{ mt.bg_color }};">{{ mt.name }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
     </td>
-    <td class="text-center">
-        <div class="flex flex-col gap-1 justify-center">
+
+    {# メモ #}
+    <td class="text-xs align-middle">
+        <div class="max-h-20 overflow-y-auto whitespace-pre-wrap pl-1 border-l-2 border-base-200">{{ item.memo|default:"" }}</div>
+    </td>
+
+    {# 操作 #}
+    <td class="text-center align-middle">
+        <div class="flex flex-col gap-2 justify-center items-center">
             <button class="btn btn-ghost btn-xs text-primary"
                     hx-get="{% url 'cards:bulk_register_edit_item' item.id %}"
                     hx-target="#bulk-edit-modal-container"
-                    hx-swap="innerHTML">
+                    hx-swap="innerHTML"
+                    {% if item.is_excluded %}disabled{% endif %}>
                 編集
             </button>
-            <button class="btn btn-ghost btn-xs text-error"
-                    hx-match="closest tr"
-                    hx-swap="outerHTML"
-                    hx-post="{% url 'cards:bulk_register_delete_item' item.id %}"
-                    hx-confirm="本当にこの行を除外しますか？"
-                    >
-                除外
-            </button>
+            
+            <div class="form-control w-full max-w-xs">
+                <label class="label cursor-pointer p-0 justify-center gap-2">
+                    <span class="label-text text-xs {% if item.is_excluded %}text-error font-bold{% endif %}">追加しない</span>
+                    <input type="checkbox" class="toggle toggle-error toggle-xs" 
+                           {% if item.is_excluded %}checked{% endif %}
+                           hx-post="{% url 'cards:bulk_register_toggle_exclude' item.id %}"
+                           hx-target="closest tr"
+                           hx-swap="outerHTML">
+                </label>
+            </div>
         </div>
     </td>
 </tr>

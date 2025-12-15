@@ -29,12 +29,13 @@
             <table class="table table-zebra w-full table-compact">
                 <thead>
                     <tr>
-                        <th class="w-20 text-center">画像</th>
-                        <th class="w-48 text-center">名前</th>
-                        <th class="w-32 text-center">カテゴリ</th>
-                        <th class="text-center">メモ/詳細</th>
-                        <th class="w-24 text-center">操作</th>
-                    </tr>
+                    <th class="w-20 text-center">画像</th>
+                    <th class="w-40 text-center">名前</th>
+                    <th class="w-24 text-center">カテゴリ</th>
+                    <th class="text-center">詳細情報 (進化/種別/タイプ等)</th>
+                    <th class="w-24 text-center">メモ</th>
+                    <th class="w-24 text-center">操作</th>
+                </tr>
                 </thead>
                 <tbody id="bulk-preview-tbody">
                     {% for item in items %}
@@ -83,3 +84,7 @@
 
 {# 編集モーダル表示用のコンテナ #}
 <div id="bulk-edit-modal-container"></div>
+{# 検索結果モーダル表示用のコンテナ #}
+<div id="search-modal-container"></div>
+{# 詳細モーダル表示用のコンテナ #}
+<div id="card-detail-modal-container"></div>

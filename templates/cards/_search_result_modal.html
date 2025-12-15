@@ -1,0 +1,96 @@
+{% load static %}
+<dialog id="search-result-modal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl">
+        <h3 class="font-bold text-lg mb-4">
+            「{{ query }}」の検索結果 ({{ cards|length }}件)
+        </h3>
+        
+        <div class="overflow-x-auto border rounded-lg max-h-[60vh]">
+            <table class="table table-zebra w-full table-compact">
+                <thead class="sticky top-0 bg-base-100 z-10">
+                    <tr>
+                        <th class="w-16 text-center">画像</th>
+                        <th>名前</th>
+                        <th class="w-24 text-center">カテゴリ</th>
+                        <th class="w-24 text-center">所持数</th>
+                        <th class="w-24 text-center">詳細</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards %}
+                    <tr>
+                        <td class="text-center p-1">
+                            {% if card.image %}
+                                <img src="{{ card.image.url }}" alt="{{ card.name }}" class="w-10 h-14 object-contain mx-auto border bg-base-200 rounded">
+                            {% else %}
+                                <img src="{% static 'images/nonepic.png' %}" alt="{{ card.name }}" class="w-10 h-14 object-contain mx-auto border bg-base-200 rounded">
+                            {% endif %}
+                        </td>
+                        <td class="font-bold">
+                            {{ card.name }}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-sm badge-ghost">{{ card.category.name }}</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="flex items-center gap-2 justify-center">
+                                <span class="font-bold text-lg">{{ card.quantity }}</span>
+                                <div class="btn-group btn-group-vertical">
+                                    <button class="btn btn-primary btn-xs" 
+                                            hx-post="{% url 'cards:increase_card_quantity' card.id %}"
+                                            hx-swap="none"
+                                            onclick="let valEl = this.parentElement.previousElementSibling; valEl.innerText = parseInt(valEl.innerText) + 1;">
+                                        +
+                                    </button>
+                                    <button class="btn btn-secondary btn-xs" 
+                                            hx-post="{% url 'cards:decrease_card_quantity' card.id %}"
+                                            hx-swap="none"
+                                            onclick="let valEl = this.parentElement.previousElementSibling; let val = parseInt(valEl.innerText); if(val > 0) valEl.innerText = val - 1;">
+                                        -
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-ghost btn-xs text-info"
+                                    hx-get="{% url 'cards:card_detail_modal' card.id %}"
+                                    hx-target="#card-detail-modal-container"
+                                    hx-swap="innerHTML">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-8 text-gray-500">
+                            該当するカードは見つかりませんでした。
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal-action">
+            <button class="btn" onclick="document.getElementById('search-result-modal').close()">閉じる</button>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+    (function() {
+        const modal = document.getElementById('search-result-modal');
+        if (modal) {
+            modal.showModal();
+            modal.addEventListener('close', () => {
+                const container = document.getElementById('search-modal-container');
+                if(container) container.innerHTML = '';
+            });
+        }
+    })();
+</script>

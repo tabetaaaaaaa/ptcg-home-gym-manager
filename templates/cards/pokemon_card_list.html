@@ -24,7 +24,7 @@
         <legend class="fieldset-legend font-bold mb-4">カード検索</legend>
         <form method="get"
             hx-get="{% url 'cards:pokemon_card_list' %}"
-            hx-trigger="change, submit"
+            hx-trigger="change, submit, cardCreated from:body, cardDeleted from:body"
             hx-target="#card-list-container"
             hx-swap="innerHTML">
                         {% include "cards/_pokemon_search_form.html" %}

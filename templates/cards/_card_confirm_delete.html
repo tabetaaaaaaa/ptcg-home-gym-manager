@@ -36,11 +36,29 @@
         document.body.addEventListener('htmx:beforeSwap', function(evt) {
             // このモーダル内のフォームからのリクエストであるかを確認
             if(evt.detail.requestConfig.elt.closest('#modal-confirm-delete')) {
-                // サーバーからのレスポンスヘッダーに 'closeModal' が含まれていればモーダルを閉じる
-                if (evt.detail.xhr.getResponseHeader("HX-Trigger") === 'closeModal') {
-                    modal.close();
-                    // このイベントリスナーは一度きりで良いので削除
-                    evt.detail.elt.removeEventListener('htmx:beforeSwap', arguments.callee);
+                // サーバーからのレスポンスヘッダーを確認
+                const triggerHeader = evt.detail.xhr.getResponseHeader("HX-Trigger");
+                
+                if (triggerHeader) {
+                    let shouldClose = false;
+                    // 文字列完全一致チェック (旧仕様互換)
+                    if (triggerHeader === 'closeModal') {
+                        shouldClose = true;
+                    } else {
+                        // JSONパースチェック
+                        try {
+                            const triggers = JSON.parse(triggerHeader);
+                            if (triggers.closeModal || Object.keys(triggers).includes('closeModal')) {
+                                shouldClose = true;
+                            }
+                        } catch (e) {
+                            // JSONパースエラーなら無視
+                        }
+                    }
+
+                    if (shouldClose) {
+                        modal.close();
+                    }
                 }
             }
         });

@@ -11,7 +11,7 @@
     <td class="text-center">
         <div class="flex flex-wrap gap-1 justify-center">
             {% for type in card.types.all %}
-                <span class="badge badge-sm whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
+                <span class="badge whitespace-nowrap" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">{{ type.name }}</span>
             {% endfor %}
         </div>
     </td>
