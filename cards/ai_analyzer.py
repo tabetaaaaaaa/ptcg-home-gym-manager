@@ -15,6 +15,7 @@ from django.conf import settings
 from datetime import datetime
 import json
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -22,18 +23,16 @@ class CardAnalyzer:
     """カード画像解析クラス"""
     
     # YOLO-World設定 (Notebookの検証結果に基づく)
-    # ユーザー検証環境: testing_YOLO-World.ipynb
     YOLO_MODEL_NAME = 'yolov8s-worldv2.pt'
     DETECT_CLASSES = ["one card"]
-    CONF_THRESHOLD = 0.01  # 低めに設定して取り漏らしを防ぐ
-    IOU_THRESHOLD = 0.1    # 重複検出を防ぐため厳しめに設定
-    MAX_DET = 30           # 20枚制限だが余裕を持たせる
+    CONF_THRESHOLD = 0.01
+    IOU_THRESHOLD = 0.1
+    MAX_DET = 30
     IMG_SIZE = 640
 
     # Gemini設定
     GEMINI_MODEL_NAME = 'gemini-2.5-flash' 
     
-    # Geminiへのシステムプロンプト
     GEMINI_PROMPT = """
     あなたはポケモンカードの専門家です。
     画像内の要素を左上から順に読み取り、以下のJSON配列形式のみを出力してください。
@@ -92,76 +91,35 @@ class CardAnalyzer:
     """
 
     def __init__(self):
-        """
-        CardAnalyzerクラスの初期化処理
-        
-        YOLO-WorldモデルとGemini APIクライアントのセットアップ、
-        および画像保存用ディレクトリの作成を行います。
-        """
+        """CardAnalyzerクラスの初期化処理"""
         self._setup_yolo()
         self._setup_gemini()
-        
-        # 保存用ディレクトリの作成
-        self.base_dir = settings.MEDIA_ROOT / 'bulk_register'
-        self.original_dir = self.base_dir / 'originals'
-        self.cropped_dir = self.base_dir / 'cropped'
-        self.debug_dir = self.base_dir / 'debug'
-        
-        for d in [self.original_dir, self.cropped_dir, self.debug_dir]:
-            d.mkdir(parents=True, exist_ok=True)
+        # 固定ディレクトリの作成は廃止し、analyze_imageで動的に決定する
 
     def _setup_yolo(self):
-        """
-        YOLOモデルのセットアップ
-        
-        パフォーマンス向上のため、検出クラス("one card")を設定済みの
-        カスタムモデルを作成・保存し、再利用します。
-        
-        保存先: /root/.cache/ultralytics/custom_yolov8s_one_card.pt
-        (docker-compose.ymlのyolo_modelsボリュームにより永続化)
-        """
-        # ultralyticsのデフォルトキャッシュディレクトリ
-        # Docker環境では /root/.cache/ultralytics
-        # docker-compose.ymlでボリュームマウントされているか確認すること
+        """YOLOモデルのセットアップ"""
         cache_dir =  os.path.expanduser("~/.cache/ultralytics") 
         custom_model_name = "custom_yolov8s_one_card.pt"
         custom_model_path = os.path.join(cache_dir, custom_model_name)
 
         try:
             if os.path.exists(custom_model_path):
-                # カスタムモデルが存在する場合はそれをロード (高速)
                 logger.info(f"Loading cached custom model: {custom_model_path}")
                 self.model = YOLO(custom_model_path)
             else:
-                # 存在しない場合はベースモデルをロードしてクラス設定・保存
                 logger.info(f"Creating custom model from {self.YOLO_MODEL_NAME}")
                 self.model = YOLO(self.YOLO_MODEL_NAME)
-                
-                # 特定のクラス("one card")をセット
-                # これによりCLIPモデルによるテキストエンベディング計算が走る
                 self.model.set_classes(self.DETECT_CLASSES)
-                
-                # カスタムモデルとして保存 (次回以降の高速化)
-                # 注: save()は現在の重みを保存する
                 self.model.save(custom_model_path)
                 logger.info(f"Saved custom model to {custom_model_path}")
                 
         except Exception as e:
             logger.error(f"Failed to load YOLO model: {e}")
-            # フォールバック: ベースモデルを毎回ロード
             self.model = YOLO(self.YOLO_MODEL_NAME)
             self.model.set_classes(self.DETECT_CLASSES)
 
     def _setup_gemini(self):
-        """
-        Gemini APIクライアントのセットアップ
-        
-        settings.pyからGEMINI_API_KEYを読み込み、
-        指定されたモデル(gemini-2.0-flash-exp)で初期化します。
-        
-        Raises:
-            ValueError: GEMINI_API_KEYが設定されていない場合
-        """
+        """Gemini APIクライアントのセットアップ"""
         api_key = getattr(settings, 'GEMINI_API_KEY', None)
         if not api_key:
             raise ValueError("GEMINI_API_KEY is not set in settings")
@@ -172,28 +130,12 @@ class CardAnalyzer:
     def analyze_image(self, image_path: str) -> dict:
         """
         画像解析のメインプロセスを実行します。
-        
-        1. YOLO-Worldによるカード検出とクロッピング
-        2. クロップ画像のグリッド画像への結合
-        3. Gemini APIによるカード情報の抽出
-        
-        Args:
-            image_path (str): 解析対象の画像ファイルの絶対パス
-            
-        Returns:
-            dict: 以下のキーを含む解析結果辞書
-                - timestamp (str): 処理実行時のタイムスタンプ
-                - card_count (int): 検出されたカードの枚数
-                - cropped_images (list): 各カードのクロップ画像情報(パス、ID等)のリスト
-                - grid_image (str): 生成されたグリッド画像のパス
-                - raw_response (str): Gemini APIからの生のJSONレスポンス
-                - error (str, optional): エラー発生時のメッセージ
-        
-        Raises:
-            ValueError: 画像の読み込みに失敗した場合
+        成果物は入力画像と同じディレクトリに保存されます。
         """
+        # 入力画像のディレクトリを基準とする
+        img_path_obj = Path(image_path)
+        base_dir = img_path_obj.parent
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = os.path.basename(image_path)
         
         # 1. 画像読み込み
         img = cv2.imread(image_path)
@@ -201,31 +143,45 @@ class CardAnalyzer:
             raise ValueError(f"Failed to load image: {image_path}")
             
         # 2. YOLOによるカード検出
-        # パラメータはNotebookでの検証結果(testing_YOLO-World.ipynb)に準拠
         logger.info(f"Running YOLO inference on {image_path}")
         results = self.model.predict(
             image_path,
-            conf=self.CONF_THRESHOLD, # 0.01: 低閾値で検出漏れ防止
-            iou=self.IOU_THRESHOLD,   # 0.1: 重複検出を厳しく抑制
-            imgsz=self.IMG_SIZE,      # 640
-            max_det=self.MAX_DET,     # 30
-            save=True,                # デバッグ用に検出結果画像を保存
-            project=str(self.debug_dir),
-            name=f"detect_{timestamp}"
+            conf=self.CONF_THRESHOLD,
+            iou=self.IOU_THRESHOLD,
+            imgsz=self.IMG_SIZE,
+            max_det=self.MAX_DET,
+            save=False, # 自動保存無効
         )
         
-        # 3. 検出結果からカード画像を切り出し
-        cropped_images = []
-        detections = results[0].boxes.data.cpu().numpy() # [x1, y1, x2, y2, conf, cls]
+        # 検出結果の保存 (detection.jpg)
+        plot_img = results[0].plot()
+        detection_save_path = base_dir / "detection.jpg"
+        cv2.imwrite(str(detection_save_path), plot_img)
         
-        # 座標でソート (上から下、左から右へ)
-        # y座標で大まかにソートしてからx座標でソート
+        # 3. カード画像の切り出し
+        cropped_images = []
+        detections = results[0].boxes.data.cpu().numpy()
+        
+        # 座標ソート
         detections = sorted(detections, key=lambda x: (x[1] // 100, x[0]))
         
+        # クロップ画像用ディレクトリ (散らばらないようにサブフォルダ推奨だが、今回は直下には置かないでおく)
+        # 要望: "timestampフォルダの中に...すべて格納" -> base_dir/crops/crop_xx.jpg とする
+        crops_dir = base_dir / "crops"
+        crops_dir.mkdir(exist_ok=True)
+        
+        # MEDIA_URLからの相対パス計算用
+        # base_dir は .../media/bulk_register/2024/...
+        # settings.MEDIA_ROOT は .../media/
+        try:
+            relative_base_path = base_dir.relative_to(settings.MEDIA_ROOT)
+        except ValueError:
+            # 万が一MEDIA_ROOT外ならそのまま使う等の対抗措置（通常はありえない）
+            relative_base_path = Path("bulk_register") 
+
         for i, det in enumerate(detections):
             x1, y1, x2, y2 = map(int, det[:4])
             
-            # マージンを追加 (検出枠より少し広めに)
             h, w = img.shape[:2]
             margin = 10
             x1 = max(0, x1 - margin)
@@ -235,30 +191,33 @@ class CardAnalyzer:
             
             crop = img[y1:y2, x1:x2]
             
-            # クロップ画像を一時保存 (プレビュー用)
-            crop_filename = f"{timestamp}_{i:02d}.jpg"
-            crop_path = self.cropped_dir / crop_filename
+            crop_filename = f"crop_{i:02d}.jpg"
+            crop_path = crops_dir / crop_filename
             cv2.imwrite(str(crop_path), crop)
+            
+            # URL生成: /media/bulk_register/2024/.../crops/crop_xx.jpg
+            media_url = f"{settings.MEDIA_URL}{relative_base_path}/crops/{crop_filename}"
             
             cropped_images.append({
                 'id': i,
                 'path': str(crop_path),
                 'image': crop,
-                'media_url': f"{settings.MEDIA_URL}bulk_register/cropped/{crop_filename}"
+                'media_url': media_url
             })
             
         if not cropped_images:
             logger.warning("No cards detected by YOLO")
             return {'error': 'No cards detected', 'count': 0}
 
-        # 4. グリッド画像の作成 (Gemini送信コスト削減のため)
-        grid_image_path = self._create_grid_image(cropped_images, timestamp)
+        # 4. グリッド画像の作成
+        grid_save_path = base_dir / "grid.jpg"
+        self._create_grid_image(cropped_images, grid_save_path)
         
         # 5. Geminiへ問い合わせ
-        gemini_response = self._query_gemini(grid_image_path)
+        gemini_response = self._query_gemini(str(grid_save_path))
         
-        # 6. 生レスポンスの保存 (デバッグ用)
-        response_log_path = self.debug_dir / f"response_{timestamp}.txt"
+        # 6. 生レスポンス保存
+        response_log_path = base_dir / "gemini_response.txt"
         with open(response_log_path, 'w', encoding='utf-8') as f:
             f.write(gemini_response)
 
@@ -266,22 +225,15 @@ class CardAnalyzer:
             'timestamp': timestamp,
             'card_count': len(cropped_images),
             'cropped_images': cropped_images,
-            'grid_image': str(grid_image_path),
+            'grid_image': str(grid_save_path),
             'raw_response': gemini_response
         }
 
-    def _create_grid_image(self, cropped_images: list, timestamp: str) -> str:
+    def _create_grid_image(self, cropped_images: list, save_path: Path) -> Path:
         """
-        複数のカード画像を1枚のグリッド画像に結合する
-        
-        Args:
-            cropped_images: クロップ情報のリスト
-            timestamp: タイムスタンプ
-            
-        Returns:
-            保存されたグリッド画像のパス
+        複数のカード画像を1枚のグリッド画像に結合して保存する
         """
-        # 画像サイズを統一 (幅を基準にリサイズ)
+        # 画像サイズを統一
         target_width = 400
         resized_images = []
         
@@ -292,7 +244,6 @@ class CardAnalyzer:
             new_h = int(h * scale)
             resized = cv2.resize(img, (target_width, new_h))
             
-            # 画像IDを描画
             cv2.putText(
                 resized, 
                 f"ID: {item['id']}", 
@@ -304,17 +255,18 @@ class CardAnalyzer:
             )
             resized_images.append(resized)
             
-        # グリッド計算 (列数は固定ではないが、適当に計算)
         num_images = len(resized_images)
         cols = 4 # 4列固定
         rows = (num_images + cols - 1) // cols
         
-        # 最大の高さを取得してキャンバス作成
-        max_h = max(img.shape[0] for img in resized_images)
+        if resized_images:
+            max_h = max(img.shape[0] for img in resized_images)
+        else:
+            max_h = 100 # ダミー
+            
         grid_h = rows * max_h
         grid_w = cols * target_width
         
-        # 白背景のキャンバス
         grid = np.full((grid_h, grid_w, 3), 255, dtype=np.uint8)
         
         for idx, img in enumerate(resized_images):
@@ -327,33 +279,18 @@ class CardAnalyzer:
             h, w = img.shape[:2]
             grid[y_offset:y_offset+h, x_offset:x_offset+w] = img
             
-        save_path = self.debug_dir / f"grid_{timestamp}.jpg"
         cv2.imwrite(str(save_path), grid)
-        
         return save_path
 
     def _query_gemini(self, image_path: str) -> str:
-        """
-        Gemini APIに画像を送信して解析する
-        
-        Args:
-            image_path: 画像パス
-            
-        Returns:
-            テキストレスポンス
-        """
+        """Gemini APIに画像を送信して解析する"""
         try:
-            # Pillowで画像読み込み
             img = Image.open(image_path)
-            
-            # API送信
             response = self.gemini_model.generate_content([
                 self.GEMINI_PROMPT,
                 img
             ])
-            
             return response.text
-            
         except Exception as e:
             logger.error(f"Gemini API Error: {e}")
             raise

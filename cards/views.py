@@ -306,20 +306,32 @@ def bulk_register_analyze(request):
     # 注意: 本番運用ではS3や専用ストレージへの保存、および定期的なクリーンアップが必要
     # ここではメディアディレクトリ内の bulk_register/originals に保存
     import os
+    from datetime import datetime
     from django.conf import settings
     from django.core.files.storage import default_storage
     from django.core.files.base import ContentFile
 
-    save_dir = os.path.join(settings.MEDIA_ROOT, 'bulk_register', 'originals')
+    # 日時ベースのディレクトリを作成: bulk_register/YYYY/MM/DD/HHMMSS_ID/
+    now = datetime.now()
+    timestamp_str = now.strftime('%H%M%S')
+    unique_id = uuid.uuid4().hex[:8]
+    
+    relative_dir = os.path.join(
+        'bulk_register',
+        str(now.year),
+        f'{now.month:02d}',
+        f'{now.day:02d}',
+        f'{timestamp_str}_{unique_id}'
+    )
+    save_dir = os.path.join(settings.MEDIA_ROOT, relative_dir)
     os.makedirs(save_dir, exist_ok=True)
     
-    # ユニークなファイル名を生成
-    ext = os.path.splitext(image_file.name)[1]
-    filename = f"{uuid.uuid4().hex}{ext}"
-    file_path = os.path.join(save_dir, filename)
-    file_url = os.path.join(settings.MEDIA_URL, 'bulk_register', 'originals', filename)
-    
     # ファイル保存
+    ext = os.path.splitext(image_file.name)[1]
+    filename = f"original{ext}"
+    file_path = os.path.join(save_dir, filename)
+    file_url = os.path.join(settings.MEDIA_URL, relative_dir, filename)
+    
     with open(file_path, 'wb+') as destination:
         for chunk in image_file.chunks():
             destination.write(chunk)
