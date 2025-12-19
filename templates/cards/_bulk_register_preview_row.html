@@ -104,7 +104,7 @@
             
             <div class="form-control w-full max-w-xs">
                 <label class="label cursor-pointer p-0 justify-center gap-2">
-                    <span class="label-text text-xs {% if item.is_excluded %}text-error font-bold{% endif %}">新規追加しない</span>
+                    <span class="label-text text-xs {% if item.is_excluded %}text-error font-bold{% endif %}">追加しない</span>
                     <input type="checkbox" class="toggle toggle-error toggle-xs" 
                            {% if item.is_excluded %}checked{% endif %}
                            hx-post="{% url 'cards:bulk_register_toggle_exclude' item.id %}"

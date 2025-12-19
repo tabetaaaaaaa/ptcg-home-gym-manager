@@ -7,12 +7,34 @@
         <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
             まとめて登録 (AI解析)
         </h3>
-
-        <div class="alert shadow-lg mb-4">
-            <div>
-                <span>複数のカードが並んだ画像をアップロードしてください。AIが自動的に切り抜き・解析を行います。</span>
+         <p class="mt-2 flex items-center gap-1">
+                複数のカードが並んだ画像をアップロードしてください。AIが自動的に切り抜き・解析を行います。
+            </p>
+        <div class="bg-accent collapse collapse-plus collapse-compact mb-6">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium py-3 flex flex-col">
+            <p class="mt-2 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                きれいに読み取るための画像撮影のコツ 📸
+            </p>
+        </div>
+        <div class="collapse-content text-sm">
+            <div class="space-y-3 pt-2">
+                <div>
+                    <p class="font-bold border-b border-base-200 mb-1 pb-1">1. 文字やマークをはっきりと</p>
+                    <p class="pl-2 text-xs text-success">✅ 明るい場所で撮影し、ピントを合わせる</p>
+                    <p class="pl-2 text-xs text-error">❌ 光の反射、手ブレ、ピンボケに注意。暗くても良くないが、光の反射で白飛びしやすいので注意。</p>
+                </div>
+                <div>
+                    <p class="font-bold border-b border-base-200 mb-1 pb-1">2. カード全体を写す</p>
+                    <p class="pl-2 text-xs text-success">✅ 背景と区別し、重ならないように並べる。カード間の距離は小指1本分以上がおすすめ。</p>
+                    <p class="pl-2 text-xs text-error">❌ カードが見切れている、重なっている</p>
+                </div>
             </div>
         </div>
+    </div>
 
         <form
             hx-post="{% url 'cards:bulk_register_analyze' %}"
@@ -58,8 +80,8 @@
 
             <div class="modal-action flex justify-between items-center">
                  <span id="bulk-analyze-indicator" class="htmx-indicator flex items-center gap-2 text-accent font-semibold">
-                    <span class="loading loading-spinner loading-md"></span>
-                    AI解析を実行中... (これには30秒ほどかかる場合があります)
+                    <span class="loading loading-ring loading-xl text-accent-content"></span>
+                    AI解析中... (これには30秒ほどかかる場合があります)
                 </span>
                 <div class="flex gap-2">
                     <button type="submit" class="btn btn-accent" id="bulk-submit-btn" disabled>

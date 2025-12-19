@@ -5,10 +5,11 @@
         </h3>
         
         <div class="mb-4 flex flex-wrap gap-2 items-center justify-between">
-            <div class="text-sm">
-                <p>※ 内容を確認し、必要に応じて「編集」ボタンで修正してください。</p>
-                <p>※ 「追加しない」ボタンで行を削除できます。</p>
-                <p>※ ポケモンの名前をクリックすると登録済みの同じ名前のポケモンを確認できます。</p>
+            {% comment %} <div class="text-sm"> {% endcomment %}
+            <div class="alert shadow-lg">
+                <span>※ 内容を確認し、必要に応じて「編集」ボタンで修正してください。</span>
+                <span>※ 「追加しない」ボタンで行を削除できます。</span>
+                <span>※ ポケモンの名前をクリックすると、登録済みの同じ名前のポケモンを確認し、枚数を増やすことができます。</span>
             </div>
             <div>
                 {% if original_image_url %}
@@ -32,7 +33,7 @@
                     <th class="w-24 text-center">カテゴリ</th>
                     <th class="text-center">詳細情報 (進化/種別/タイプ等)</th>
                     <th class="w-24 text-center">メモ</th>
-                    <th class="w-24 text-center">操作</th>
+                    <th class="w-32 text-center">操作</th>
                 </tr>
                 </thead>
                 <tbody id="bulk-preview-tbody">
@@ -46,7 +47,7 @@
         {# アクションエリア #}
         <div class="modal-action mt-4 flex justify-between items-center">
             <span class="htmx-indicator" id="bulk-submit-indicator">
-                <span class="loading loading-spinner"></span> 登録処理中...
+                <span class="loading loading-ring"></span> 登録処理中...
             </span>
             <div class="flex gap-2">
                 <button class="btn btn-warning"
