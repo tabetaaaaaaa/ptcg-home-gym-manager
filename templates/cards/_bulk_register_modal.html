@@ -23,20 +23,18 @@
         >
             {% csrf_token %}
             
-            <div class="form-control w-full mb-4">                
+            <div class="form-control w-full mb-4">                  
                 {# 画像プレビューエリア #}
                 <div id="bulk-image-preview-area" class="mb-4" style="display: none;">
-                    <div class="avatar">
-                        <div class="w-full max-w-md rounded-lg ring ring-primary ring-offset-base-100 ring-offset-2">
-                            <img id="bulk-image-preview" src="" alt="画像プレビュー" class="w-full object-contain max-h-96">
-                        </div>
+                    <div class="w-full h-64 flex justify-center items-center bg-base-200 rounded-lg border-2 border-base-300 border-dashed">
+                        <img id="bulk-image-preview" src="" alt="画像プレビュー" class="max-w-full max-h-full object-contain p-2">
                     </div>
                 </div>
 
                 {# ファイル入力エリア #}
                 <div id="bulk-image-upload-wrapper" class="relative">
-                    <div id="bulk-drop-zone" class="border-2 border-dashed border-base-300 rounded-lg p-10 text-center hover:border-primary transition-colors cursor-pointer bg-base-100">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-base-content opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div id="bulk-drop-zone" class="h-64 flex flex-col justify-center items-center border-2 border-dashed border-base-300 rounded-lg text-center hover:border-primary transition-colors cursor-pointer bg-base-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-base-content opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <p class="text-lg font-medium text-base-content opacity-80 mb-2">クリックして画像を選択、またはドラッグ&ドロップ</p>
@@ -59,12 +57,12 @@
             </div>
 
             <div class="modal-action flex justify-between items-center">
-                 <span id="bulk-analyze-indicator" class="htmx-indicator flex items-center gap-2 text-primary font-semibold">
+                 <span id="bulk-analyze-indicator" class="htmx-indicator flex items-center gap-2 text-accent font-semibold">
                     <span class="loading loading-spinner loading-md"></span>
-                    AI解析を実行中... (これには数秒かかる場合があります)
+                    AI解析を実行中... (これには30秒ほどかかる場合があります)
                 </span>
                 <div class="flex gap-2">
-                    <button type="submit" class="btn btn-primary" id="bulk-submit-btn" disabled>
+                    <button type="submit" class="btn btn-accent" id="bulk-submit-btn" disabled>
                         解析を開始する
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />

@@ -44,7 +44,7 @@
                         {% if card.move_types.all %}
                             <li>わざのタイプ:
                                 {% for move_type in card.move_types.all %}
-                                    <span class="badge badge-outline badge-sm whitespace-nowrap" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.bg_color }};">{{ move_type.name }}</span>
+                                    <span class="badge badge-outline badge-sm whitespace-nowrap" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.text_color }};">{{ move_type.name }}</span>
                                 {% endfor %}
                             </li>
                         {% endif %}

@@ -24,15 +24,6 @@
                 削除
             </button>
         </div>
-        <!-- {% if card.category.slug == 'pokemon' %}
-        <button
-            class="btn btn-neutral btn-sm w-full"
-            hx-get="{% url 'cards:related_cards_modal' card.pk %}"
-            hx-target="body"
-            hx-swap="beforeend">
-            関連サーチ
-        </button>
-        {% endif %} -->
     </div>
     <figure class="px-10 pt-10">
         <img src="{% if card.image %}{{ card.image.url }}{% else %}{% static 'images/nonepic.png' %}{% endif %}" alt="{{ card.name }}" class="rounded-xl h-48 w-full object-contain" />
@@ -100,7 +91,7 @@
                         {% if card.move_types.all %}
                             <li>わざのタイプ:
                                 {% for move_type in card.move_types.all %}
-                                    <span class="badge badge-outline badge-sm" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.bg_color }};">{{ move_type.name }}</span>
+                                    <span class="badge badge-outline badge-sm" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.text_color }};">{{ move_type.name }}</span>
                                 {% endfor %}
                             </li>
                         {% endif %}

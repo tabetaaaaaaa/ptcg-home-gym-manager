@@ -55,7 +55,6 @@
                 {% endif %}
                 
                 {% if item.evolves_from or item.evolution_stage_name %}
-                    <span class="opacity-70">進化:</span>
                     {% if item.evolution_stage_name %}
                         <span class="badge badge-neutral badge-outline whitespace-nowrap">{{ item.evolution_stage_name }}</span>
                     {% endif %}
@@ -80,7 +79,7 @@
                 {% if item.move_types_preview %}
                     <span class="opacity-70"> 技:</span>
                     {% for mt in item.move_types_preview %}
-                        <span class="badge badge-outline" style="border-color: {{ mt.bg_color }}; color: {{ mt.bg_color }};">{{ mt.name }}</span>
+                        <span class="badge badge-outline" style="border-color: {{ mt.bg_color }}; color: {{ mt.text_color }};">{{ mt.name }}</span>
                     {% endfor %}
                 {% endif %}
             </div>
@@ -105,7 +104,7 @@
             
             <div class="form-control w-full max-w-xs">
                 <label class="label cursor-pointer p-0 justify-center gap-2">
-                    <span class="label-text text-xs {% if item.is_excluded %}text-error font-bold{% endif %}">追加しない</span>
+                    <span class="label-text text-xs {% if item.is_excluded %}text-error font-bold{% endif %}">新規追加しない</span>
                     <input type="checkbox" class="toggle toggle-error toggle-xs" 
                            {% if item.is_excluded %}checked{% endif %}
                            hx-post="{% url 'cards:bulk_register_toggle_exclude' item.id %}"
