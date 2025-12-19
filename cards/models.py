@@ -125,7 +125,7 @@ class PokemonCard(models.Model):
     image = models.ImageField("画像", upload_to=card_image_upload_to, null=True, blank=True)
     memo = models.TextField("メモ", null=True, blank=True)
 
-    # === カテゴリ (新規追加) ===
+    # === カテゴリ ===
     # default=1 を指定することで、マイグレーション時に既存データは自動的にID=1のカテゴリ（ポケモン）に設定される
     category = models.ForeignKey(
         CardCategory,
@@ -136,17 +136,19 @@ class PokemonCard(models.Model):
     )
 
     # === ポケモン専用フィールド ===
+    hp = models.IntegerField("HP", null=True, blank=True)
+    retreat_cost = models.IntegerField("にげる", null=True, blank=True)
     evolves_from = models.CharField("進化元カード", max_length=100, null=True, blank=True)
     # evolution_stageを null=True に変更（既存データは保持される）
     evolution_stage = models.ForeignKey(
         EvolutionStage,
         on_delete=models.PROTECT,
         verbose_name="進化段階",
-        null=True,  # トレーナーズカードのため null 許可s
+        null=True,  # トレーナーズカードのため null 許可
         blank=True
     )
 
-    # === トレーナーズ専用フィールド (新規追加) ===
+    # === トレーナーズ専用フィールド===
     trainer_type = models.ForeignKey(
         TrainerType,
         on_delete=models.PROTECT,
@@ -156,12 +158,12 @@ class PokemonCard(models.Model):
         related_name='cards'
     )
 
-    # === 多対多 (既存) ===
+    # === 多対多===
     types = models.ManyToManyField(Type, verbose_name="タイプ", blank=True)
+    weakness = models.ManyToManyField(Type, verbose_name="弱点", blank=True, related_name='weakness_cards')
+    resistance = models.ManyToManyField(Type, verbose_name="抵抗力", blank=True, related_name='resistance_cards')
     special_features = models.ManyToManyField(SpecialFeature, verbose_name="特別", blank=True)
     move_types = models.ManyToManyField(MoveType, verbose_name="わざのエネルギータイプ", blank=True)
-
-    # === 多対多 (新規追加) ===
     special_trainers = models.ManyToManyField(
         SpecialTrainer,
         verbose_name="特別な分類",
