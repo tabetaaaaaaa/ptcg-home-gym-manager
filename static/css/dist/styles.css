@@ -2454,6 +2454,12 @@ html {
   margin-inline-end: -1rem;
 }
 
+.input-sm[type="number"]::-webkit-inner-spin-button {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-inline-end: -0px;
+}
+
 .link {
   cursor: pointer;
   text-decoration-line: underline;
@@ -4367,6 +4373,14 @@ details.collapse summary::-webkit-details-marker {
   line-height: 2;
 }
 
+.input-sm {
+  height: 2rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 2rem;
+}
+
 .select-sm {
   height: 2rem;
   min-height: 2rem;
@@ -4729,12 +4743,12 @@ details.collapse summary::-webkit-details-marker {
   min-height: 0px;
 }
 
-.min-h-\[200px\] {
-  min-height: 200px;
+.min-h-\[18px\] {
+  min-height: 18px;
 }
 
-.min-h-\[24px\] {
-  min-height: 24px;
+.min-h-\[200px\] {
+  min-height: 200px;
 }
 
 .min-h-\[2rem\] {

@@ -41,12 +41,22 @@
                         {% if card.evolves_from %}
                             <li>進化元: {{ card.evolves_from }}</li>
                         {% endif %}
-                        {% if card.move_types.all %}
-                            <li>わざのタイプ:
-                                {% for move_type in card.move_types.all %}
-                                    <span class="badge badge-outline badge-sm whitespace-nowrap" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.text_color }};">{{ move_type.name }}</span>
+                        {% if card.weakness.all %}
+                            <li>弱点:
+                                {% for type in card.weakness.all %}
+                                    <span class="badge badge-outline badge-sm whitespace-nowrap" style="border-color: {{ type.bg_color }}; color: {{ type.bg_color }};">{{ type.name }}</span>
                                 {% endfor %}
                             </li>
+                        {% endif %}
+                        {% if card.resistance.all %}
+                            <li>抵抗力:
+                                {% for type in card.resistance.all %}
+                                    <span class="badge badge-outline badge-sm whitespace-nowrap" style="border-color: {{ type.bg_color }}; color: {{ type.bg_color }};">{{ type.name }}</span>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                        {% if card.retreat_cost != None %}
+                            <li>にげるエネルギー: {{ card.retreat_cost }}</li>
                         {% endif %}
                         {% if card.memo %}
                             <li>メモ: {{ card.memo|linebreaksbr }}</li>

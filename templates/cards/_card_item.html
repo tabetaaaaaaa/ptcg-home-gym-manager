@@ -50,14 +50,19 @@
             </div>
         </div>
         
-        <div class="flex flex-wrap justify-center gap-1 my-2 min-h-[24px]">
+        <div class="flex flex-wrap justify-center gap-1 my-2 min-h-[18px]">
             {% if card.category.slug == 'pokemon' %}
-                {% if card.evolution_stage %}
-                <span class="badge badge-neutral badge-outline">{{ card.evolution_stage.name }}</span>
-                {% endif %}
                 {% for type in card.types.all %}
                     <span class="badge" style="background-color: {{ type.bg_color }}; color: {{ type.text_color }};">
                         {{ type.name }}
+                    </span>
+                {% endfor %}
+                {% if card.evolution_stage %}
+                <span class="badge badge-neutral badge-outline">{{ card.evolution_stage.name }}</span>
+                {% endif %}
+                {% for move_type in card.move_types.all %}
+                    <span class="badge badge-outline" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.text_color }};">
+                        {{ move_type.name }}
                     </span>
                 {% endfor %}
                 {% for feature in card.special_features.all %}
@@ -77,7 +82,13 @@
             {% endif %}
         </div>
 
-        <div class="collapse collapse-arrow bg-base-200 mt-4">
+        {% if card.hp %}
+        <div class="font-bold text-sm leading-tight">
+            HP: {{ card.hp }}
+        </div>
+        {% endif %}
+
+        <div class="collapse collapse-arrow bg-base-200 mt-1">
             <input type="checkbox" /> 
             <div class="collapse-title text-sm font-medium">
                 詳細情報
@@ -85,15 +96,27 @@
             <div class="collapse-content text-left"> 
                 <ul class="list-disc list-inside text-sm">
                     {% if card.category.slug == 'pokemon' %}
+
                         {% if card.evolves_from %}
                             <li>進化元: {{ card.evolves_from }}</li>
                         {% endif %}
-                        {% if card.move_types.all %}
-                            <li>わざのタイプ:
-                                {% for move_type in card.move_types.all %}
-                                    <span class="badge badge-outline badge-sm" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.text_color }};">{{ move_type.name }}</span>
+
+                        {% if card.weakness.all %}
+                            <li>弱点:
+                                {% for type in card.weakness.all %}
+                                    <span class="badge badge-outline badge-sm" style="border-color: {{ type.bg_color }}; color: {{ type.bg_color }};">{{ type.name }}</span>
                                 {% endfor %}
                             </li>
+                        {% endif %}
+                        {% if card.resistance.all %}
+                            <li>抵抗力:
+                                {% for type in card.resistance.all %}
+                                    <span class="badge badge-outline badge-sm" style="border-color: {{ type.bg_color }}; color: {{ type.bg_color }};">{{ type.name }}</span>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                        {% if card.retreat_cost != None %}
+                            <li>にげるエネルギー: {{ card.retreat_cost }}</li>
                         {% endif %}
                     {% endif %}
                     {% if card.memo %}

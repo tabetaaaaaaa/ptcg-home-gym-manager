@@ -28,6 +28,18 @@
         </div>
     </td>
     <td class="text-center">
+        <div class="flex flex-wrap gap-1 justify-center">
+            {% for move_type in card.move_types.all %}
+                <span class="badge badge-outline badge-sm whitespace-nowrap" style="border-color: {{ move_type.bg_color }}; color: {{ move_type.text_color }};">{{ move_type.name }}</span>
+            {% endfor %}
+        </div>
+    </td>
+    <td class="text-center font-bold">
+        {% if card.hp %}
+            {{ card.hp }}
+        {% endif %}
+    </td>
+    <td class="text-center">
         <div class="flex items-center gap-2 justify-center">
             <span class="font-bold text-lg">{{ card.quantity }}</span>
             <div class="btn-group btn-group-vertical">

@@ -6,7 +6,7 @@
     </div>
 </div>
 
-<div class="flex flex-col gap-3">
+<div class="grid grid-cols-2 md:grid-cols-2 gap-3">
     {# Types Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
@@ -78,6 +78,77 @@
         </div>
     </div>
 </div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+    {# Weakness Filter #}
+    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium text-sm">
+            {{ filter.form.weakness.label }}
+        </div>
+        <div class="collapse-content">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            {% for choice in filter.form.weakness %}
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
+                    <span class="label-text">{{ choice.choice_label }}</span>
+                </label>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Resistance Filter #}
+    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium text-sm">
+            {{ filter.form.resistance.label }}
+        </div>
+        <div class="collapse-content">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            {% for choice in filter.form.resistance %}
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
+                    <span class="label-text">{{ choice.choice_label }}</span>
+                </label>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+    {# HP #}
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text text-xs font-bold">{{ filter.form.hp.label }}</span>
+        </label>
+        <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-1">
+                {{ filter.form.hp.subwidgets.0 }}
+            </div>
+            <div class="flex items-center gap-1">
+                <span class="text-xs">〜</span>
+                {{ filter.form.hp.subwidgets.1 }}
+            </div>
+        </div>
+    </div>
+
+    {# Retreat Cost #}
+    <div class="form-control">
+        <label class="label">
+            <span class="label-text text-xs font-bold">{{ filter.form.retreat_cost.label }}</span>
+        </label>
+        <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-1">
+                {{ filter.form.retreat_cost.subwidgets.0 }}
+            </div>
+            <div class="flex items-center gap-1">
+                <span class="text-xs">〜</span>
+                {{ filter.form.retreat_cost.subwidgets.1 }}
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="mt-4 flex justify-end items-center gap-2">
     <div class="form-control w-1/2 sm:w-1/4 md:w-1/4">
         <select name="ordering" class="select select-bordered border-secondary select-sm w-full">
