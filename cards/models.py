@@ -1,4 +1,25 @@
+import os
+import uuid
+from datetime import datetime
 from django.db import models
+
+
+def card_image_upload_to(instance, filename):
+    """
+    カード画像のアップロードパスとファイル名を生成
+    形式: cards/{yyyymmddhhmmss}_{randomid}.{ext}
+
+    Args:
+        instance: PokemonCardモデルのインスタンス
+        filename: アップロードされた元のファイル名
+
+    Returns:
+        保存先のパス（cards/以下のファイル名）
+    """
+    ext = os.path.splitext(filename)[1].lower()
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    random_id = uuid.uuid4().hex[:8]
+    return f'cards/{timestamp}_{random_id}{ext}'
 
 class CardCategory(models.Model):
     """カードの大分類 (例: ポケモン, トレーナーズ)"""
@@ -101,7 +122,7 @@ class PokemonCard(models.Model):
     # === 共通フィールド ===
     name = models.CharField("カード名称", max_length=100)
     quantity = models.PositiveIntegerField("所持枚数", default=1)
-    image = models.ImageField("画像", upload_to='cards/', null=True, blank=True)
+    image = models.ImageField("画像", upload_to=card_image_upload_to, null=True, blank=True)
     memo = models.TextField("メモ", null=True, blank=True)
 
     # === カテゴリ (新規追加) ===
