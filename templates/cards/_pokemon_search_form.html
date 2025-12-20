@@ -79,8 +79,7 @@
     </div>
 </div>
 
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
     {# Weakness Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
@@ -116,37 +115,137 @@
             </div>
         </div>
     </div>
-    {# HP #}
-    <div class="form-control">
-        <label class="label">
+    {# HP Filter (Slider) #}
+    <div class="form-control" id="hp-slider-container">
+        <label class="label pb-1">
             <span class="label-text text-xs font-bold">{{ filter.form.hp.label }}</span>
+            <span class="text-xs font-mono"><span class="hp-min-display">0</span> ~ <span class="hp-max-display">340+</span></span>
         </label>
-        <div class="flex flex-col gap-1">
-            <div class="flex items-center gap-1">
-                {{ filter.form.hp.subwidgets.0 }}
-            </div>
-            <div class="flex items-center gap-1">
-                <span class="text-xs">〜</span>
-                {{ filter.form.hp.subwidgets.1 }}
-            </div>
+        <div class="relative h-8 w-full px-1">
+            <!-- Track -->
+            <div class="absolute top-1/2 left-0 right-0 h-1 bg-base-300 rounded -translate-y-1/2"></div>
+            <!-- Range Bar -->
+            <div class="hp-range-bar absolute top-1/2 h-1 bg-secondary rounded -translate-y-1/2 z-10" style="left: 0%; right: 0%;"></div>
+            
+            <!-- Interactable Inputs -->
+            <input type="range" min="0" max="400" step="10" value="{{ filter.form.hp.subwidgets.0.data.value|default:0 }}"
+                   class="hp-input-min absolute top-1/2 w-full -translate-y-1/2 z-20 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-secondary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-secondary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-secondary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-secondary [&::-moz-range-thumb]:cursor-pointer">
+                   
+            <input type="range" min="0" max="400" step="10" value="{{ filter.form.hp.subwidgets.1.data.value|default:400 }}"
+                   class="hp-input-max absolute top-1/2 w-full -translate-y-1/2 z-20 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-secondary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-secondary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-secondary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-secondary [&::-moz-range-thumb]:cursor-pointer">
+            
+            <!-- Hidden Fields for Django Form -->
+            <input type="hidden" name="{{ filter.form.hp.subwidgets.0.name }}" value="{{ filter.form.hp.subwidgets.0.data.value|default:0 }}" class="hp-hidden-min">
+            <input type="hidden" name="{{ filter.form.hp.subwidgets.1.name }}" value="{{ filter.form.hp.subwidgets.1.data.value|default:400 }}" class="hp-hidden-max">
         </div>
     </div>
 
-    {# Retreat Cost #}
-    <div class="form-control">
-        <label class="label">
+    {# Retreat Cost Filter (Slider) #}
+    <div class="form-control" id="retreat-slider-container">
+        <label class="label pb-1">
             <span class="label-text text-xs font-bold">{{ filter.form.retreat_cost.label }}</span>
+            <span class="text-xs font-mono"><span class="retreat-min-display">0</span> ~ <span class="retreat-max-display">5</span></span>
         </label>
-        <div class="flex flex-col gap-1">
-            <div class="flex items-center gap-1">
-                {{ filter.form.retreat_cost.subwidgets.0 }}
-            </div>
-            <div class="flex items-center gap-1">
-                <span class="text-xs">〜</span>
-                {{ filter.form.retreat_cost.subwidgets.1 }}
-            </div>
+        <div class="relative h-8 w-full px-1">
+            <div class="absolute top-1/2 left-0 right-0 h-1 bg-base-300 rounded -translate-y-1/2"></div>
+            <div class="retreat-range-bar absolute top-1/2 h-1 bg-secondary rounded -translate-y-1/2 z-10" style="left: 0%; right: 0%;"></div>
+            
+            <input type="range" min="0" max="5" step="1" value="{{ filter.form.retreat_cost.subwidgets.0.data.value|default:0 }}"
+                   class="retreat-input-min absolute top-1/2 w-full -translate-y-1/2 z-20 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-secondary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-secondary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-secondary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-secondary [&::-moz-range-thumb]:cursor-pointer">
+                   
+            <input type="range" min="0" max="5" step="1" value="{{ filter.form.retreat_cost.subwidgets.1.data.value|default:5 }}"
+                   class="retreat-input-max absolute top-1/2 w-full -translate-y-1/2 z-20 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-secondary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-secondary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-secondary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-secondary [&::-moz-range-thumb]:cursor-pointer">
+            
+            <input type="hidden" name="{{ filter.form.retreat_cost.subwidgets.0.name }}" value="{{ filter.form.retreat_cost.subwidgets.0.data.value|default:0 }}" class="retreat-hidden-min">
+            <input type="hidden" name="{{ filter.form.retreat_cost.subwidgets.1.name }}" value="{{ filter.form.retreat_cost.subwidgets.1.data.value|default:5 }}" class="retreat-hidden-max">
         </div>
     </div>
+
+<script>
+(function() {
+    function initSlider(containerId, minLimit, maxLimit, prefix) {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+
+        const rangeMinInfo = container.querySelector(`.${prefix}-min-display`);
+        const rangeMaxInfo = container.querySelector(`.${prefix}-max-display`);
+        const inputMin = container.querySelector(`.${prefix}-input-min`);
+        const inputMax = container.querySelector(`.${prefix}-input-max`);
+        const hiddenMin = container.querySelector(`.${prefix}-hidden-min`);
+        const hiddenMax = container.querySelector(`.${prefix}-hidden-max`);
+        const rangeBar = container.querySelector(`.${prefix}-range-bar`);
+
+        function updateSlider() {
+            let vMin = parseInt(inputMin.value);
+            let vMax = parseInt(inputMax.value);
+
+            // Swap if crossed
+            if (vMin > vMax) {
+                const temp = vMin;
+                vMin = vMax;
+                vMax = temp;
+                // We physically swap interactions for correct thumb control? 
+                // Or just display swapped?
+                // Standard UI pattern: min thumb stops at max thumb.
+                // But for simple implementation, we can just allow crossing visually but display Correctly?
+                // Or better: prevent crossing.
+                // Let's prevent crossing for inputs:
+                // Actually, just rendering the bar based on min/max of the two values is easiest UX.
+                // The user moves "a thumb" and the one on the left is min.
+            }
+
+            rangeMinInfo.innerText = vMin;
+            rangeMaxInfo.innerText = vMax;
+            
+            // Update hidden inputs
+            hiddenMin.value = vMin;
+            hiddenMax.value = vMax;
+
+            // Visual bar
+            const percentMin = ((vMin - minLimit) / (maxLimit - minLimit)) * 100;
+            const percentMax = ((vMax - minLimit) / (maxLimit - minLimit)) * 100;
+            
+            rangeBar.style.left = percentMin + '%';
+            rangeBar.style.width = (percentMax - percentMin) + '%';
+        }
+
+        // Prevent crossing logic for input interaction (optional but strictly better)
+        inputMin.addEventListener('input', function() {
+            let vMin = parseInt(inputMin.value);
+            let vMax = parseInt(inputMax.value);
+            if(vMin > vMax) {
+                inputMin.value = vMax;
+                vMin = vMax;
+            }
+            updateSlider();
+        });
+
+        inputMax.addEventListener('input', function() {
+            let vMin = parseInt(inputMin.value);
+            let vMax = parseInt(inputMax.value);
+            if(vMax < vMin) {
+                inputMax.value = vMin;
+                vMax = vMin;
+            }
+            updateSlider();
+        });
+        
+        // HTMX Trigger on change (drag end)
+        function triggerChange() {
+             hiddenMin.dispatchEvent(new Event('change', {bubbles: true}));
+        }
+        
+        inputMin.addEventListener('change', triggerChange);
+        inputMax.addEventListener('change', triggerChange);
+
+        // Initial update
+        updateSlider();
+    }
+
+    initSlider('hp-slider-container', 0, 400, 'hp');
+    initSlider('retreat-slider-container', 0, 5, 'retreat');
+})();
+</script>
 </div>
 
 <div class="mt-4 flex justify-end items-center gap-2">
