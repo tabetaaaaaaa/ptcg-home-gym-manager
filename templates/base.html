@@ -22,8 +22,8 @@
                 {% url 'cards:card_create' category_slug='pokemon' as create_url %}
             {% endif %}
             {# 一括登録ボタン #}
-            <button 
-                hx-get="{% url 'cards:bulk_register_upload' %}" 
+            <button
+                hx-get="{% url 'cards:bulk_register_upload' %}"
                 hx-target="#dialog-target"
                 class="btn btn-warning mr-2 gap-2">
                 {% comment %} <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -31,12 +31,29 @@
                 </svg> {% endcomment %}
                 まとめて登録
             </button>
-            <button 
-                hx-get="{{ create_url }}" 
+            <button
+                hx-get="{{ create_url }}"
                 hx-target="#dialog-target"
-                class="btn btn-warning">
+                class="btn btn-warning mr-2">
                 新規カード登録
             </button>
+            {# アバタードロップダウンメニュー #}
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                    <div class="w-10 rounded-full">
+                        <img
+                            alt="User avatar"
+                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                    </div>
+                </div>
+                <ul
+                    tabindex="-1"
+                    class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                    <li><a>Export/Import</a></li>
+                    <li><a>Settings</a></li>
+                    <li><a>Logout</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms', # ウィジェットのテンプレートカスタマイズ用に必要
     'import_export', # django-import-export の追加
     'django_filters', # django-filter の追加
     'cards.apps.CardsConfig',
@@ -154,3 +155,6 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
 # セッション設定（一括登録機能用）
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+# ウィジェットのレンダリング設定（プロジェクトのtemplatesを優先する）
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'

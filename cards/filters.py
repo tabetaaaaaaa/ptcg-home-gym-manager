@@ -1,6 +1,8 @@
 import django_filters
 from django import forms
+from django.db.models import Q
 from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType, TrainerType, SpecialTrainer
+from .widgets import RangeSliderWidget
 
 class PokemonCardFilter(django_filters.FilterSet):
     """ポケモンカードの絞り込みを行うためのFilterSet"""
@@ -50,13 +52,15 @@ class PokemonCardFilter(django_filters.FilterSet):
     hp = django_filters.RangeFilter(
         field_name='hp',
         label='HP',
-        widget=django_filters.widgets.RangeWidget(attrs={'class': 'input input-bordered input-sm w-full'})
+        widget=RangeSliderWidget(min_val=0, max_val=400, step=10),
+        method='filter_range_with_null'
     )
 
     retreat_cost = django_filters.RangeFilter(
         field_name='retreat_cost',
         label='にげる',
-        widget=django_filters.widgets.RangeWidget(attrs={'class': 'input input-bordered input-sm w-full'})
+        widget=RangeSliderWidget(min_val=0, max_val=5, step=1),
+        method='filter_range_with_null'
     )
 
     CHOICES = (
@@ -91,6 +95,24 @@ class PokemonCardFilter(django_filters.FilterSet):
         model = PokemonCard
         # fields の指定により、GETパラメータのキー名とフィルタのフィールド名が一致する
         fields = ['name', 'types', 'evolution_stage', 'special_features', 'move_types', 'weakness', 'resistance', 'hp', 'retreat_cost', 'ordering']
+
+    def filter_range_with_null(self, queryset, name, value):
+        """
+        null（未設定）の値を 0 として扱い、指定された範囲に含まれる場合に表示するカスタムフィルタ
+        """
+        if value:
+            start = value.start if value.start is not None else -float('inf')
+            stop = value.stop if value.stop is not None else float('inf')
+
+            # 範囲のクエリ
+            range_query = Q(**{f"{name}__range": (start, stop)})
+
+            # 0 が範囲内に含まれる場合、null（未設定）のカードも表示対象に含める
+            if start <= 0 <= stop:
+                return queryset.filter(range_query | Q(**{f"{name}__isnull": True}))
+            
+            return queryset.filter(range_query)
+        return queryset
 
 
 class TrainersCardFilter(django_filters.FilterSet):

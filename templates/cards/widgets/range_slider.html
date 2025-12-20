@@ -1,0 +1,92 @@
+<div class="range-slider-container w-full" id="container_{{ widget.name }}">
+    <div class="flex justify-between items-center mb-1">
+        {# ラベルは呼び出し元のフォーム側で表示されるため、ここでは値の表示のみ #}
+        <span class="text-xs font-mono ml-auto">
+            <span class="min-display">{{ current_min }}</span> ~ <span class="max-display">{{ current_max }}{% if current_max == max_val %}+{% endif %}</span>
+        </span>
+    </div>
+    
+    <div class="relative h-8 w-full px-1">
+        <!-- Track (Background) -->
+        <div class="absolute top-1/2 left-0 right-0 h-1 bg-base-300 rounded -translate-y-1/2"></div>
+        <!-- Range Bar (Active area) -->
+        <div class="range-bar absolute top-1/2 h-1 bg-secondary rounded -translate-y-1/2 z-10" style="left: 0%; width: 100%;"></div>
+        
+        <!-- Multi-range Inputs -->
+        {# hiddenフィールドはDjangoの値を保持、rangeインプットはUI操作用 #}
+        {% for subwidget in widget.subwidgets %}
+            <input type="range" 
+                   min="{{ min_val }}" 
+                   max="{{ max_val }}" 
+                   step="{{ step }}" 
+                   value="{% if forloop.first %}{{ current_min }}{% else %}{{ current_max }}{% endif %}"
+                   class="range-input{% if forloop.first %}-min{% else %}-max{% endif %} absolute top-1/2 w-full -translate-y-1/2 z-20 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-secondary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-secondary [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-secondary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-secondary [&::-moz-range-thumb]:cursor-pointer">
+            
+            <input type="hidden" name="{{ subwidget.name }}" value="{{ subwidget.value|default:'' }}" class="hidden{% if forloop.first %}-min{% else %}-max{% endif %}">
+        {% endfor %}
+    </div>
+
+    <script>
+        (function() {
+            const container = document.getElementById('container_{{ widget.name }}');
+            if (!container) return;
+
+            const inputMin = container.querySelector('.range-input-min');
+            const inputMax = container.querySelector('.range-input-max');
+            const hiddenMin = container.querySelector('.hidden-min');
+            const hiddenMax = container.querySelector('.hidden-max');
+            const displayMin = container.querySelector('.min-display');
+            const displayMax = container.querySelector('.max-display');
+            const rangeBar = container.querySelector('.range-bar');
+            
+            const minLimit = {{ min_val }};
+            const maxLimit = {{ max_val }};
+
+            function update(e) {
+                let vMin = parseInt(inputMin.value);
+                let vMax = parseInt(inputMax.value);
+
+                // 交差防止ロジック
+                if (vMin > vMax) {
+                    if (e && e.target === inputMin) {
+                        inputMin.value = vMax;
+                        vMin = vMax;
+                    } else {
+                        inputMax.value = vMin;
+                        vMax = vMin;
+                    }
+                }
+
+                // 表示の更新
+                displayMin.innerText = vMin;
+                displayMax.innerText = vMax + (vMax == maxLimit ? '+' : '');
+                
+                // hiddenフィールドに値を同期 (Djangoへの配信用)
+                hiddenMin.value = vMin;
+                hiddenMax.value = vMax;
+
+                // バーの視覚的更新
+                const percentMin = ((vMin - minLimit) / (maxLimit - minLimit)) * 100;
+                const percentMax = ((vMax - minLimit) / (maxLimit - minLimit)) * 100;
+                
+                rangeBar.style.left = percentMin + '%';
+                rangeBar.style.width = (percentMax - percentMin) + '%';
+            }
+
+            inputMin.addEventListener('input', update);
+            inputMax.addEventListener('input', update);
+
+            // HTMX連携: スライダーを離した際にフォーム全体のチェンジイベントを発火させる
+            function triggerHTMX() {
+                // バブリングを有効にして発火させることで、フォーム要素のhx-trigger="change"が反応する
+                hiddenMin.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            inputMin.addEventListener('change', triggerHTMX);
+            inputMax.addEventListener('change', triggerHTMX);
+
+            // 初回表示時の同期
+            update();
+        })();
+    </script>
+</div>
