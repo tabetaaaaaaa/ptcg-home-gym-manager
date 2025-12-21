@@ -37,17 +37,25 @@
                         <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
                             <span class="badge badge-primary badge-sm">基本情報</span>
                         </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
                             <div class="form-control w-full">
                                 <label class="label"><span class="label-text">{{ form.name.label }}</span></label>
                                 {{ form.name }}
                                 {{ form.name.errors }}
                             </div>
                             <!-- quantityは一括登録時はデフォルト1あるいはformに含まれている -->
-                             <div class="form-control w-full">
+                            <div class="form-control w-full">
                                 <label class="label"><span class="label-text">{{ form.quantity.label }}</span></label>
                                 {{ form.quantity }}
+                                {{ form.quantity.errors }}
                             </div>
+                            {% if form.category.value == 1 or item.category_name == 'ポケモン' %}
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text">{{ form.hp.label }}</span></label>
+                                {{ form.hp }}
+                                {{ form.hp.errors }}
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -132,9 +140,53 @@
                     {% endif %}
 
                     <div class="mb-4 p-4 bg-base-50 rounded-lg border border-base-200">
-                         <div class="form-control w-full">
-                            <label class="label"><span class="label-text">{{ form.memo.label }}</span></label>
-                            {{ form.memo }}
+                        <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <span class="badge badge-neutral badge-sm">その他</span>
+                        </h4>
+                        
+                        {% if form.category.value == 1 or item.category_name == 'ポケモン' %}
+                        <div class="form-control mb-3">
+                            <label class="label"><span class="label-text">{{ form.weakness.label }}</span></label>
+                             <div class="flex flex-wrap gap-4">
+                                {% for checkbox in form.weakness %}
+                                    <label class="cursor-pointer label gap-2">
+                                        {{ checkbox.tag }}
+                                        <span class="label-text">{{ checkbox.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-control mb-3">
+                            <label class="label"><span class="label-text">{{ form.resistance.label }}</span></label>
+                             <div class="flex flex-wrap gap-4">
+                                {% for checkbox in form.resistance %}
+                                    <label class="cursor-pointer label gap-2">
+                                        {{ checkbox.tag }}
+                                        <span class="label-text">{{ checkbox.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="grid grid-cols-5 gap-4">
+                            <div class="col-span-1">
+                                {% if form.category.value == 1 or item.category_name == 'ポケモン' %}
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text text-xs whitespace-nowrap">{{ form.retreat_cost.label }}</span></label>
+                                    {{ form.retreat_cost }}
+                                    {{ form.retreat_cost.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-span-4">
+                                <div class="form-control w-full">
+                                    <label class="label"><span class="label-text">{{ form.memo.label }}</span></label>
+                                    {{ form.memo }}
+                                    {{ form.memo.errors }}
+                                </div>
+                            </div>
                         </div>
                     </div>
 

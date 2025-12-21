@@ -58,7 +58,7 @@ class PokemonCardFilter(django_filters.FilterSet):
 
     retreat_cost = django_filters.RangeFilter(
         field_name='retreat_cost',
-        label='にげる',
+        label='にげるエネルギー',
         widget=RangeSliderWidget(min_val=0, max_val=5, step=1),
         method='filter_range_with_null'
     )
@@ -98,20 +98,36 @@ class PokemonCardFilter(django_filters.FilterSet):
 
     def filter_range_with_null(self, queryset, name, value):
         """
-        null（未設定）の値を 0 として扱い、指定された範囲に含まれる場合に表示するカスタムフィルタ
+        null（未設定）の値を 0 として扱い、指定された範囲に含まれる場合に表示するカスタムフィルタ。
+        また、選択された上限が最大値（HPなら400、にげるなら5）の場合は、上限なしとして処理する。
         """
         if value:
-            start = value.start if value.start is not None else -float('inf')
-            stop = value.stop if value.stop is not None else float('inf')
+            start = value.start
+            stop = value.stop
 
-            # 範囲のクエリ
-            range_query = Q(**{f"{name}__range": (start, stop)})
+            # フィルタ対象に応じた最大リミットの設定
+            max_limit = 400 if name == 'hp' else 5 if name == 'retreat_cost' else None
 
-            # 0 が範囲内に含まれる場合、null（未設定）のカードも表示対象に含める
-            if start <= 0 <= stop:
-                return queryset.filter(range_query | Q(**{f"{name}__isnull": True}))
-            
-            return queryset.filter(range_query)
+            # フィルタ条件の構築
+            q_objects = Q()
+
+            # 下限の設定
+            if start is not None:
+                if start <= 0:
+                    # 0を含む場合はnull（未設定）も対象に含める
+                    q_objects &= (Q(**{f"{name}__gte": 0}) | Q(**{f"{name}__isnull": True}))
+                else:
+                    q_objects &= Q(**{f"{name}__gte": start})
+
+            # 上限の設定
+            if stop is not None:
+                # 最大値に達している場合は、上限フィルタを適用しない（400+ の意味を持たせる）
+                if max_limit is not None and stop >= max_limit:
+                    pass
+                else:
+                    q_objects &= Q(**{f"{name}__lte": stop})
+
+            return queryset.filter(q_objects)
         return queryset
 
 

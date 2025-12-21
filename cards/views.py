@@ -385,31 +385,20 @@ def bulk_register_analyze(request):
                 mapped['trainer_type'] = mapped['trainer_type'].id
                 
             # ManyToManyのリスト(オブジェクト)をIDのリストに変換 & 名称リスト作成
-            for field in ['types', 'special_features', 'move_types', 'special_trainers']:
+            for field in ['types', 'special_features', 'move_types', 'special_trainers', 'weakness', 'resistance']:
                 if mapped.get(field):
                     # 表示用名称リスト (例: types_names)
                     mapped[f'{field}_names'] = [obj.name for obj in mapped[field]]
                     
-                    # typesの場合、プレビュー用に色情報も含める
-                    if field == 'types':
-                        mapped['types_preview'] = [
+                    # types, weakness, resistanceの場合、プレビュー用に色情報も含める
+                    if field in ['types', 'weakness', 'resistance', 'move_types']:
+                        mapped[f'{field}_preview'] = [
                             {
                                 'name': obj.name,
                                 'bg_color': obj.bg_color,
                                 'text_color': obj.text_color
                             } for obj in mapped[field]
-                        ]
-                    
-                    # move_typesの場合も、プレビュー用に色情報を含める
-                    if field == 'move_types':
-                        mapped['move_types_preview'] = [
-                            {
-                                'name': obj.name,
-                                'bg_color': obj.bg_color,
-                                'text_color': obj.text_color
-                            } for obj in mapped[field]
-                        ]
-                    
+                        ]                    
                     mapped[field] = [obj.id for obj in mapped[field]]
 
             # クロップ画像のURLを紐付ける (インデックスが一致すると仮定)
@@ -640,6 +629,9 @@ def bulk_register_submit(request):
                 trainer_type_id=item.get('trainer_type'),
                 # CharFields
                 evolves_from=item.get('evolves_from'),
+                # Pokemon specific
+                hp=item.get('hp'),
+                retreat_cost=item.get('retreat_cost'),
             )
             
             if image_content and filename:
@@ -656,6 +648,12 @@ def bulk_register_submit(request):
                 
             if item.get('move_types'):
                 card.move_types.set(item['move_types'])
+                
+            if item.get('weakness'):
+                card.weakness.set(item['weakness'])
+                
+            if item.get('resistance'):
+                card.resistance.set(item['resistance'])
                 
             if item.get('special_trainers'):
                 card.special_trainers.set(item['special_trainers'])

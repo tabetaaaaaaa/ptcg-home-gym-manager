@@ -39,12 +39,15 @@ class CardAnalyzer:
     画像品質が悪くても推測して補完し、Markdown記法は一切含めないでください。
 
     # データ定義
-    - 全ての項目は必須です。値がない場合は `null` (文字列) または `[]` (配列)、`false` (真偽値) を使用してください。
-    - `category`: "pokemon", "trainers", "Other" (カード以外の場合)
+    - 全ての項目は必須です。値がない場合は `null` (文字列, 数値) または `[]` (配列)、`false` (真偽値)、を使用してください。
+    - `category`: "pokemon", "trainers", "Other" (ポケモンカード以外の場合)
     - `trainer_type`: "グッズ", "サポート", "スタジアム", "ポケモンのどうぐ" (pokemon/Otherの場合は null)
-    - `special_trainers`: ACE SPECカードの場合のみ "ACE SPEC"
+    - `special_trainers`: `category`が"trainers"でカード色が蛍光ピンクの場合のみ"ACE SPEC"
     - `special_features`: Pokemonの特殊分類("ポケモンex", "テラスタル"等)。trainers/Otherの場合は null
-    - `type`, `move_types`, `weakness`: Pokemonの属性。trainers/Otherの場合は [] (空配列)。同一タイプは一度のみ記載。
+    - `hp`, `type`, `move_types`: Pokemonの属性。trainers/Otherの場合は [] (空配列)。同一types, move_typesは一度のみ記載。
+    - `weakness`, `resistance`: Pokemonの属性。trainers/Otherの場合は [] (空配列)。カード下部に記載されていることが多い。
+    - `retreat_cost`: Pokemonの属性で、にげるためのコストを指す。trainers/Otherの場合は"null"。カード右下に星マークの数として記載される。
+
 
     # 出力例
     [
@@ -59,7 +62,10 @@ class CardAnalyzer:
         "special_features": ["ポケモンex", "テラスタル"],
         "type": ["悪"],
         "move_types": ["炎", "無色"],
-        "weakness": ["草"]
+        "weakness": ["草"].
+        "resistance": ["水"],
+        "retreat_cost": 2,
+        "hp": 170
     },
     {
         "id": 2,
@@ -72,7 +78,10 @@ class CardAnalyzer:
         "special_features": null,
         "type": [],
         "move_types": [],
-        "weakness": []
+        "weakness": [],
+        "resistance": [],
+        "retreat_cost": null,
+        "hp": null
     },
     {
         "id": 3,
@@ -85,7 +94,10 @@ class CardAnalyzer:
         "special_features": null,
         "type": [],
         "move_types": [],
-        "weakness": []
+        "weakness": [],
+        "resistance": [],
+        "retreat_cost": null,
+        "hp": null
     }
     ]
     """

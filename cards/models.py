@@ -137,7 +137,7 @@ class PokemonCard(models.Model):
 
     # === ポケモン専用フィールド ===
     hp = models.IntegerField("HP", null=True, blank=True)
-    retreat_cost = models.IntegerField("にげる", null=True, blank=True)
+    retreat_cost = models.IntegerField("にげるエネルギー", null=True, blank=True)
     evolves_from = models.CharField("進化元カード", max_length=100, null=True, blank=True)
     # evolution_stageを null=True に変更（既存データは保持される）
     evolution_stage = models.ForeignKey(

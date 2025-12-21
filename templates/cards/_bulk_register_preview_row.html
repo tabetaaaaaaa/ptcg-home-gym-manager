@@ -62,6 +62,9 @@
                         <span class="badge">{{ item.evolves_from }} から進化</span>
                     {% endif %}
                 {% endif %}
+                {% if item.hp %}
+                    <span class="badge">HP:{{ item.hp }}</span>
+                {% endif %}
             </div>
 
             {# 特性・特徴 #}
@@ -81,6 +84,25 @@
                     {% for mt in item.move_types_preview %}
                         <span class="badge badge-outline" style="border-color: {{ mt.bg_color }}; color: {{ mt.text_color }};">{{ mt.name }}</span>
                     {% endfor %}
+                {% endif %}
+
+                {% if item.weakness_preview %}
+                    <span class="opacity-70"> / 弱点:</span>
+                    {% for w in item.weakness_preview %}
+                        <span class="badge badge-outline" style="border-color: {{ w.bg_color }}; color: {{ w.bg_color }};">{{ w.name }}</span>
+                    {% endfor %}
+                {% endif %}
+
+                {% if item.resistance_preview %}
+                    <span class="opacity-70"> / 抵抗力:</span>
+                    {% for r in item.resistance_preview %}
+                        <span class="badge badge-outline" style="border-color: {{ r.bg_color }}; color: {{ r.bg_color }};">{{ r.name }}</span>
+                    {% endfor %}
+                {% endif %}
+
+                {% if item.retreat_cost is not None %}
+                    <span class="opacity-70"> / </span>
+                    <span class="badge">にげるエネルギー:{{ item.retreat_cost }}</span>
                 {% endif %}
             </div>
         </div>

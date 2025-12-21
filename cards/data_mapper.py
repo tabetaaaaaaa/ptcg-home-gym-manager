@@ -84,6 +84,18 @@ class CardDataMapper:
         move_types_raw = raw_item.get('move_types', [])
         mapped['move_types'] = self._map_many_to_many(move_types_raw, self._move_types)
 
+        # 弱点 (多対多)
+        weakness_raw = raw_item.get('weakness', [])
+        mapped['weakness'] = self._map_many_to_many(weakness_raw, self._types)
+
+        # 抵抗力 (多対多)
+        resistance_raw = raw_item.get('resistance', [])
+        mapped['resistance'] = self._map_many_to_many(resistance_raw, self._types)
+
+        # HP / にげるコスト
+        mapped['hp'] = raw_item.get('hp')
+        mapped['retreat_cost'] = raw_item.get('retreat_cost')
+
         # 進化段階 (外部キー)
         # プロンプトの例では "evolution_stage" だが、出力例では "evolves_stage" になっている可能性も考慮
         evo_raw = raw_item.get('evolution_stage') or raw_item.get('evolves_stage')

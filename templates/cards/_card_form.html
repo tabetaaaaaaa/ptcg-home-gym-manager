@@ -33,7 +33,7 @@
                 <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
                     <span class="badge badge-primary badge-sm">基本情報</span>
                 </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-end">
                     <div class="form-control w-full mb-2">
                         <label for="{{ form.name.id_for_label }}" class="label py-1">
                             <span class="label-text text-sm">{{ form.name.label }}</span>
@@ -42,14 +42,6 @@
                             {% endif %}
                         </label>
                         {{ form.name }}
-                        {% if form.name.errors %}
-                            <div class="alert alert-error shadow-lg mt-1 py-2">
-                                <div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    <span class="text-sm">{{ form.name.errors.0 }}</span>
-                                </div>
-                            </div>
-                        {% endif %}
                     </div>
 
                     <div class="form-control w-full mb-2">
@@ -60,12 +52,38 @@
                             {% endif %}
                         </label>
                         {{ form.quantity }}
+                    </div>
+
+                    {% if category_slug == 'pokemon' %}
+                    <div class="form-control w-full mb-2">
+                        <label for="{{ form.hp.id_for_label }}" class="label py-1">
+                            <span class="label-text text-sm">{{ form.hp.label }}</span>
+                        </label>
+                        {{ form.hp }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {# エラー表示用 #}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4">
+                    <div>
+                        {% if form.name.errors %}
+                            <div class="alert alert-error shadow-lg mt-1 py-1">
+                                <span class="text-xs">{{ form.name.errors.0 }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
                         {% if form.quantity.errors %}
-                            <div class="alert alert-error shadow-lg mt-1 py-2">
-                                <div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    <span class="text-sm">{{ form.quantity.errors.0 }}</span>
-                                </div>
+                            <div class="alert alert-error shadow-lg mt-1 py-1">
+                                <span class="text-xs">{{ form.quantity.errors.0 }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if category_slug == 'pokemon' and form.hp.errors %}
+                            <div class="alert alert-error shadow-lg mt-1 py-1">
+                                <span class="text-xs">{{ form.hp.errors.0 }}</span>
                             </div>
                         {% endif %}
                     </div>
@@ -264,25 +282,90 @@
 
             <div class="divider my-2"></div>
 
-            {# その他の情報セクション #}
             <div class="mb-3">
                 <h4 class="font-semibold text-sm mb-2 flex items-center gap-2">
                     <span class="badge badge-neutral badge-sm">その他</span>
                 </h4>
 
+                {% if category_slug == 'pokemon' %}
                 <div class="form-control w-full mb-2">
-                    <label for="{{ form.memo.id_for_label }}" class="label py-1">
-                        <span class="label-text text-sm">{{ form.memo.label }}</span>
-                    </label>
-                    {{ form.memo }}
-                    {% if form.memo.errors %}
-                        <div class="alert alert-error shadow-lg mt-1 py-2">
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <span class="text-sm">{{ form.memo.errors.0 }}</span>
+                    <div class="collapse collapse-plus bg-base-200 border border-base-300 collapse-compact">
+                        <input type="checkbox" />
+                        <div class="collapse-title text-sm min-h-0 py-2">
+                            {{ form.weakness.label }}
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+                                {% for choice in form.weakness %}
+                                    <label class="label cursor-pointer justify-start gap-2 py-1">
+                                        {{ choice.tag }}
+                                        <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
                             </div>
                         </div>
+                    </div>
+                    {% if form.weakness.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-1">
+                            <span class="text-xs">{{ form.weakness.errors.0 }}</span>
+                        </div>
                     {% endif %}
+                </div>
+
+                <div class="form-control w-full mb-2">
+                    <div class="collapse collapse-plus bg-base-200 border border-base-300 collapse-compact">
+                        <input type="checkbox" />
+                        <div class="collapse-title text-sm min-h-0 py-2">
+                            {{ form.resistance.label }}
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+                                {% for choice in form.resistance %}
+                                    <label class="label cursor-pointer justify-start gap-2 py-1">
+                                        {{ choice.tag }}
+                                        <span class="label-text text-sm">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if form.resistance.errors %}
+                        <div class="alert alert-error shadow-lg mt-1 py-1">
+                            <span class="text-xs">{{ form.resistance.errors.0 }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-5 gap-x-4">
+                    <div class="col-span-1">
+                        {% if category_slug == 'pokemon' %}
+                        <div class="form-control w-full mb-2">
+                            <label for="{{ form.retreat_cost.id_for_label }}" class="label py-1">
+                                <span class="label-text text-sm whitespace-nowrap">{{ form.retreat_cost.label }}</span>
+                            </label>
+                            {{ form.retreat_cost }}
+                            {% if form.retreat_cost.errors %}
+                                <div class="alert alert-error shadow-lg mt-1 py-1">
+                                    <span class="text-xs">{{ form.retreat_cost.errors.0 }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-span-4">
+                        <div class="form-control w-full mb-2">
+                            <label for="{{ form.memo.id_for_label }}" class="label py-1">
+                                <span class="label-text text-sm">{{ form.memo.label }}</span>
+                            </label>
+                            {{ form.memo }}
+                            {% if form.memo.errors %}
+                                <div class="alert alert-error shadow-lg mt-1 py-1">
+                                    <span class="text-xs">{{ form.memo.errors.0 }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-control w-full mb-2">

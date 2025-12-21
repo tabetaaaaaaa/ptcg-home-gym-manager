@@ -1888,11 +1888,6 @@ html {
 }
 
 @media (hover:hover) {
-  .checkbox-primary:hover {
-    --tw-border-opacity: 1;
-    border-color: var(--fallback-p,oklch(var(--p)/var(--tw-border-opacity)));
-  }
-
   .checkbox-secondary:hover {
     --tw-border-opacity: 1;
     border-color: var(--fallback-s,oklch(var(--s)/var(--tw-border-opacity)));
@@ -3557,27 +3552,6 @@ input.tab:checked + .tab-content,
       linear-gradient(0deg, var(--chkbg) 43%, var(--chkfg) 43%, var(--chkfg) 57%, var(--chkbg) 57%);
 }
 
-.checkbox-primary {
-  --chkbg: var(--fallback-p,oklch(var(--p)/1));
-  --chkfg: var(--fallback-pc,oklch(var(--pc)/1));
-  --tw-border-opacity: 1;
-  border-color: var(--fallback-p,oklch(var(--p)/var(--tw-border-opacity)));
-}
-
-.checkbox-primary:focus-visible {
-  outline-color: var(--fallback-p,oklch(var(--p)/1));
-}
-
-.checkbox-primary:checked,
-    .checkbox-primary[aria-checked="true"] {
-  --tw-border-opacity: 1;
-  border-color: var(--fallback-p,oklch(var(--p)/var(--tw-border-opacity)));
-  --tw-bg-opacity: 1;
-  background-color: var(--fallback-p,oklch(var(--p)/var(--tw-bg-opacity)));
-  --tw-text-opacity: 1;
-  color: var(--fallback-pc,oklch(var(--pc)/var(--tw-text-opacity)));
-}
-
 .checkbox-secondary {
   --chkbg: var(--fallback-s,oklch(var(--s)/1));
   --chkfg: var(--fallback-sc,oklch(var(--sc)/1));
@@ -5075,6 +5049,14 @@ details.collapse summary::-webkit-details-marker {
   z-index: 1;
 }
 
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
+
+.col-span-4 {
+  grid-column: span 4 / span 4;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -5372,6 +5354,10 @@ details.collapse summary::-webkit-details-marker {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.grid-cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .grid-cols-\[repeat\(auto-fit\2c minmax\(120px\2c 1fr\)\)\] {
   grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
 }
@@ -5394,6 +5380,10 @@ details.collapse summary::-webkit-details-marker {
 
 .items-start {
   align-items: flex-start;
+}
+
+.items-end {
+  align-items: flex-end;
 }
 
 .items-center {
