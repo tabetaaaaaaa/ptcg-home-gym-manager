@@ -116,19 +116,25 @@
         </div>
     </div>
     {# HP Filter (Slider) #}
-    <div class="form-control">
-        <label class="label pb-1">
-            <span class="label-text text-xs font-bold text-secondary">{{ filter.form.hp.label }}</span>
-        </label>
-        {{ filter.form.hp }}
+    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium text-sm">
+            {{ filter.form.hp.label }}
+        </div>
+        <div class="collapse-content px-4 pb-4">
+            {{ filter.form.hp }}
+        </div>
     </div>
 
     {# Retreat Cost Filter (Slider) #}
-    <div class="form-control">
-        <label class="label pb-1">
-            <span class="label-text text-xs font-bold text-secondary">{{ filter.form.retreat_cost.label }}</span>
-        </label>
-        {{ filter.form.retreat_cost }}
+    <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
+        <input type="checkbox" />
+        <div class="collapse-title font-medium text-sm">
+            {{ filter.form.retreat_cost.label }}
+        </div>
+        <div class="collapse-content px-4 pb-4">
+            {{ filter.form.retreat_cost }}
+        </div>
     </div>
 </div>
 
