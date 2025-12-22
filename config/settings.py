@@ -150,8 +150,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # django-tailwind の設定
 TAILWIND_APP_NAME = 'theme'
 
-# Gemini API設定
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+# Gemini API設定（複数キーのローテーション対応）
+GEMINI_API_KEYS = [
+    os.environ.get(f'GEMINI_API_KEY_{i}')
+    for i in range(1, 10)
+]
+# None を除外（未設定のキーをスキップ）
+GEMINI_API_KEYS = [key for key in GEMINI_API_KEYS if key]
+
+if not GEMINI_API_KEYS:
+    raise ValueError("At least one GEMINI_API_KEY must be configured")
 
 # セッション設定（一括登録機能用）
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'

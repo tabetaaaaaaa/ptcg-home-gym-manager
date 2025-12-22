@@ -1,6 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin # 追加
-from .models import PokemonCard, CardCategory, Type, EvolutionStage, SpecialFeature, MoveType, TrainerType, SpecialTrainer
+from .models import PokemonCard, CardCategory, Type, EvolutionStage, SpecialFeature, MoveType, TrainerType, SpecialTrainer, GeminiApiKeyUsage
 
 # PokemonCardAdminを定義し、ImportExportModelAdminを継承させる
 class PokemonCardAdmin(ImportExportModelAdmin):
@@ -48,5 +48,12 @@ class SpecialTrainerAdmin(admin.ModelAdmin):
     """SpecialTrainerモデルの管理画面設定"""
     list_display = ('name', 'display_order', 'bg_color', 'text_color')
     list_editable = ('display_order', 'bg_color', 'text_color')
+
+@admin.register(GeminiApiKeyUsage)
+class GeminiApiKeyUsageAdmin(admin.ModelAdmin):
+    """GeminiApiKeyUsageモデルの管理画面設定"""
+    list_display = ['key_index', 'usage_count', 'last_reset_date', 'updated_at']
+    readonly_fields = ['key_index', 'updated_at']
+    ordering = ['key_index']
 
 admin.site.register(PokemonCard, PokemonCardAdmin)

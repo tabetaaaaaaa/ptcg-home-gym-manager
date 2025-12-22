@@ -182,3 +182,32 @@ class PokemonCard(models.Model):
         ordering = ['name']
         verbose_name = "カード"
         verbose_name_plural = "カード"
+
+class GeminiApiKeyUsage(models.Model):
+    """Gemini API KEYの使用状況を管理するモデル"""
+
+    key_index = models.IntegerField(
+        primary_key=True,
+        verbose_name='API KEYインデックス',
+        help_text='0-8の範囲（GEMINI_API_KEY_1～9に対応）'
+    )
+    usage_count = models.IntegerField(
+        default=0,
+        verbose_name='本日の使用回数'
+    )
+    last_reset_date = models.DateField(
+        auto_now_add=True,
+        verbose_name='最終リセット日'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='最終更新日時'
+    )
+
+    class Meta:
+        db_table = 'gemini_api_key_usage'
+        verbose_name = 'Gemini API KEY使用状況'
+        verbose_name_plural = 'Gemini API KEY使用状況'
+
+    def __str__(self):
+        return f"Key {self.key_index + 1}: {self.usage_count}/20 (最終更新: {self.last_reset_date})"

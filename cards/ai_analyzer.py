@@ -16,6 +16,8 @@ from datetime import datetime
 import json
 import logging
 from pathlib import Path
+from django.db import transaction
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -107,8 +109,8 @@ class CardAnalyzer:
     def __init__(self):
         """CardAnalyzerクラスの初期化処理"""
         self._setup_yolo()
-        self._setup_gemini()
-        # 固定ディレクトリの作成は廃止し、analyze_imageで動的に決定する
+        self.api_keys = self._load_api_keys()
+        # Geminiの初期化はanalyze_image内で動的に行う
 
     def _setup_yolo(self):
         """YOLOモデルのセットアップ"""
@@ -132,12 +134,66 @@ class CardAnalyzer:
             self.model = YOLO(self.YOLO_MODEL_NAME)
             self.model.set_classes(self.DETECT_CLASSES)
 
-    def _setup_gemini(self):
-        """Gemini APIクライアントのセットアップ"""
-        api_key = getattr(settings, 'GEMINI_API_KEY', None)
+    def _load_api_keys(self) -> list:
+        """設定から複数のAPI KEYを読み込む"""
+        api_keys = settings.GEMINI_API_KEYS
+        if not api_keys:
+            raise ValueError("No GEMINI_API_KEYS configured in settings")
+        logger.info(f"Loaded {len(api_keys)} Gemini API keys")
+        return api_keys
+
+    @transaction.atomic
+    def _get_current_api_key(self) -> tuple[str, int]:
+        """
+        現在使用すべきAPI KEYを取得し、使用回数を管理
+
+        Returns:
+            tuple[str, int]: (API KEY文字列, キーインデックス)
+        """
+        from .models import GeminiApiKeyUsage
+
+        today = timezone.now().date()
+        num_keys = len(self.api_keys)
+
+        # 全キーの状態を確認・初期化
+        for i in range(num_keys):
+            usage, created = GeminiApiKeyUsage.objects.select_for_update().get_or_create(
+                key_index=i,
+                defaults={'usage_count': 0, 'last_reset_date': today}
+            )
+
+            # 日付が変わっていたらリセット
+            if usage.last_reset_date < today:
+                usage.usage_count = 0
+                usage.last_reset_date = today
+                usage.save()
+
+        # 使用可能なキーを検索（使用回数が20未満）
+        for i in range(num_keys):
+            usage = GeminiApiKeyUsage.objects.select_for_update().get(key_index=i)
+            if usage.usage_count < 20:
+                logger.info(f"Using API key {i + 1}: {usage.usage_count}/20 used today")
+                return self.api_keys[i], i
+
+        # 全キーが上限に達している場合
+        logger.error("All Gemini API keys have reached daily limit (20 requests each)")
+        raise Exception("RESOURCE_EXHAUSTED: All API keys reached daily quota")
+
+    @transaction.atomic
+    def _increment_usage(self, key_index: int):
+        """使用回数をインクリメント"""
+        from .models import GeminiApiKeyUsage
+
+        usage = GeminiApiKeyUsage.objects.select_for_update().get(key_index=key_index)
+        usage.usage_count += 1
+        usage.save()
+        logger.info(f"Incremented API key {key_index + 1} usage: {usage.usage_count}/20")
+
+    def _setup_gemini(self, api_key: str):
+        """指定されたAPI KEYでGemini APIクライアントをセットアップ"""
         if not api_key:
-            raise ValueError("GEMINI_API_KEY is not set in settings")
-        
+            raise ValueError("API key is required for Gemini setup")
+
         genai.configure(api_key=api_key)
         self.gemini_model = genai.GenerativeModel(self.GEMINI_MODEL_NAME)
 
@@ -226,11 +282,18 @@ class CardAnalyzer:
         # 4. グリッド画像の作成
         grid_save_path = base_dir / "grid.jpg"
         self._create_grid_image(cropped_images, grid_save_path)
-        
-        # 5. Geminiへ問い合わせ
+
+        # 5. Gemini API KEYの取得と初期化
+        current_key, key_index = self._get_current_api_key()
+        self._setup_gemini(current_key)
+
+        # 6. Geminiへ問い合わせ
         gemini_response = self._query_gemini(str(grid_save_path))
-        
-        # 6. 生レスポンス保存
+
+        # 7. 成功したら使用回数をインクリメント
+        self._increment_usage(key_index)
+
+        # 8. 生レスポンス保存
         response_log_path = base_dir / "gemini_response.txt"
         with open(response_log_path, 'w', encoding='utf-8') as f:
             f.write(gemini_response)
