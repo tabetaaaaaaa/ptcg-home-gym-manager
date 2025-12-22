@@ -355,7 +355,37 @@ def bulk_register_analyze(request):
         except json.JSONDecodeError as e:
             logger.error(f"JSON Parse Error: {e}")
             logger.error(f"Raw Response: {analysis_result['raw_response']}")
-            return HttpResponse("AI解析結果の読み取りに失敗しました", status=500)
+            error_html = f"""
+            <dialog id="bulk-error-modal" class="modal">
+                <div class="modal-box">
+                    <div class="alert alert-error shadow-lg mb-4">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>AIからの解析結果を正しく読み取れませんでした(JSON形式エラー)。解析結果を確認し、必要であれば再度お試しください。</span>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn" onclick="document.getElementById('bulk-error-modal').close()">閉じる</button>
+                    </div>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+            <script>
+                (function() {{
+                    const modal = document.getElementById('bulk-error-modal');
+                    if(modal) modal.showModal();
+                    modal.addEventListener('close', () => {{
+                        const dialogTarget = document.getElementById('dialog-target');
+                        if (dialogTarget) {{
+                            dialogTarget.innerHTML = '';
+                        }}
+                    }});
+                }})();
+            </script>
+            """
+            return HttpResponse(error_html)
 
         # データマッピング
         mapper = CardDataMapper()
@@ -591,6 +621,7 @@ def bulk_register_submit(request):
         return HttpResponse("登録するデータがありません", status=400)
     
     registered_count = 0
+    failed_count = 0
     
     for item in items:
         # 除外フラグがある場合はスキップ
@@ -599,6 +630,7 @@ def bulk_register_submit(request):
 
         # バリデーション: 必須項目チェックなど
         if not item.get('name') or not item.get('category'):
+            failed_count += 1
             continue # 名前かカテゴリがないものはスキップ
 
         # 画像の処理 (一時URLから保存)
@@ -662,26 +694,33 @@ def bulk_register_submit(request):
 
         except Exception as e:
             logger.error(f"Failed to save card: {item.get('name')}, Error: {e}")
+            failed_count += 1
             continue # エラーが出ても他のカードは保存を試みる
 
     # セッションクリア (全ての処理が終わった後)
     if 'bulk_register_items' in request.session:
         del request.session['bulk_register_items']
     
-    # 成功メッセージと共にモーダルを閉じる等のアクション
-    # モーダルを閉じるためのJSを含める
+    # 結果メッセージの構築
+    if failed_count > 0:
+        alert_class = "alert-warning"
+        message = f"<span>{registered_count}件の登録に成功し、{failed_count}件に失敗しました。</span>"
+    else:
+        alert_class = "alert-success"
+        message = f"<span>{registered_count}件のカードをすべて登録しました</span>"
+
     response = HttpResponse(f"""
-        <div class='alert alert-success shadow-lg'>
+        <div class='alert {alert_class} shadow-lg'>
             <div>
                 <svg xmlns='http://www.w3.org/2000/svg' class='stroke-current flex-shrink-0 h-6 w-6' fill='none' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-                <span>{registered_count}件のカードを登録しました</span>
+                {message}
             </div>
         </div>
         <script>
             setTimeout(function() {{
                 const modal = document.getElementById('bulk-preview-modal');
                 if(modal) modal.close();
-            }}, 1500);
+            }}, 2000);
         </script>
     """)
     response['HX-Trigger'] = json.dumps({'cardCreated': ''}) # リスト更新
