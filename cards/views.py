@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.core.files.base import ContentFile
@@ -12,6 +13,7 @@ from .forms import PokemonCardForm
 from .utils import find_evolution_root, collect_evolution_line
 from .ai_analyzer import CardAnalyzer
 from .data_mapper import CardDataMapper
+from .resources import PokemonCardResource
 from google.api_core.exceptions import ResourceExhausted
 from django.http import JsonResponse
 import json
@@ -123,6 +125,12 @@ class PokemonCardListView(ListView):
         context = super().get_context_data(**kwargs)
         context['filter'] = self.filterset
         context['view_mode'] = self.request.session.get('view_mode', 'card')
+        
+        # 現在の検索条件をセッションに保存（エクスポートで使用するため）
+        # カテゴリごとに個別に保存する (pokemon / trainers)
+        category = 'pokemon'
+        self.request.session[f'last_search_params_{category}'] = self.request.GET.urlencode()
+        
         return context
 
     def get_template_names(self):
@@ -149,6 +157,13 @@ class TrainersCardListView(PokemonCardListView):
         if self.request.htmx:
             return ['cards/_card_list_content.html']
         return ['cards/trainers_card_list.html']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # 親の context_data で pokemon として保存されてしまうため、ここで trainers として上書き
+        category = 'trainers'
+        self.request.session[f'last_search_params_{category}'] = self.request.GET.urlencode()
+        return context
 
 @require_POST
 def increase_card_quantity(request, pk):
@@ -738,3 +753,50 @@ def search_cards_by_name_modal(request):
         'query': query,
         'cards': cards
     })
+
+def export_cards_csv(request):
+    """
+    直近の検索・フィルタリング条件をセッションから取得し、CSVとしてダウンロードする
+    """
+    from django.http import QueryDict
+    
+    # カテゴリの判定
+    category_slug = request.GET.get('category', 'pokemon')
+    
+    # セッションから直近の検索条件を取得
+    session_key = f'last_search_params_{category_slug}'
+    query_string = request.session.get(session_key, '')
+    params = QueryDict(query_string)
+    
+    # ベースとなるクエリセットの取得
+    if category_slug == 'trainers':
+        queryset = PokemonCard.objects.filter(category__slug='trainers').select_related(
+            'trainer_type'
+        ).prefetch_related(
+            'special_trainers'
+        )
+        filterset = TrainersCardFilter(params, queryset=queryset)
+    else:
+        queryset = PokemonCard.objects.filter(category__slug='pokemon').select_related(
+            'evolution_stage'
+        ).prefetch_related(
+            'types', 'special_features', 'move_types'
+        )
+        filterset = PokemonCardFilter(params, queryset=queryset)
+    
+    # フィルタの適用
+    filtered_queryset = filterset.qs
+    
+    # Resourceクラスを使用してエクスポート
+    dataset = PokemonCardResource().export(filtered_queryset)
+    
+    # レスポンスの作成
+    response = HttpResponse(content_type='text/csv')
+    filename = f"pokeapp_export_{category_slug}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    # Excelで文字化けしないようにBOM (Byte Order Mark) を追加
+    response.write('\ufeff')
+    response.write(dataset.csv)
+    
+    return response
