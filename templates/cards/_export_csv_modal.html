@@ -1,0 +1,25 @@
+<div id="csv-export-modal" class="modal modal-open">
+    <div class="modal-box max-w-lg">
+        <h3 class="font-bold text-lg mb-4">CSVエクスポート</h3>
+        <div class="mt-2 mb-8 flex flex-col gap-1 text-sm text-base-content/70">
+            <p>現在表示されている絞り込み条件でCSVファイルとしてカード情報をエクスポートします。</p>
+            <p>画像ファイルは出力できません。</p>
+        </div>
+        <form action="{% url 'cards:export_cards_csv' %}" method="get">
+            <input type="hidden" name="category" value="{{ category }}">
+            <div class="modal-action flex justify-center gap-3">
+                <button id="export-execute-btn" 
+                        type="submit" 
+                        class="btn btn-info btn-sm px-8 relative"
+                        onclick="setTimeout(() => document.getElementById('dialog-target').innerHTML='', 100)">
+                    <span id="export-indicator" class="htmx-indicator loading loading-ring absolute left-2"></span>
+                    エクスポート実行
+                </button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('dialog-target').innerHTML=''">キャンセル</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button type="button" onclick="document.getElementById('dialog-target').innerHTML=''">close</button>
+    </form>
+</div>

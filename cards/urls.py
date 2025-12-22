@@ -25,6 +25,7 @@ urlpatterns = [
     path('bulk/item/<str:item_id>/toggle-exclude/', views.bulk_register_toggle_exclude, name='bulk_register_toggle_exclude'),
     path('bulk/submit/', views.bulk_register_submit, name='bulk_register_submit'),
     path('search/name/', views.search_cards_by_name_modal, name='search_cards_by_name_modal'),
+    path('export-csv-modal/', views.export_csv_modal, name='export_cards_csv_modal'),
     path('export-csv/', views.export_cards_csv, name='export_cards_csv'),
     path('import-csv/', views.import_cards_csv, name='import_cards_csv'),
 ]

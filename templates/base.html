@@ -50,7 +50,7 @@
                     tabindex="-1"
                     class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                     <li>
-                        <a href="{% url 'cards:export_cards_csv' %}?category={% if 'trainer_card_list' in request.resolver_match.url_name %}trainers{% else %}pokemon{% endif %}">
+                        <a hx-get="{% url 'cards:export_cards_csv_modal' %}?category={% if 'trainer_card_list' in request.resolver_match.url_name %}trainers{% else %}pokemon{% endif %}" hx-target="#dialog-target" role="button">
                             CSVエクスポート
                         </a>
                     </li>
@@ -59,6 +59,7 @@
                             CSVインポート
                         </a>
                     </li>
+                    <li><a>設定</a></li>
                     <li><a>ログアウト</a></li>
                 </ul>
             </div>

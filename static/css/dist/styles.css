@@ -3767,6 +3767,24 @@ details.collapse summary::-webkit-details-marker {
   color: var(--fallback-sc,oklch(var(--sc)/var(--tw-text-opacity)));
 }
 
+.file-input-info {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-in,oklch(var(--in)/var(--tw-border-opacity)));
+}
+
+.file-input-info:focus {
+  outline-color: var(--fallback-in,oklch(var(--in)/1));
+}
+
+.file-input-info::file-selector-button {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-in,oklch(var(--in)/var(--tw-border-opacity)));
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-in,oklch(var(--in)/var(--tw-bg-opacity)));
+  --tw-text-opacity: 1;
+  color: var(--fallback-inc,oklch(var(--inc)/var(--tw-text-opacity)));
+}
+
 .file-input-disabled,
   .file-input[disabled] {
   cursor: not-allowed;

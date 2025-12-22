@@ -10,7 +10,7 @@
     {# Types Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title text-sm">
+        <div class="collapse-title font-medium text-sm">
             {{ filter.form.types.label }}
         </div>
         <div class="collapse-content">
@@ -47,18 +47,19 @@
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
         <div class="collapse-title font-medium text-sm">
-                {{ filter.form.special_features.label }}
+            {{ filter.form.special_features.label }}
+        </div>
+        <div class="collapse-content">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-x-4 gap-y-2 p-2">
+            {% for choice in filter.form.special_features %}
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
+                    <span class="label-text">{{ choice.choice_label }}</span>
+                </label>
+            {% endfor %}
             </div>
-            <div class="collapse-content">
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-x-4 gap-y-2 p-2">
-                {% for choice in filter.form.special_features %}
-                    <label class="label cursor-pointer justify-start gap-3">
-                        <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
-                        <span class="label-text">{{ choice.choice_label }}</span>
-                    </label>
-                {% endfor %}
-                </div>
-            </div>    </div>
+        </div>
+    </div>
 
     {# Move Types Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
@@ -121,8 +122,10 @@
         <div class="collapse-title font-medium text-sm">
             {{ filter.form.hp.label }}
         </div>
-        <div class="collapse-content px-4 pb-4">
-            {{ filter.form.hp }}
+        <div class="collapse-content">
+            <div class="px-4 pb-4">
+                {{ filter.form.hp }}
+            </div>
         </div>
     </div>
 
@@ -132,8 +135,10 @@
         <div class="collapse-title font-medium text-sm">
             {{ filter.form.retreat_cost.label }}
         </div>
-        <div class="collapse-content px-4 pb-4">
-            {{ filter.form.retreat_cost }}
+        <div class="collapse-content">
+            <div class="px-4 pb-4">
+                {{ filter.form.retreat_cost }}
+            </div>
         </div>
     </div>
 </div>

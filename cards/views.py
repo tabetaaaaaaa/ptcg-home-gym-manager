@@ -754,6 +754,11 @@ def search_cards_by_name_modal(request):
         'cards': cards
     })
 
+def export_csv_modal(request):
+    """CSVエクスポートの確認モーダルを表示する"""
+    category = request.GET.get('category', 'pokemon')
+    return render(request, 'cards/_export_csv_modal.html', {'category': category})
+
 def export_cards_csv(request):
     """
     直近の検索・フィルタリング条件をセッションから取得し、CSVとしてダウンロードする
