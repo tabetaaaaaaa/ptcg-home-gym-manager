@@ -26,4 +26,5 @@ urlpatterns = [
     path('bulk/submit/', views.bulk_register_submit, name='bulk_register_submit'),
     path('search/name/', views.search_cards_by_name_modal, name='search_cards_by_name_modal'),
     path('export-csv/', views.export_cards_csv, name='export_cards_csv'),
+    path('import-csv/', views.import_cards_csv, name='import_cards_csv'),
 ]

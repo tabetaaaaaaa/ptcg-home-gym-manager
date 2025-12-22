@@ -1,0 +1,66 @@
+<div class="mt-6 space-y-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-2">
+        <div>
+            <div class="text-xs opacity-60 mb-0.5">全データ</div>
+            <div class="text-xl font-bold">{{ total_count }}</div>
+        </div>
+
+        <div>
+            <div class="text-xs {% if has_errors %}opacity-60 text-base-content{% else %}text-success{% endif %} mb-0.5">新規登録</div>
+            <div class="text-xl font-bold {% if has_errors %}text-base-content{% else %}text-success{% endif %}">{{ new_count }}</div>
+        </div>
+        
+        <div>
+            <div class="text-xs opacity-60 mb-0.5">既存（更新・維持）</div>
+            <div class="text-xl font-bold">{% with existing_count=update_count|add:skip_count %}{{ existing_count }}{% endwith %}</div>
+        </div>
+        
+        <div>
+            <div class="text-xs {% if error_count > 0 %}text-error{% else %}opacity-60{% endif %} mb-0.5">エラー</div>
+            <div class="text-xl font-bold {% if error_count > 0 %}text-error{% endif %}">{{ error_count }}</div>
+        </div>
+    </div>
+
+    {% if error_messages %}
+    <div class="alert alert-error shadow-lg py-3">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span class="text-sm font-bold">1件以上のエラーがあるため、全てのデータの取り込みを中止しました。</span>
+        </div>
+    </div>
+
+    <div class="collapse collapse-arrow bg-base-200 border border-error/20">
+        <input type="checkbox" checked /> 
+        <div class="collapse-title text-error font-medium">
+            修正が必要な箇所
+        </div>
+        <div class="collapse-content"> 
+            <ul class="list-disc list-inside text-sm text-error/80 space-y-2">
+                {% for msg in error_messages %}
+                <li>{{ msg }}</li>
+                {% endfor %}
+                {% if error_count > 5 %}
+                <li class="list-none italic pt-2">...他、多数のエラーがあります。CSVの形式を確認して再度お試しください。</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not has_errors %}
+        {% if total_count > 0 %}
+        <div class="alert alert-success shadow-lg">
+            <div class="flex flex-col items-start gap-1">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span class="font-bold">インポートが完了しました。</span>
+                </div>
+                <div class="text-sm opacity-90 ml-8">
+                    全 {{ total_count }} 件を処理しました。
+                    （新規追加: {{ new_count }} 件 / その他 {{ update_count|add:skip_count }} 件は既存データとして確認・更新されました）
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>

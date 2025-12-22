@@ -59,6 +59,11 @@ class PokemonCardResource(resources.ModelResource):
 
     class Meta:
         model = PokemonCard
+        # idをインポート時のキーとして明示
+        import_id_fields = ('id',)
+        # 値に変更がない場合はスキップする
+        skip_unchanged = True
+        report_skipped = True
         # 出力する順番を制御
         fields = (
             'id', 'name', 'quantity', 'category', 'hp', 'retreat_cost', 
@@ -67,3 +72,23 @@ class PokemonCardResource(resources.ModelResource):
             'special_trainers', 'memo'
         )
         export_order = fields
+
+    def before_import_row(self, row, **kwargs):
+        """
+        インポート前に各行のデータをクレンジングする
+        """
+        # 数値フィールドが空文字の場合はデフォルト値を設定
+        if '枚数' in row and row['枚数'] == '':
+            row['枚数'] = '1'
+        
+        if 'HP' in row and row['HP'] == '':
+            row['HP'] = None # NullableなのでNoneをセット
+            
+        if 'にげる' in row and row['にげる'] == '':
+            row['にげる'] = None # NullableなのでNoneをセット
+            
+        # idが空文字や空の場合はNoneに変換（新規登録として扱うため）
+        if 'id' in row and not row['id']:
+            row['id'] = None
+            
+        return super().before_import_row(row, **kwargs)

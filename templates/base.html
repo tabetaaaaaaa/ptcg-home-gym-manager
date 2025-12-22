@@ -54,7 +54,11 @@
                             CSVエクスポート
                         </a>
                     </li>
-                    <li><a>設定</a></li>
+                    <li>
+                        <a hx-get="{% url 'cards:import_cards_csv' %}" hx-target="#dialog-target">
+                            CSVインポート
+                        </a>
+                    </li>
                     <li><a>ログアウト</a></li>
                 </ul>
             </div>

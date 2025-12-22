@@ -76,6 +76,8 @@ class PokemonCardFilter(django_filters.FilterSet):
         ('-evolution_stage__display_order', '進化度合い (降順)'),
         ('-created_at', '登録日時 (新しい順)'),
         ('created_at', '登録日時 (古い順)'),
+        ('-updated_at', '更新日時 (新しい順)'),
+        ('updated_at', '更新日時 (古い順)'),
     )
 
     ordering = django_filters.OrderingFilter(
@@ -87,6 +89,7 @@ class PokemonCardFilter(django_filters.FilterSet):
             'retreat_cost',
             'evolution_stage__display_order',
             'created_at',
+            'updated_at',
         ),
         choices=CHOICES,
                     empty_label=None,
@@ -168,6 +171,8 @@ class TrainersCardFilter(django_filters.FilterSet):
         ('-trainer_type__display_order', '種別 (降順)'),
         ('-created_at', '登録日時 (新しい順)'),
         ('created_at', '登録日時 (古い順)'),
+        ('-updated_at', '更新日時 (新しい順)'),
+        ('updated_at', '更新日時 (古い順)'),
     )
 
     ordering = django_filters.OrderingFilter(
@@ -177,6 +182,7 @@ class TrainersCardFilter(django_filters.FilterSet):
             'quantity',
             'trainer_type__display_order',
             'created_at',
+            'updated_at',
         ),
         choices=CHOICES,
         empty_label=None,

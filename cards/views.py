@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.files.base import ContentFile
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST, require_http_methods
 from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType, CardCategory
 from .filters import PokemonCardFilter, TrainersCardFilter
@@ -800,3 +800,111 @@ def export_cards_csv(request):
     response.write(dataset.csv)
     
     return response
+
+@require_http_methods(["GET", "POST"])
+def import_cards_csv(request):
+    """
+    CSVファイルをアップロードし、カード情報をインポートする
+    """
+    if request.method == "GET":
+        # モーダルHTMLを返す
+        return render(request, 'cards/_csv_import_modal.html')
+
+    # POST処理
+    import tablib
+    from import_export.results import RowResult
+
+    csv_file = request.FILES.get('csv_file')
+    if not csv_file:
+        return HttpResponseBadRequest("ファイルがありません")
+
+    try:
+        # バイナリを文字列として読み込み (BOM付きUTF-8を考慮)
+        content = csv_file.read().decode('utf-8-sig')
+        dataset = tablib.Dataset().load(content, format='csv')
+        
+        # ヘッダーから「名前」列のインデックスを特定しておく
+        name_idx = -1
+        if '名前' in dataset.headers:
+            name_idx = dataset.headers.index('名前')
+        
+        resource = PokemonCardResource()
+        # インポート実行 (ドライランなしでいきなり保存)
+        # use_transactions=True (デフォルト) の場合、1件でもエラーがあれば全ロールバックされる
+        result = resource.import_data(dataset, dry_run=False, raise_errors=False, use_transactions=True)
+
+        # 結果のサマリーを作成
+        # エラーがあるかどうかを判定
+        has_errors = result.has_errors() or result.has_validation_errors()
+        
+        if has_errors:
+            # エラーがある場合は全ロールバックされているので、成功件数はすべて0とする
+            new_count = 0
+            update_count = 0
+            skip_count = 0
+            error_count = result.totals.get('error', 0) + result.totals.get('invalid', 0)
+            # totalsに載らない例外エラーも加算
+            if error_count == 0:
+                error_count = len(result.row_errors())
+        else:
+            new_count = result.totals.get('new', 0)
+            update_count = result.totals.get('update', 0)
+            skip_count = result.totals.get('skip', 0)
+            error_count = 0
+        
+        # エラー詳細の抽出 (最初の5件程度)
+        error_messages = []
+        for i, row_result in enumerate(result.rows):
+            if row_result.import_type in [RowResult.IMPORT_TYPE_ERROR, RowResult.IMPORT_TYPE_INVALID]:
+                # 元のデータセットから直接その行のデータを読み取る (最も確実)
+                display_val = ""
+                try:
+                    original_row = dataset[i]
+                    if name_idx >= 0:
+                        display_val = original_row[name_idx]
+                    else:
+                        display_val = original_row[0]
+                except:
+                    display_val = "名称不明"
+                
+                line_info = f"{display_val}"
+                
+                # エラーメッセージの取得と整形
+                error_detail = ""
+                if row_result.errors:
+                    err = str(row_result.errors[0].error)
+                    # データベースの制約エラーを分かりやすく変換
+                    error_detail = err
+                elif row_result.validation_error:
+                    error_detail = str(row_result.validation_error)
+                else:
+                    error_detail = "データの不備"
+                
+                error_messages.append(f"{line_info}: {error_detail}")
+            
+            if len(error_messages) >= 5:
+                break
+
+        context = {
+            'new_count': new_count,
+            'update_count': update_count,
+            'skip_count': skip_count,
+            'success_count': new_count + update_count,
+            'error_count': error_count,
+            'error_messages': error_messages,
+            'total_count': result.total_rows,
+            'has_errors': has_errors,
+        }
+        
+        # 結果用のHTML部品を返す
+        html = render(request, 'cards/_csv_import_result.html', context).content.decode('utf-8')
+        
+        # 新規追加または更新があった場合はリストの更新もトリガーする
+        response = HttpResponse(html)
+        if new_count > 0 or update_count > 0:
+            response['HX-Trigger'] = 'cardCreated'
+        return response
+
+    except Exception as e:
+        logger.error(f"CSV Import Error: {e}", exc_info=True)
+        return HttpResponse(f'<div class="alert alert-error mt-4">エラーが発生しました: {str(e)}</div>')

@@ -1,0 +1,39 @@
+<div id="csv-import-modal" class="modal modal-open">
+    <div class="modal-box max-w-lg">
+        <h3 class="font-bold text-lg mb-4">CSVインポート</h3>
+        <div class="mt-2 mb-8 flex flex-col gap-1 text-sm text-base-content/70">
+            <p>エクスポートしたCSVファイルを読み込んでカード情報を登録・更新できます。IDがある行は更新、ない行は新規登録されます。</p>
+            <p class="text-error font-medium mt-1">※基本的にはデータ移行用の機能です。エクスポートしたファイルのみをインポートしてください。手動更新したcsvファイルをインポートすると、データ破損の恐れがあります。</p>
+            <p class="text-error font-medium mt-1">※一括登録は「まとめて登録」機能をご活用ください。</p>
+        </div>
+
+        <form hx-post="{% url 'cards:import_cards_csv' %}" 
+              hx-encoding="multipart/form-data" 
+              hx-target="#csv-import-result" 
+              hx-indicator="#import-indicator"
+              class="space-y-4">
+            
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">CSVファイルを選択</span>
+                </label>
+                <input type="file" name="csv_file" accept=".csv" class="file-input file-input-bordered w-full" required />
+            </div>
+
+            <div id="csv-import-result">
+                {# ここに結果が表示される #}
+            </div>
+
+            <div class="modal-action flex justify-center gap-3">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('dialog-target').innerHTML=''">キャンセル</button>
+                <button type="submit" class="btn btn-primary btn-sm px-8 relative">
+                    <span id="import-indicator" class="htmx-indicator loading loading-spinner loading-xs absolute left-2"></span>
+                    インポート実行
+                </button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button type="button" onclick="document.getElementById('dialog-target').innerHTML=''">close</button>
+    </form>
+</div>
