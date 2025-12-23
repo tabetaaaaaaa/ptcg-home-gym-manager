@@ -10,11 +10,11 @@
     {# Types Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.types.label }}
         </div>
         <div class="collapse-content">
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-x-2 gap-y-1 p-2">
             {% for choice in filter.form.types %}
                 <label class="label cursor-pointer justify-start gap-3">
                     <input type="checkbox" class="checkbox checkbox-neutral" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
@@ -28,11 +28,11 @@
     {# Evolution Stage Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.evolution_stage.label }}
         </div>
         <div class="collapse-content">
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-x-4 gap-y-2 p-2">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-x-2 gap-y-1 p-2">
             {% for choice in filter.form.evolution_stage %}
                 <label class="label cursor-pointer justify-start gap-3">
                     <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
@@ -46,11 +46,11 @@
     {# Special Features Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.special_features.label }}
         </div>
         <div class="collapse-content">
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-x-4 gap-y-2 p-2">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-x-2 gap-y-1 p-2">
             {% for choice in filter.form.special_features %}
                 <label class="label cursor-pointer justify-start gap-3">
                     <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
@@ -64,11 +64,11 @@
     {# Move Types Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.move_types.label }}
         </div>
         <div class="collapse-content">
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-x-2 gap-y-1 p-2">
             {% for choice in filter.form.move_types %}
                 <label class="label cursor-pointer justify-start gap-3">
                     <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
@@ -84,11 +84,11 @@
     {# Weakness Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.weakness.label }}
         </div>
         <div class="collapse-content">
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-x-2 gap-y-1 p-2">
             {% for choice in filter.form.weakness %}
                 <label class="label cursor-pointer justify-start gap-3">
                     <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
@@ -102,11 +102,11 @@
     {# Resistance Filter #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.resistance.label }}
         </div>
         <div class="collapse-content">
-            <div class="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-x-4 gap-y-2 p-2">
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-x-2 gap-y-1 p-2">
             {% for choice in filter.form.resistance %}
                 <label class="label cursor-pointer justify-start gap-3">
                     <input type="checkbox" name="{{ choice.data.name }}" value="{{ choice.data.value }}" {% if choice.is_checked %}checked{% endif %} id="{{ choice.id_for_label }}" class="checkbox">
@@ -119,11 +119,11 @@
     {# HP Filter (Slider) #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.hp.label }}
         </div>
         <div class="collapse-content">
-            <div class="px-4 pb-4">
+            <div class="px-2 pb-4">
                 {{ filter.form.hp }}
             </div>
         </div>
@@ -132,11 +132,11 @@
     {# Retreat Cost Filter (Slider) #}
     <div class="collapse collapse-plus bg-base-100 border-secondary border collapse-compact">
         <input type="checkbox" />
-        <div class="collapse-title font-medium text-sm">
+        <div class="collapse-title font-medium text-sm pr-10">
             {{ filter.form.retreat_cost.label }}
         </div>
         <div class="collapse-content">
-            <div class="px-4 pb-4">
+            <div class="px-2 pb-4">
                 {{ filter.form.retreat_cost }}
             </div>
         </div>

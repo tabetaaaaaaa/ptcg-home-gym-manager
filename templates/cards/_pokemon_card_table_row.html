@@ -63,11 +63,17 @@
             <button class="btn btn-neutral btn-xs h-6 min-h-0 px-2 text-[0.625rem] leading-tight"
                     hx-get="{% url 'cards:related_cards_modal' card.pk %}"
                     hx-target="body"
-                    hx-swap="beforeend">進化<br>サーチ</button>
+                    hx-swap="beforeend">
+                <span class="hidden lg:inline">進化<br>サーチ</span>
+                <span class="lg:hidden">進化</span>
+            </button>
             <a href="https://www.pokemon-card.com/card-search/index.php?keyword={{ card.name|urlencode }}&se_ta=&regulation_sidebar_form=all&pg=&illust=&sm_and_keyword=true"
                target="_blank"
                rel="noopener noreferrer"
-               class="btn btn-neutral btn-outline btn-xs h-6 min-h-0 px-2 text-[0.625rem] leading-tight">公式<br>サーチ</a>
+               class="btn btn-neutral btn-outline btn-xs h-6 min-h-0 px-2 text-[0.625rem] leading-tight">
+                <span class="hidden lg:inline">公式<br>サーチ</span>
+                <span class="lg:hidden">公式</span>
+            </a>
         </div>
     </td>
     <td class="text-center">

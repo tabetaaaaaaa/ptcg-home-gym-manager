@@ -6,22 +6,24 @@
   カスタムCSS: .collapse-compact
   DaisyUIのcollapseコンポーネントをよりコンパクトにするためのスタイル
 */
-.collapse-compact > .collapse-title,
-.collapse-compact > input[type="checkbox"] {
-    min-height: 2.5rem; /* 高さを指定 (例: 40px) */
-    padding-top: 0;
-    padding-bottom: 0;
+.collapse-compact>.collapse-title,
+.collapse-compact>input[type="checkbox"] {
+  min-height: 2.5rem;
+  /* 高さを指定 (例: 40px) */
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* タイトルテキストを垂直方向中央に配置 */
-.collapse-compact > .collapse-title {
-    display: flex;
-    align-items: center;
+.collapse-compact>.collapse-title {
+  display: flex;
+  align-items: center;
 }
 
 /* collapse-compact が適用された collapse-plus のアイコン位置調整 */
 .collapse-compact.collapse-plus .collapse-title::after {
-    top: 0.5rem; /* (親要素の高さ2.5rem - アイコンの高さ0.5rem) / 2 = 1rem */
+  top: 0.5rem;
+  /* (親要素の高さ2.5rem - アイコンの高さ0.5rem) / 2 = 1rem */
 }
 
 /*
@@ -29,6 +31,6 @@
 */
 /* 破線スタイルのバッジ */
 .badge-dashed {
-    border: 1.5px dashed currentColor;
-    background-color: transparent;
+  border: 1.5px dashed currentColor;
+  background-color: transparent;
 }
