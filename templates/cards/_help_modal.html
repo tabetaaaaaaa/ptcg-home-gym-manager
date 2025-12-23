@@ -1,0 +1,192 @@
+{% load static %}
+<dialog id="help-modal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl p-0 overflow-y-auto max-h-[90vh] bg-base-100 shadow-2xl rounded-3xl">
+        {# ヘッダー #}
+        <div class="px-8 pt-8 pb-4 flex justify-between items-center border-b border-base-200">
+            <div>
+                <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 from-30% to-red-600 mb-1">
+                    P TCG Home Gym Manager
+                </h2>
+                <p class="text-sm opacity-60">ようこそ！あなたのコレクション管理をサポートします。</p>
+            </div>
+            <form method="dialog">
+                <button class="btn btn-circle btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <div class="p-8 space-y-12">
+            {# 1. カードの一覧と表示切り替え #}
+            <section class="space-y-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-3 bg-secondary/20 rounded-2xl text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold">カードの一覧と表示設定</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <h4 class="font-bold flex items-center gap-2">
+                            <span class="badge badge-secondary">表示モード</span>
+                            スタイルを自由に変更
+                        </h4>
+                        <p class="text-sm opacity-70 leading-relaxed">
+                            右上のトグルボタンで、カードの見た目を変更できます。用途に合わせて使いこなしましょう。
+                        </p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-6 bg-base-200 rounded-2xl text-center border border-transparent hover:border-secondary/20 transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-10 h-10 mx-auto mb-3 text-secondary">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75h6.75v6.75H3.75V3.75zm10.5 0h6.75v6.75h-6.75V3.75zM3.75 13.5h6.75v6.75H3.75V13.5zm10.5 0h6.75v6.75h-6.75V13.5z" />
+                                </svg>
+                                <div class="font-black text-lg mb-1">カードビュー</div>
+                                <div class="text-sm opacity-70">画像重視・コレクション向き</div>
+                            </div>
+                            <div class="p-6 bg-base-200 rounded-2xl text-center border border-transparent hover:border-secondary/20 transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-10 h-10 mx-auto mb-3 text-secondary">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                                </svg>
+                                <div class="font-black text-lg mb-1">テーブルビュー</div>
+                                <div class="text-sm opacity-70">詳細重視・管理向き</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# カードビューの凡例 #}
+                    <div class="bg-base-200 rounded-2xl p-6 border border-base-300">
+                        <div class="aspect-video bg-base-300 rounded-lg mb-4 flex items-center justify-center bg-opacity-50">
+                            <img src="{% static 'images/help/card_example_2.png' %}" alt="Card View Example" class="max-w-full max-h-full object-contain shadow-sm">
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between border-b border-base-100 pb-1">
+                                <span class="font-bold">在庫数</span>
+                                <span class="opacity-70">「＋」「ー」で即座に枚数変更</span>
+                            </div>
+                            <div class="flex justify-between border-b border-base-100 pb-1">
+                                <span class="font-bold text-nowrap">属性バッジ</span>
+                                <span class="opacity-70 text-right">
+                                    タイプ、進化、わざのタイプ、特別な種類が<br>
+                                    ひとめでわかる！
+                                </span>
+                            </div>
+                            <div class="flex justify-between border-b border-base-100 pb-1">
+                                <span class="font-bold">詳細情報</span>
+                                <span class="opacity-70">弱点、にげるコスト、自分のコメントなど</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {# 2. 進化サーチ機能 (強調セクション) #}
+            <section class="bg-gradient-to-br from-indigo-600 to-primary p-1 rounded-3xl shadow-xl">
+                <div class="bg-base-100 p-8 rounded-[1.4rem] space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-4 bg-indigo-500 rounded-2xl text-white shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-10 h-10">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-black italic">EVOLUTION SEARCH</h3>
+                                <p class="text-indigo-600 font-bold text-xs uppercase tracking-tighter">進化系統のすべてを、一瞬で。</p>
+                            </div>
+                        </div>
+                        <div class="badge badge-ghost font-bold py-4">おすすめ機能</div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="md:w-1/2 space-y-4">
+                            <p class="text-sm opacity-80 leading-relaxed border-l-4 border-indigo-600 pl-4">
+                                「このポケモンの進化前って持ってたっけ？」そんな悩みはもう不要です。<br>
+                                進化サーチなら、いま見ているカードの進化系統（たね、1進化、2進化、V進化など）すべてを「進化サーチ」ボタン一つで検索・表示します。
+                            </p>
+                            <div class="alert alert-info bg-indigo-50 border-indigo-100 py-3 shadow-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-indigo-600 shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="text-xs text-indigo-900">デッキ構築の際、足りないパーツを確認するのに最適です。</span>
+                            </div>
+                        </div>
+                        <div class="md:w-1/2 relative">
+                            <div class="bg-base-200 rounded-xl p-4 text-center border-2 border-indigo-200 shadow-inner group overflow-hidden">
+                                <div class="text-5xl mb-2 animate-bounce">�</div>
+                                <div class="text-xs font-bold opacity-70">ヒトカゲ → リザード → リザードン...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {# 3. 2つの登録方法 #}
+            <section class="space-y-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-3 bg-warning/20 rounded-2xl text-warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold">選べる2つの登録方法</h3>
+                </div>
+
+                <div class="space-y-8">
+                    {# AI一括登録 #}
+                    <div class="flex flex-col md:flex-row gap-8 items-center bg-gradient-to-br from-warning/10 to-primary/5 p-8 rounded-3xl border border-warning/20">
+                        <div class="md:w-1/2 space-y-4">
+                            <div class="badge badge-warning font-bold">AI機能</div>
+                            <h4 class="text-xl font-bold">画像からまとめて登録</h4>
+                            <p class="opacity-80 leading-relaxed text-sm">
+                                複数のカードを並べて撮影し、アップロードするだけでAIが情報を自動抽出。名前・タイプ・HPなどを瞬時に読み取ります。
+                            </p>
+                            <ul class="steps steps-vertical text-xs opacity-70">
+                                <li class="step step-warning">カードを並べて撮影</li>
+                                <li class="step step-warning">画像をアップロード</li>
+                                <li class="step step-warning">解析結果を確認して一括保存</li>
+                            </ul>
+                            <p class="text-[10px] opacity-60 pt-2 border-t border-warning/20">
+                                ※ AI解析の精度は、画像の明暗やカードの状態に依存します。解析結果は必ずプレビューで確認・修正してから登録してください。
+                            </p>
+                        </div>
+                        <div class="md:w-1/2">
+                            <img src="{% static 'images/help/help_ai_scan.png' %}" alt="AI Scan" class="rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
+                        </div>
+                    </div>
+
+                    {# 個別登録 #}
+                    <div class="flex gap-4 p-6 bg-base-200 rounded-2xl border border-base-300">
+                        <div class="text-3xl">✍️</div>
+                        <div>
+                            <h4 class="font-bold mb-1 text-lg">個別登録（手動入力）</h4>
+                            <p class="text-sm opacity-70">細かな情報を一つずつ入力したい場合は、「新規カード登録」から手動で登録いただけます。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {# フッター注釈 #}
+            <div class="bg-base-200 p-4 rounded-xl text-center text-[10px] opacity-50">
+                <p>Copyright © {% now "Y" %} - P TCG Home Gym Manager</p>
+            </div>
+        </div>
+
+        <div class="px-8 py-6 bg-base-200 flex justify-end">
+            <form method="dialog">
+                <button class="btn btn-primary px-8 rounded-full">わかった！</button>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+    (function() {
+        const modal = document.getElementById('help-modal');
+        if (modal) modal.showModal();
+    })();
+</script>

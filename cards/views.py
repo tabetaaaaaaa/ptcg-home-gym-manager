@@ -913,3 +913,7 @@ def import_cards_csv(request):
     except Exception as e:
         logger.error(f"CSV Import Error: {e}", exc_info=True)
         return HttpResponse(f'<div class="alert alert-error mt-4">エラーが発生しました: {str(e)}</div>')
+
+def help_modal(request):
+    """ヘルプ画面をモーダルで表示する"""
+    return render(request, 'cards/_help_modal.html')

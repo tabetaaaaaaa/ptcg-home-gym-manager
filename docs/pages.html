@@ -1,0 +1,130 @@
+{% load static %}
+{% comment %} 検討中 {% endcomment %}
+
+<dialog id="help-modal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl p-0 overflow-y-auto max-h-[90vh] bg-base-100 shadow-2xl rounded-3xl">
+        {# ヒーローセクション #}
+        <div class="relative h-64 w-full">
+            <img src="{% static 'images/help/help_welcome.png' %}" alt="Welcome" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-base-100 to-transparent"></div>
+            <div class="absolute bottom-6 left-8 text-white drop-shadow-lg">
+                <h2 class="text-4xl font-extrabold mb-1">P TCG Home Gym Manager</h2>
+                <p class="text-xl opacity-90">あなたのコレクションをもっとスマートに、もっと楽しく。</p>
+            </div>
+            <form method="dialog">
+                <button class="btn btn-circle btn-ghost absolute right-4 top-4 text-white hover:bg-white/20 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <div class="p-8 space-y-10">
+            {# 基本的な使い方 #}
+            <section class="space-y-4">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-primary/10 rounded-xl text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold">基本的な使い方</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card bg-base-200 hover:bg-base-300 transition-colors duration-300 p-6 rounded-2xl">
+                        <div class="text-3xl mb-3">🗂️</div>
+                        <h4 class="font-bold mb-2">一覧表示</h4>
+                        <p class="text-sm opacity-70">ポケモンとトレーナーズをタブで切り替えて、サクサク管理。カード画像をクリックで詳細を確認できます。</p>
+                    </div>
+                    <div class="card bg-base-200 hover:bg-base-300 transition-colors duration-300 p-6 rounded-2xl">
+                        <div class="text-3xl mb-3">🔍</div>
+                        <h4 class="font-bold mb-2">高度な検索</h4>
+                        <p class="text-sm opacity-70">キーワード、属性、HP、にげるコストなど、複数の条件を組み合わせて目的のカードを瞬時に発見。</p>
+                    </div>
+                    <div class="card bg-base-200 hover:bg-base-300 transition-colors duration-300 p-6 rounded-2xl">
+                        <div class="text-3xl mb-3">🔗</div>
+                        <h4 class="font-bold mb-2">進化サーチ</h4>
+                        <p class="text-sm opacity-70">カード詳細にある「進化サーチ」から、そのカードの進化系統すべてをリストアップ。デッキ構築に便利！</p>
+                    </div>
+                </div>
+            </section>
+
+            {# 登録方法 #}
+            <section class="space-y-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-secondary/10 rounded-xl text-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold">選べる3つの登録方法</h3>
+                </div>
+
+                <div class="space-y-8">
+                    {# AI一括登録 #}
+                    <div class="flex flex-col md:flex-row gap-8 items-center bg-gradient-to-br from-warning/10 to-primary/5 p-8 rounded-3xl border border-warning/20">
+                        <div class="md:w-1/2 space-y-4">
+                            <div class="badge badge-warning font-bold">AI機能</div>
+                            <h4 class="text-xl font-bold">画像からまとめて登録</h4>
+                            <p class="opacity-80 leading-relaxed text-sm">
+                                YOLO-World と Gemini AI があなたの代わりにカードを読み取ります。
+                                複数のカードを並べて写真を撮り、アップロードするだけで、名前・タイプ・HP・ワザなどの情報を自動で抽出。
+                            </p>
+                            <ul class="steps steps-vertical text-xs opacity-70">
+                                <li class="step step-warning">カードを並べて撮影</li>
+                                <li class="step step-warning">画像をアップロード</li>
+                                <li class="step step-warning">解析結果を確認して一括保存</li>
+                            </ul>
+                        </div>
+                        <div class="md:w-1/2">
+                            <img src="{% static 'images/help/help_ai_scan.png' %}" alt="AI Scan" class="rounded-2xl shadow-xl hover:scale-105 transition-transform duration-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {# 個別登録 #}
+                        <div class="flex gap-4 p-6 bg-base-200 rounded-2xl border border-base-300">
+                            <div class="text-3xl">✍️</div>
+                            <div>
+                                <h4 class="font-bold mb-1">個別登録</h4>
+                                <p class="text-sm opacity-70">1枚ずつ丁寧に。手動で細かな情報を入力したい場合に最適です。</p>
+                            </div>
+                        </div>
+                        {# CSVインポート #}
+                        <div class="flex gap-4 p-6 bg-base-200 rounded-2xl border border-base-300">
+                            <div class="text-3xl">📁</div>
+                            <div>
+                                <h4 class="font-bold mb-1">CSVインポート</h4>
+                                <p class="text-sm opacity-70">大量のデータを一気に移行。エクスポートしたCSVを読み込ませることも可能です。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {# フッター注釈 #}
+            <div class="bg-info/5 p-4 rounded-xl text-center text-xs opacity-60">
+                <p>※ AI解析の精度は、画像の明暗やカードの状態に依存します。解析結果は必ずプレビューで確認・修正してから登録してください。</p>
+            </div>
+        </div>
+
+        <div class="p-6 bg-base-200 flex justify-end">
+            <form method="dialog">
+                <button class="btn btn-primary px-8 rounded-full">わかった！</button>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+    // モーダルを表示
+    (function() {
+        const modal = document.getElementById('help-modal');
+        if (modal) modal.showModal();
+    })();
+</script>
