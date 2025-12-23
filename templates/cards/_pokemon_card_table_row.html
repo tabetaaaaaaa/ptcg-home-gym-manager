@@ -55,15 +55,19 @@
         </div>
     </td>
     <td class="text-center">
-        <div class="flex flex-col gap-1">
-            <button class="btn btn-neutral btn-xs"
+        <div class="flex flex-col gap-0.5">
+            <button class="btn btn-neutral btn-xs h-6 min-h-0 px-2 text-[0.625rem] leading-tight"
                     hx-get="{% url 'cards:card_detail_modal' card.pk %}"
                     hx-target="body"
                     hx-swap="beforeend">詳細</button>
-            <button class="btn btn-neutral btn-xs h-auto min-h-[2rem] py-1 whitespace-normal leading-tight text-[0.625rem]"
+            <button class="btn btn-neutral btn-xs h-6 min-h-0 px-2 text-[0.625rem] leading-tight"
                     hx-get="{% url 'cards:related_cards_modal' card.pk %}"
                     hx-target="body"
                     hx-swap="beforeend">進化<br>サーチ</button>
+            <a href="https://www.pokemon-card.com/card-search/index.php?keyword={{ card.name|urlencode }}&se_ta=&regulation_sidebar_form=all&pg=&illust=&sm_and_keyword=true"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="btn btn-neutral btn-outline btn-xs h-6 min-h-0 px-2 text-[0.625rem] leading-tight">公式<br>サーチ</a>
         </div>
     </td>
     <td class="text-center">

@@ -2,6 +2,13 @@
 <div id="card-{{ card.pk }}" class="card w-full bg-base-100 shadow-xl transition-transform transform hover:-translate-y-1 relative">
     <div class="absolute top-3 right-3 z-10 flex flex-col gap-1"> {# ボタンをカードの右上に配置するためのdiv #}
         <div class="flex gap-1">
+            <a
+                href="https://www.pokemon-card.com/card-search/index.php?keyword={{ card.name|urlencode }}&se_ta=&regulation_sidebar_form=all&pg=&illust=&sm_and_keyword=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-neutral btn-outline btn-xs">
+                公式サーチ
+            </a>
             {% if card.category.slug == 'pokemon' %}
             <button
                 class="btn btn-neutral btn-xs"
