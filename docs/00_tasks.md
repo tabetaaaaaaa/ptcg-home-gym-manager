@@ -749,7 +749,7 @@ def toggle_favorite_flag(request, pk, flag_id):
 docker-compose exec db pg_dump -U pokeapp_user pokeapp_db > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
-## Step 19: 接続URL固定 (Network)
+## Step 19: 接続URL固定 (Network): DONE
 
 - **目的**: サーバーPCのIPアドレスが変動しても、毎回URLを打ち直すことなく、固定されたURLでアプリケーションにアクセスできるようにする。
 - **やること**: 以下のいずれかの方式を比較検討し選択する。
