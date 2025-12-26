@@ -103,39 +103,44 @@ docker compose -f docker-compose.dev.yml exec web python manage.py createsuperus
 docker compose -f docker-compose.dev.yml exec web python manage.py shell
 ```
 
+```bash
+# ----- CSS 管理コマンド -----
+docker-compose -f docker-compose.dev.yml exec web npm run build
+```
+
 ### 3.2. prd 環境
 
 ```bash
 # ----- 起動・停止 -----
 
 # 起動（バックグラウンド推奨）
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prd.yml up -d
 
 # 停止
-docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prd.yml down
 
 # 再ビルドして起動（デプロイ時）
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prd.yml up -d --build
 ```
 
 ```bash
 # ----- ログ確認 -----
 
 # リアルタイムログ
-docker compose -f docker-compose.prod.yml logs -f web
+docker compose -f docker-compose.prd.yml logs -f web
 
 # 直近50行のログ
-docker compose -f docker-compose.prod.yml logs --tail=50 web
+docker compose -f docker-compose.prd.yml logs --tail=50 web
 ```
 
 ```bash
 # ----- Django 管理コマンド -----
 
 # DBマイグレーション実行
-docker compose -f docker-compose.prod.yml exec web python manage.py migrate
+docker compose -f docker-compose.prd.yml exec web python manage.py migrate
 
 # Django シェル起動
-docker compose -f docker-compose.prod.yml exec web python manage.py shell
+docker compose -f docker-compose.prd.yml exec web python manage.py shell
 ```
 
 ---
@@ -158,9 +163,13 @@ docker compose -f docker-compose.dev.yml up
 # ===== Step 3: 開発作業 =====
 # - コードを編集（ホットリロードで即時反映）
 # - ブラウザで http://localhost:8001 にアクセスして動作確認
+
 # - モデルを変更した場合はマイグレーションを実行：
 docker compose -f docker-compose.dev.yml exec web python manage.py makemigrations
 docker compose -f docker-compose.dev.yml exec web python manage.py migrate
+
+# - CSSを明示的に再ビルドしたい場合：
+docker-compose -f docker-compose.dev.yml exec web npm run build
 
 # ===== Step 4: 変更をコミット =====
 git add .
@@ -232,20 +241,20 @@ git status
 
 # ===== Step 3: イメージを事前ビルド =====
 # ※ この時点では prd コンテナは稼働したまま
-docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prd.yml build
 
 # ===== Step 4: コンテナを新イメージに入れ替え =====
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prd.yml up -d
 
 # ===== Step 5: DBマイグレーション（モデル変更がある場合） =====
-docker compose -f docker-compose.prod.yml exec web python manage.py migrate
+docker compose -f docker-compose.prd.yml exec web python manage.py migrate
 
 # ===== Step 6: 動作確認 =====
 curl http://localhost:8000/
 # または、ブラウザで http://localhost:8000 にアクセス
 
 # ===== Step 7: ログを確認してエラーがないことを確認 =====
-docker compose -f docker-compose.prod.yml logs --tail=50 web
+docker compose -f docker-compose.prd.yml logs --tail=50 web
 ```
 
 ### 5.2. 緊急ロールバック
@@ -260,7 +269,7 @@ git log --oneline -5
 git checkout <正常だったコミットのハッシュ>
 
 # ===== Step 3: prd を再ビルド =====
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prd.yml up -d --build
 
 # ===== Step 4: 動作確認 =====
 curl http://localhost:8000/
@@ -277,11 +286,11 @@ git push --force origin main  # ⚠️ 強制プッシュは慎重に
 
 ### 6.1. 絶対にやってはいけないこと
 
-| ❌ 禁止事項                                                                | 理由                                           |
-| :------------------------------------------------------------------------ | :--------------------------------------------- |
-| feature ブランチで `docker compose -f docker-compose.prod.yml up --build` | 未完成のコードが prd に反映される              |
-| prd コンテナ内で直接ファイルを編集                                        | コンテナ再起動で消える、バージョン管理外になる |
-| dev の DB (`pokeapp_dev_postgres`) を prd と混同                          | テストデータが本番に混入する                   |
+| ❌ 禁止事項                                                               | 理由                                           |
+| :----------------------------------------------------------------------- | :--------------------------------------------- |
+| feature ブランチで `docker compose -f docker-compose.prd.yml up --build` | 未完成のコードが prd に反映される              |
+| prd コンテナ内で直接ファイルを編集                                       | コンテナ再起動で消える、バージョン管理外になる |
+| dev の DB (`pokeapp_dev_postgres`) を prd と混同                         | テストデータが本番に混入する                   |
 
 ### 6.2. デプロイ前チェックリスト
 
@@ -306,23 +315,23 @@ git push --force origin main  # ⚠️ 強制プッシュは慎重に
 
 ```bash
 # ログを確認
-docker compose -f docker-compose.prod.yml logs web
+docker compose -f docker-compose.prd.yml logs web
 
 # コンテナの状態を確認
-docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prd.yml ps
 ```
 
 ### 7.2. DB接続エラー
 
 ```bash
 # DB コンテナが起動しているか確認
-docker compose -f docker-compose.prod.yml ps db
+docker compose -f docker-compose.prd.yml ps db
 
 # DB コンテナのログを確認
-docker compose -f docker-compose.prod.yml logs db
+docker compose -f docker-compose.prd.yml logs db
 
 # DB コンテナを再起動
-docker compose -f docker-compose.prod.yml restart db
+docker compose -f docker-compose.prd.yml restart db
 ```
 
 ### 7.3. ポートが既に使用されている

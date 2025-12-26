@@ -29,11 +29,11 @@
 
 本アプリケーションは、**3つの環境**で動作するよう設計されています。
 
-| 環境      | 用途                | 利用ファイル               | 起動コマンド                                      |
-| :-------- | :------------------ | :------------------------- | :------------------------------------------------ |
-| **dev**   | ローカルPC開発      | `docker-compose.dev.yml`   | `docker compose -f docker-compose.dev.yml up`     |
-| **prd**   | 本番デプロイ (汎用) | `docker-compose.prod.yml`  | `docker compose -f docker-compose.prod.yml up -d` |
-| **raspi** | Raspberry Pi 最適化 | `docker-compose.raspi.yml` | `docker compose -f docker-compose.raspi.yml up`   |
+| 環境      | 用途                | 利用ファイル               | 起動コマンド                                     |
+| :-------- | :------------------ | :------------------------- | :----------------------------------------------- |
+| **dev**   | ローカルPC開発      | `docker-compose.dev.yml`   | `docker compose -f docker-compose.dev.yml up`    |
+| **prd**   | 本番デプロイ (汎用) | `docker-compose.prd.yml`   | `docker compose -f docker-compose.prd.yml up -d` |
+| **raspi** | Raspberry Pi 最適化 | `docker-compose.raspi.yml` | `docker compose -f docker-compose.raspi.yml up`  |
 
 > **💡 同一PC上での dev/prd 同時運用**
 >
@@ -164,7 +164,7 @@ graph TD
     end
 
     subgraph HostPC ["本番サーバー"]
-        subgraph DockerEnv ["Docker Compose環境<br>docker-compose.prod.yml"]
+        subgraph DockerEnv ["Docker Compose環境<br>docker-compose.prd.yml"]
             subgraph WebContainer ["🐍 pokeapp-prd-web (APP_ENV=production)"]
                 Gunicorn["Gunicorn<br>WSGI Server :8000"]:::process
                 WhiteNoise["WhiteNoise<br>静的ファイル配信"]:::middleware

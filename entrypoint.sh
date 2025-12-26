@@ -22,6 +22,10 @@ else
     echo "------------------------------------------------"
     echo " Launching in DEVELOPMENT mode"
     echo "------------------------------------------------"
+    # データベースマイグレーションを適用
+    echo "Applying database migrations..."
+    python manage.py migrate --noinput
+    
     # Start Tailwind CSS watcher in the background
     npm run watch &
     
