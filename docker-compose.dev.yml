@@ -18,8 +18,6 @@ services:
     volumes:
       # ソースコードをマウント（ホットリロード用）
       - .:/app
-      # node_modules はコンテナ内のものを優先
-      - /app/node_modules
       # 名前付きボリューム
       - media_data:/app/media
       - yolo_models:/root/.cache/ultralytics
