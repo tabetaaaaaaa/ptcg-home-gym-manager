@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django_htmx.middleware.HtmxMiddleware', # django-htmx のミドルウェア
     'django.middleware.common.CommonMiddleware',
@@ -138,6 +139,13 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+# Production static files
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise storage to use compressed and cached static files
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Media files (User-uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -162,7 +170,14 @@ if not GEMINI_API_KEYS:
     raise ValueError("At least one GEMINI_API_KEY must be configured")
 
 # セッション設定（一括登録機能用）
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+# signed_cookies: キャッシュやDBが不要で低リソース環境に最適
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+
+# settings.py
+SESSION_ENGINE = os.environ.get(
+    'SESSION_ENGINE',
+    'django.contrib.sessions.backends.signed_cookies'  # デフォルト
+)
 
 # ウィジェットのレンダリング設定（プロジェクトのtemplatesを優先する）
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'

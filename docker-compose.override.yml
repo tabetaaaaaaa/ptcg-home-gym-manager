@@ -1,0 +1,8 @@
+services:
+  web:
+    environment:
+      - APP_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    # 開発時はホットリロードを有効にするためボリュームをマウント

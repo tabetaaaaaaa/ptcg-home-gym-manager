@@ -20,6 +20,8 @@ ultralytics = "^8.3.49"
 opencv-python-headless = "^4.10.0.84"
 google-generativeai = "^0.8.3"
 openai-clip = "^1.0.1"
+gunicorn = "^23.0.0"
+whitenoise = {version = "^6.8.2", extras = ["brotli"]}
 
 [build-system]
 requires = ["poetry-core"]

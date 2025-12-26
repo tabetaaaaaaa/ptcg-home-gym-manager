@@ -1,0 +1,84 @@
+# ============================================================
+# Raspberry Pi 向け Docker Compose 設定
+# ------------------------------------------------------------
+# 使用方法:
+#   Raspberry Pi 上で以下を実行:
+#   docker-compose -f docker-compose.raspi.yml up -d
+#
+# 前提条件:
+#   - .env ファイルが同一ディレクトリに存在すること
+#   - Docker Hub にログイン済みであること (private repo の場合)
+# ============================================================
+
+services:
+  web:
+    # Docker Hub からビルド済みイメージを Pull
+    image: vana4/my-tools:latest
+    container_name: pokeapp-web
+    restart: unless-stopped
+    volumes:
+      # 永続化データ
+      - media_data:/app/media
+      - yolo_models:/root/.cache/ultralytics
+      - bulk_register_data:/app/media/bulk_register
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      # Raspberry Pi (1GB RAM) 向け最適化
+      - APP_ENV=production
+      - GUNICORN_WORKERS=1
+      - GUNICORN_TIMEOUT=600
+    deploy:
+      resources:
+        limits:
+          memory: 768M  # Raspberry Pi 1GB RAM 向け
+        reservations:
+          memory: 400M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+      start_period: 120s  # YOLO/AI 初期化時間を考慮
+
+  db:
+    image: postgres:16-alpine
+    container_name: pokeapp-db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    # Raspberry Pi 低メモリ環境向けの PostgreSQL 最適化
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c max_connections=20
+      -c work_mem=4MB
+      -c effective_cache_size=128MB
+    deploy:
+      resources:
+        limits:
+          memory: 150M
+        reservations:
+          memory: 80M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    name: pokeapp_postgres_data
+  media_data:
+    name: pokeapp_media_data
+  yolo_models:
+    name: pokeapp_yolo_models
+  bulk_register_data:
+    name: pokeapp_bulk_register
