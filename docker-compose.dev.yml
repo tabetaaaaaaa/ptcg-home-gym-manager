@@ -5,6 +5,8 @@
 # 停止コマンド: docker compose -f docker-compose.dev.yml down
 # =============================================================================
 
+name: pokeapp-dev
+
 services:
   web:
     container_name: pokeapp-dev-web
@@ -18,10 +20,10 @@ services:
       - .:/app
       # node_modules はコンテナ内のものを優先
       - /app/node_modules
-      # 名前付きボリューム（dev専用）
-      - pokeapp_dev_media:/app/media
-      - pokeapp_dev_yolo:/root/.cache/ultralytics
-      - pokeapp_dev_bulk:/app/media/bulk_register
+      # 名前付きボリューム
+      - media_data:/app/media
+      - yolo_models:/root/.cache/ultralytics
+      - bulk_register_data:/app/media/bulk_register
     ports:
       - "8001:8000"  # 外部:8001 → コンテナ内:8000
     depends_on:
@@ -33,12 +35,12 @@ services:
     container_name: pokeapp-dev-db
     image: postgres:16
     volumes:
-      - pokeapp_dev_postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env.dev
 
 volumes:
-  pokeapp_dev_postgres:
-  pokeapp_dev_media:
-  pokeapp_dev_yolo:
-  pokeapp_dev_bulk:
+  postgres_data:
+  media_data:
+  yolo_models:
+  bulk_register_data:

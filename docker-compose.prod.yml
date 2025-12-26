@@ -5,6 +5,8 @@
 # 停止コマンド: docker compose -f docker-compose.prod.yml down
 # =============================================================================
 
+name: pokeapp-prd
+
 services:
   web:
     container_name: pokeapp-prd-web
