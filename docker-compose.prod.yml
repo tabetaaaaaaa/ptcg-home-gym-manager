@@ -25,7 +25,7 @@ services:
     depends_on:
       - db
     env_file:
-      - .env
+      - .env.prd
 
   db:
     container_name: pokeapp-prd-db
@@ -33,7 +33,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
-      - .env
+      - .env.prd
 
 volumes:
   postgres_data:

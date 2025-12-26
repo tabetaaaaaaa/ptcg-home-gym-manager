@@ -6,6 +6,8 @@ docs/study/result**
 
 # Environments
 .env
+.env.dev
+.env.prd
 
 # Python
 __pycache__/
