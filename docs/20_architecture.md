@@ -29,23 +29,35 @@
 
 本アプリケーションは、**3つの環境**で動作するよう設計されています。
 
-| 環境      | 用途                | 利用ファイル                                                    | 起動コマンド                                                         |
-| :-------- | :------------------ | :-------------------------------------------------------------- | :------------------------------------------------------------------- |
-| **dev**   | ローカルPC開発      | `docker-compose.yml` + `docker-compose.override.yml` (自動適用) | `docker compose up`                                                  |
-| **prd**   | 本番デプロイ (汎用) | `docker-compose.yml` + `docker-compose.prod.yml`                | `docker compose -f docker-compose.yml -f docker-compose.prod.yml up` |
-| **raspi** | Raspberry Pi 最適化 | `docker-compose.raspi.yml`                                      | `docker compose -f docker-compose.raspi.yml up`                      |
+| 環境      | 用途                | 利用ファイル               | 起動コマンド                                      |
+| :-------- | :------------------ | :------------------------- | :------------------------------------------------ |
+| **dev**   | ローカルPC開発      | `docker-compose.dev.yml`   | `docker compose -f docker-compose.dev.yml up`     |
+| **prd**   | 本番デプロイ (汎用) | `docker-compose.prod.yml`  | `docker compose -f docker-compose.prod.yml up -d` |
+| **raspi** | Raspberry Pi 最適化 | `docker-compose.raspi.yml` | `docker compose -f docker-compose.raspi.yml up`   |
+
+> **💡 同一PC上での dev/prd 同時運用**
+>
+> dev と prd は**異なるポート・コンテナ名・ボリューム名**を使用するため、同一PC上で両環境を同時に起動できます。
+>
+> | 項目 | dev | prd |
+> | :--- | :--- | :--- |
+> | ポート | 8001 | 8000 |
+> | コンテナ名 | `pokeapp-dev-web`, `pokeapp-dev-db` | `pokeapp-prd-web`, `pokeapp-prd-db` |
+> | ボリューム | `pokeapp_dev_*` | `postgres_data`, `media_data` 等 |
 
 ### 環境別構成比較
 
-| コンポーネント       | dev                              | prd                      | raspi                    |
-| :------------------- | :------------------------------- | :----------------------- | :----------------------- |
-| **Webサーバー**      | Django runserver                 | Gunicorn                 | Gunicorn                 |
-| **静的ファイル配信** | Django 開発サーバー              | WhiteNoise               | WhiteNoise               |
-| **CSSビルド**        | `npm run watch` (ホットリロード) | ビルド済み (Dockerfile)  | ビルド済み (Docker Hub)  |
-| **セッション管理**   | signed_cookies                   | signed_cookies           | signed_cookies           |
-| **DBイメージ**       | postgres:16                      | postgres:16-alpine       | postgres:16-alpine       |
-| **メモリ制限**       | なし                             | 500MB (web) / 100MB (db) | 768MB (web) / 150MB (db) |
-| **イメージソース**   | ローカルビルド                   | ローカルビルド           | Docker Hub Pull          |
+| コンポーネント       | dev                              | prd                     | raspi                    |
+| :------------------- | :------------------------------- | :---------------------- | :----------------------- |
+| **ポート**           | 8001                             | 8000                    | 8000                     |
+| **コンテナ名**       | `pokeapp-dev-*`                  | `pokeapp-prd-*`         | `pokeapp-*`              |
+| **Webサーバー**      | Django runserver                 | Gunicorn                | Gunicorn                 |
+| **静的ファイル配信** | Django 開発サーバー              | WhiteNoise              | WhiteNoise               |
+| **CSSビルド**        | `npm run watch` (ホットリロード) | ビルド済み (Dockerfile) | ビルド済み (Docker Hub)  |
+| **セッション管理**   | signed_cookies                   | signed_cookies          | signed_cookies           |
+| **DBイメージ**       | postgres:16                      | postgres:16-alpine      | postgres:16-alpine       |
+| **メモリ制限**       | なし                             | なし                    | 768MB (web) / 150MB (db) |
+| **イメージソース**   | ローカルビルド                   | ローカルビルド          | Docker Hub Pull          |
 
 > **⚠️ 見えづらい機能について**
 >
@@ -77,26 +89,26 @@ graph TD
     classDef middleware fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
 
     subgraph UserSpace ["開発者 (Developer)"]
-        HostBrowser["💻 ブラウザ<br>localhost:8000"]:::device
+        HostBrowser["💻 ブラウザ<br>localhost:8001"]:::device
     end
 
     subgraph HostPC ["ホストPC (Your PC)"]
         SourceCode["📁 ソースコード<br>.:/app マウント"]:::storage
 
-        subgraph DockerEnv ["Docker Compose環境<br>docker-compose.yml + override.yml"]
-            subgraph WebContainer ["🐍 Webコンテナ (APP_ENV=development)"]
-                DjangoRunserver["Django runserver<br>:8000"]:::process
+        subgraph DockerEnv ["Docker Compose環境<br>docker-compose.dev.yml"]
+            subgraph WebContainer ["🐍 pokeapp-dev-web (APP_ENV=development)"]
+                DjangoRunserver["Django runserver<br>:8001→:8000"]:::process
                 NpmWatch["npm run watch<br>(Tailwind CSS)"]:::process
                 Session["🍪 Session<br>signed_cookies"]:::middleware
             end
-            DBContainer["🐘 DBコンテナ<br>PostgreSQL 16"]:::container
+            DBContainer["🐘 pokeapp-dev-db<br>PostgreSQL 16"]:::container
         end
 
-        subgraph Volumes ["データ永続化 (Volume)"]
-            MediaVol[("🖼️ media_data")]:::storage
-            DBVol[("🗄️ postgres_data")]:::storage
-            YoloVol[("🤖 yolo_models")]:::storage
-            BulkVol[("📦 bulk_register_data")]:::storage
+        subgraph Volumes ["データ永続化 (Volume) - dev専用"]
+            MediaVol[("🖼️ pokeapp_dev_media")]:::storage
+            DBVol[("🗄️ pokeapp_dev_postgres")]:::storage
+            YoloVol[("🤖 pokeapp_dev_yolo")]:::storage
+            BulkVol[("📦 pokeapp_dev_bulk")]:::storage
         end
     end
 
@@ -152,14 +164,14 @@ graph TD
     end
 
     subgraph HostPC ["本番サーバー"]
-        subgraph DockerEnv ["Docker Compose環境<br>docker-compose.yml + prod.yml"]
-            subgraph WebContainer ["🐍 Webコンテナ (APP_ENV=production)"]
+        subgraph DockerEnv ["Docker Compose環境<br>docker-compose.prod.yml"]
+            subgraph WebContainer ["🐍 pokeapp-prd-web (APP_ENV=production)"]
                 Gunicorn["Gunicorn<br>WSGI Server :8000"]:::process
                 WhiteNoise["WhiteNoise<br>静的ファイル配信"]:::middleware
                 DjangoApp["Django App"]:::container
                 Session["🍪 Session<br>signed_cookies"]:::middleware
             end
-            DBContainer["🐘 DBコンテナ<br>PostgreSQL 16 Alpine"]:::container
+            DBContainer["🐘 pokeapp-prd-db<br>PostgreSQL 16 Alpine"]:::container
         end
 
         subgraph Volumes ["データ永続化 (Volume)"]

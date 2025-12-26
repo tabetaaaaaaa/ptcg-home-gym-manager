@@ -1,0 +1,44 @@
+# =============================================================================
+# 開発環境 (dev) 用 Docker Compose
+# =============================================================================
+# 起動コマンド: docker compose -f docker-compose.dev.yml up
+# 停止コマンド: docker compose -f docker-compose.dev.yml down
+# =============================================================================
+
+services:
+  web:
+    container_name: pokeapp-dev-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - APP_ENV=development
+    volumes:
+      # ソースコードをマウント（ホットリロード用）
+      - .:/app
+      # node_modules はコンテナ内のものを優先
+      - /app/node_modules
+      # 名前付きボリューム（dev専用）
+      - pokeapp_dev_media:/app/media
+      - pokeapp_dev_yolo:/root/.cache/ultralytics
+      - pokeapp_dev_bulk:/app/media/bulk_register
+    ports:
+      - "8001:8000"  # 外部:8001 → コンテナ内:8000
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  db:
+    container_name: pokeapp-dev-db
+    image: postgres:16
+    volumes:
+      - pokeapp_dev_postgres:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+volumes:
+  pokeapp_dev_postgres:
+  pokeapp_dev_media:
+  pokeapp_dev_yolo:
+  pokeapp_dev_bulk:

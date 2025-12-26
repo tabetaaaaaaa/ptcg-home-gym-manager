@@ -1,10 +1,21 @@
+# =============================================================================
+# 本番環境 (prd) 用 Docker Compose
+# =============================================================================
+# 起動コマンド: docker compose -f docker-compose.prod.yml up -d
+# 停止コマンド: docker compose -f docker-compose.prod.yml down
+# =============================================================================
+
 services:
   web:
-    # 実際にはビルド済みの自分のイメージパスを指定してください
-    # image: your-dockerhub-username/pokeapp-web:latest
+    container_name: pokeapp-prd-web
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - APP_ENV=production
+      # ワーカー数: 公式推奨は (2 × CPUコア数) + 1
+      # 4名同時接続想定では 2〜4 が適切。サーバースペックに応じて調整
+      - GUNICORN_WORKERS=2
     volumes:
       - media_data:/app/media
       - yolo_models:/root/.cache/ultralytics
@@ -15,33 +26,14 @@ services:
       - db
     env_file:
       - .env
-    environment:
-      - GUNICORN_WORKERS=1  # 1GB RAMでは1が推奨
-    deploy:
-      resources:
-        limits:
-          memory: 500M  # Webコンテナの上限
-        reservations:
-          memory: 300M
 
   db:
-    image: postgres:16-alpine  # より軽量なAlpine版を使用
+    container_name: pokeapp-prd-db
+    image: postgres:16-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
-    # 低メモリ環境向けのPostgreSQL最適化
-    command: >
-      postgres
-      -c shared_buffers=64MB
-      -c max_connections=20
-      -c work_mem=4MB
-    deploy:
-      resources:
-        limits:
-          memory: 100M  # DBコンテナの上限
-        reservations:
-          memory: 50M
 
 volumes:
   postgres_data:
