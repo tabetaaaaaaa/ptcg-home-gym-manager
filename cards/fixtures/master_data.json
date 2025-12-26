@@ -1,0 +1,584 @@
+[
+{
+  "model": "cards.cardcategory",
+  "pk": 1,
+  "fields": {
+    "name": "ポケモン",
+    "slug": "pokemon",
+    "display_order": 10,
+    "bg_color": "#6b7280",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.cardcategory",
+  "pk": 2,
+  "fields": {
+    "name": "トレーナーズ",
+    "slug": "trainers",
+    "display_order": 20,
+    "bg_color": "#6b7280",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 1,
+  "fields": {
+    "name": "草",
+    "display_order": 10,
+    "bg_color": "#4CAF50",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 2,
+  "fields": {
+    "name": "炎",
+    "display_order": 20,
+    "bg_color": "#E53935",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 3,
+  "fields": {
+    "name": "水",
+    "display_order": 30,
+    "bg_color": "#29B6F6",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 4,
+  "fields": {
+    "name": "雷",
+    "display_order": 40,
+    "bg_color": "#FBC02D",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 5,
+  "fields": {
+    "name": "超",
+    "display_order": 50,
+    "bg_color": "#8E44AD",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 6,
+  "fields": {
+    "name": "闘",
+    "display_order": 60,
+    "bg_color": "#D84315",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 7,
+  "fields": {
+    "name": "悪",
+    "display_order": 70,
+    "bg_color": "#2D3436",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 8,
+  "fields": {
+    "name": "鋼",
+    "display_order": 80,
+    "bg_color": "#95A5A6",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 9,
+  "fields": {
+    "name": "フェアリー",
+    "display_order": 90,
+    "bg_color": "#F48FB1",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 10,
+  "fields": {
+    "name": "ドラゴン",
+    "display_order": 100,
+    "bg_color": "#A89038",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.type",
+  "pk": 11,
+  "fields": {
+    "name": "無色",
+    "display_order": 110,
+    "bg_color": "#B0BEC5",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 1,
+  "fields": {
+    "name": "たね",
+    "display_order": 10
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 2,
+  "fields": {
+    "name": "1進化",
+    "display_order": 20
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 3,
+  "fields": {
+    "name": "2進化",
+    "display_order": 30
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 4,
+  "fields": {
+    "name": "M進化",
+    "display_order": 42
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 6,
+  "fields": {
+    "name": "V進化",
+    "display_order": 40
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 7,
+  "fields": {
+    "name": "BREAK進化",
+    "display_order": 41
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 8,
+  "fields": {
+    "name": "復元",
+    "display_order": 43
+  }
+},
+{
+  "model": "cards.evolutionstage",
+  "pk": 9,
+  "fields": {
+    "name": "LV.X",
+    "display_order": 44
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 1,
+  "fields": {
+    "name": "ポケモンex",
+    "display_order": 10
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 2,
+  "fields": {
+    "name": "メガシンカex",
+    "display_order": 11
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 3,
+  "fields": {
+    "name": "テラスタルのポケモン",
+    "display_order": 20
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 4,
+  "fields": {
+    "name": "ポケモンV",
+    "display_order": 40
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 5,
+  "fields": {
+    "name": "ポケモンVMAX",
+    "display_order": 41
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 6,
+  "fields": {
+    "name": "ポケモンVSTAR",
+    "display_order": 42
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 7,
+  "fields": {
+    "name": "ポケモンVUNION",
+    "display_order": 43
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 8,
+  "fields": {
+    "name": "かがやくポケモン",
+    "display_order": 21
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 9,
+  "fields": {
+    "name": "アローラポケモン",
+    "display_order": 22
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 10,
+  "fields": {
+    "name": "ポケモンEX",
+    "display_order": 12
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 11,
+  "fields": {
+    "name": "古代",
+    "display_order": 90
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 12,
+  "fields": {
+    "name": "未来",
+    "display_order": 91
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 13,
+  "fields": {
+    "name": "ICHIGEKI",
+    "display_order": 92
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 14,
+  "fields": {
+    "name": "RENGEKI",
+    "display_order": 93
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 15,
+  "fields": {
+    "name": "FUSION",
+    "display_order": 94
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 16,
+  "fields": {
+    "name": "プリズムスター",
+    "display_order": 95
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 17,
+  "fields": {
+    "name": "きのみ",
+    "display_order": 80
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 18,
+  "fields": {
+    "name": "どうぐ",
+    "display_order": 81
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 19,
+  "fields": {
+    "name": "ポケモンGX",
+    "display_order": 13
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 20,
+  "fields": {
+    "name": "ウルトラビースト",
+    "display_order": 76
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 21,
+  "fields": {
+    "name": "伝説",
+    "display_order": 75
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 22,
+  "fields": {
+    "name": "SP",
+    "display_order": 74
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 23,
+  "fields": {
+    "name": "ポケパワー",
+    "display_order": 73
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 24,
+  "fields": {
+    "name": "ポケボディー",
+    "display_order": 72
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 25,
+  "fields": {
+    "name": "グレートポケモン",
+    "display_order": 71
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 26,
+  "fields": {
+    "name": "デュアルタイプ",
+    "display_order": 70
+  }
+},
+{
+  "model": "cards.specialfeature",
+  "pk": 27,
+  "fields": {
+    "name": "プラズマ団",
+    "display_order": 82
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 1,
+  "fields": {
+    "name": "草",
+    "display_order": 10,
+    "bg_color": "#4CAF50",
+    "text_color": "#4CAF50"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 2,
+  "fields": {
+    "name": "炎",
+    "display_order": 20,
+    "bg_color": "#E53935",
+    "text_color": "#E53935"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 3,
+  "fields": {
+    "name": "水",
+    "display_order": 30,
+    "bg_color": "#29B6F6",
+    "text_color": "#29B6F6"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 4,
+  "fields": {
+    "name": "雷",
+    "display_order": 40,
+    "bg_color": "#FBC02D",
+    "text_color": "#FBC02D"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 5,
+  "fields": {
+    "name": "超",
+    "display_order": 50,
+    "bg_color": "#8E44AD",
+    "text_color": "#8E44AD"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 6,
+  "fields": {
+    "name": "闘",
+    "display_order": 60,
+    "bg_color": "#D84315",
+    "text_color": "#D84315"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 7,
+  "fields": {
+    "name": "悪",
+    "display_order": 70,
+    "bg_color": "#2D3436",
+    "text_color": "#2D3436"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 8,
+  "fields": {
+    "name": "鋼",
+    "display_order": 80,
+    "bg_color": "#95A5A6",
+    "text_color": "#95A5A6"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 9,
+  "fields": {
+    "name": "フェアリー",
+    "display_order": 90,
+    "bg_color": "#F48FB1",
+    "text_color": "#F48FB1"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 10,
+  "fields": {
+    "name": "ドラゴン",
+    "display_order": 100,
+    "bg_color": "#A89038",
+    "text_color": "#A89038"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 11,
+  "fields": {
+    "name": "無色",
+    "display_order": 110,
+    "bg_color": "#B0BEC5",
+    "text_color": "#B0BEC5"
+  }
+},
+{
+  "model": "cards.movetype",
+  "pk": 12,
+  "fields": {
+    "name": "なし",
+    "display_order": 120,
+    "bg_color": "#B0BEC5",
+    "text_color": "#B0BEC5"
+  }
+},
+{
+  "model": "cards.trainertype",
+  "pk": 1,
+  "fields": {
+    "name": "グッズ",
+    "display_order": 10,
+    "bg_color": "#6b7280",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.trainertype",
+  "pk": 2,
+  "fields": {
+    "name": "ポケモンのどうぐ",
+    "display_order": 20,
+    "bg_color": "#6b7280",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.trainertype",
+  "pk": 3,
+  "fields": {
+    "name": "サポート",
+    "display_order": 30,
+    "bg_color": "#6b7280",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.trainertype",
+  "pk": 4,
+  "fields": {
+    "name": "スタジアム",
+    "display_order": 40,
+    "bg_color": "#6b7280",
+    "text_color": "#ffffff"
+  }
+},
+{
+  "model": "cards.specialtrainer",
+  "pk": 1,
+  "fields": {
+    "name": "ACE SPEC",
+    "display_order": 10,
+    "bg_color": "#6b7280",
+    "text_color": "#ffffff"
+  }
+}
+]

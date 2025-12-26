@@ -4,6 +4,18 @@ set -e
 # Wait for DB if necessary (optional, but good for stability)
 # You can add a wait-for-it script here if needed
 
+# ================================================
+# 共通処理: マイグレーション & マスタデータ投入
+# ================================================
+echo "Applying database migrations..."
+python manage.py migrate --noinput
+
+echo "Seeding master data..."
+python manage.py seed_master_data
+
+# ================================================
+# 環境別サーバー起動
+# ================================================
 if [ "$APP_ENV" = "production" ]; then
     echo "------------------------------------------------"
     echo " Launching in PRODUCTION mode"
@@ -22,9 +34,6 @@ else
     echo "------------------------------------------------"
     echo " Launching in DEVELOPMENT mode"
     echo "------------------------------------------------"
-    # データベースマイグレーションを適用
-    echo "Applying database migrations..."
-    python manage.py migrate --noinput
     
     # Start Tailwind CSS watcher in the background
     npm run watch &
