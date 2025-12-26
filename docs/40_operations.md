@@ -25,6 +25,10 @@
     - [7.3. ポートが既に使用されている](#73-ポートが既に使用されている)
     - [7.4. ディスク容量不足](#74-ディスク容量不足)
     - [7.5. マイグレーションエラー](#75-マイグレーションエラー)
+  - [8. マスタデータ管理](#8-マスタデータ管理)
+    - [8.1. 自動投入の仕組み](#81-自動投入の仕組み)
+    - [8.2. 手動でマスタデータを投入する](#82-手動でマスタデータを投入する)
+    - [8.3. マスタデータの更新](#83-マスタデータの更新)
 
 ---
 
@@ -363,3 +367,95 @@ docker compose -f docker-compose.dev.yml exec web python manage.py showmigration
 # 特定のアプリのマイグレーションをリセット（⚠️ データが消える可能性あり）
 docker compose -f docker-compose.dev.yml exec web python manage.py migrate <app_name> zero
 ```
+
+---
+
+## 8. マスタデータ管理
+
+### 8.1. 自動投入の仕組み
+
+本アプリケーションでは、**コンテナ起動時にマスタデータが自動的に投入**されます。
+
+**対象テーブル**:
+
+| モデル名         | 内容                                   |
+| :--------------- | :------------------------------------- |
+| `CardCategory`   | カテゴリ（ポケモン、トレーナーズ）     |
+| `Type`           | タイプ（草、炎、水など）               |
+| `EvolutionStage` | 進化段階（たね、1進化、2進化など）     |
+| `SpecialFeature` | 特別（ポケモンex、テラスタルなど）     |
+| `MoveType`       | わざのエネルギータイプ                 |
+| `TrainerType`    | トレーナーズの種別（グッズ、サポート） |
+| `SpecialTrainer` | 特別な分類（ACE SPEC）                 |
+
+**動作フロー** (`entrypoint.sh`):
+
+```text
+コンテナ起動
+    ↓
+DBマイグレーション実行 (python manage.py migrate)
+    ↓
+マスタデータ投入 (python manage.py seed_master_data)
+    ↓
+    ├─ データが存在しない → fixtures からデータ投入
+    └─ データが既に存在  → スキップ（ログ出力のみ）
+    ↓
+サーバー起動 (dev: runserver / prd: gunicorn)
+```
+
+**ポイント**:
+
+- **冪等性**: 既にデータがある場合はスキップするため、何度実行しても安全
+- **自動実行**: `docker compose up` するだけで、マスタデータまで含めた初期セットアップが完了
+- **GitHub公開対応**: リポジトリをクローンした人が追加の手順なしでアプリを利用可能
+
+### 8.2. 手動でマスタデータを投入する
+
+コンテナ起動時に自動実行されますが、手動で実行することも可能です。
+
+```bash
+# dev 環境
+docker compose -f docker-compose.dev.yml exec web python manage.py seed_master_data
+
+# prd 環境
+docker compose -f docker-compose.prd.yml exec web python manage.py seed_master_data
+```
+
+**出力例（データがない場合）**:
+
+```text
+マスタデータを投入中...
+Installed 65 object(s) from 1 fixture(s)
+✓ マスタデータの投入が完了しました。
+```
+
+**出力例（データがある場合）**:
+
+```text
+✓ マスタデータは既に存在します（CardCategoryにデータあり）。スキップします。
+```
+
+### 8.3. マスタデータの更新
+
+マスタデータを変更した場合、以下の手順で fixtures ファイルを更新します。
+
+```bash
+# Step 1: Django Admin などで dev 環境のマスタデータを編集
+
+# Step 2: 現在のマスタデータをエクスポート
+docker compose -f docker-compose.dev.yml exec web python manage.py dumpdata \
+  cards.CardCategory \
+  cards.Type \
+  cards.EvolutionStage \
+  cards.SpecialFeature \
+  cards.MoveType \
+  cards.TrainerType \
+  cards.SpecialTrainer \
+  --indent 2 > cards/fixtures/master_data.json
+
+# Step 3: 変更をコミット
+git add cards/fixtures/master_data.json
+git commit -m "chore: マスタデータを更新"
+```
+
+**注意**: `seed_master_data` コマンドは「データが存在しない場合のみ投入」するため、既存環境でマスタデータを更新したい場合は、Django Admin で直接編集するか、一度テーブルを空にしてから再投入してください。
