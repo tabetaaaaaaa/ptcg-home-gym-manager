@@ -764,5 +764,3 @@ docker-compose exec db pg_dump -U pokeapp_user pokeapp_db > backup_$(date +%Y%m%
 - カード統計情報の表示
 - 生成AIによるデッキ提案機能の追加
 - 名前から公式情報を検索できるようにする: DONE
-- アーキテクチャ図の更新
-- dockerファイル構成の再整理
