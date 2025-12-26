@@ -1,28 +1,24 @@
 services:
   web:
     build: .
-    command: >
-      bash -c "npm run watch &
-              python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - .:/app
       - media_data:/app/media
-      - /app/node_modules
       - yolo_models:/root/.cache/ultralytics
       - bulk_register_data:/app/media/bulk_register
+    # NOTE: Command is handled by ENTRYPOINT [./entrypoint.sh] in Dockerfile
     ports:
       - "8000:8000"
     depends_on:
       - db
     env_file:
-      - ./.env
+      - .env
 
   db:
     image: postgres:16
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
-      - ./.env
+      - .env
 
 volumes:
   postgres_data:

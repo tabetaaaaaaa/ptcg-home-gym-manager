@@ -1,0 +1,50 @@
+services:
+  web:
+    # 実際にはビルド済みの自分のイメージパスを指定してください
+    # image: your-dockerhub-username/pokeapp-web:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - media_data:/app/media
+      - yolo_models:/root/.cache/ultralytics
+      - bulk_register_data:/app/media/bulk_register
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - GUNICORN_WORKERS=1  # 1GB RAMでは1が推奨
+    deploy:
+      resources:
+        limits:
+          memory: 500M  # Webコンテナの上限
+        reservations:
+          memory: 300M
+
+  db:
+    image: postgres:16-alpine  # より軽量なAlpine版を使用
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    # 低メモリ環境向けのPostgreSQL最適化
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c max_connections=20
+      -c work_mem=4MB
+    deploy:
+      resources:
+        limits:
+          memory: 100M  # DBコンテナの上限
+        reservations:
+          memory: 50M
+
+volumes:
+  postgres_data:
+  media_data:
+  yolo_models:
+  bulk_register_data:
