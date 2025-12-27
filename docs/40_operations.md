@@ -9,9 +9,13 @@
     - [3.1. dev 環境](#31-dev-環境)
     - [3.2. prd 環境](#32-prd-環境)
   - [4. 開発ワークフロー](#4-開発ワークフロー)
-    - [4.1. 日常の開発作業](#41-日常の開発作業)
-    - [4.2. main ブランチへのマージ](#42-main-ブランチへのマージ)
-    - [4.3. マージ後の動作確認](#43-マージ後の動作確認)
+    - [4.1. Git 運用規則](#41-git-運用規則)
+      - [4.1.1. ブランチ命名規則](#411-ブランチ命名規則)
+      - [4.1.2. コミットメッセージ規則](#412-コミットメッセージ規則)
+      - [4.1.3. プルリクエスト (PR) 運用規則](#413-プルリクエスト-pr-運用規則)
+    - [4.2. 日常の開発作業](#42-日常の開発作業)
+    - [4.3. main ブランチへのマージ](#43-main-ブランチへのマージ)
+    - [4.4. マージ後の動作確認](#44-マージ後の動作確認)
   - [5. prd デプロイ手順](#5-prd-デプロイ手順)
     - [5.1. 標準デプロイ（ダウンタイム最小化版）](#51-標準デプロイダウンタイム最小化版)
     - [5.2. 緊急ロールバック](#52-緊急ロールバック)
@@ -52,12 +56,12 @@
 
 ## 2. 運用スケジュール例
 
-| タイミング     | 作業内容                                       |
-| :------------- | :--------------------------------------------- |
-| **日常**       | dev 環境で開発、feature ブランチで作業         |
-| **機能完成時** | main マージ → dev で動作確認 → prd デプロイ    |
-| **週次/月次**  | ログ確認、ディスク使用量確認、不要イメージ削除 |
-| **緊急時**     | ロールバック（手順4.2参照）                    |
+| タイミング     | 作業内容                                          |
+| :------------- | :------------------------------------------------ |
+| **日常**       | issue登録、dev 環境で開発、feature ブランチで作業 |
+| **機能完成時** | main マージ → dev で動作確認 → prd デプロイ       |
+| **週次/月次**  | ログ確認、ディスク使用量確認、不要イメージ削除    |
+| **緊急時**     | ロールバック（手順4.2参照）                       |
 
 ---
 
@@ -68,8 +72,8 @@
 ```bash
 # ----- 起動・停止 -----
 
-# 起動（フォアグラウンド、ログ表示）
-docker compose -f docker-compose.dev.yml up
+# 再ビルドして起動（Dockerfile や pyproject.toml を変更した場合）
+docker compose -f docker-compose.dev.yml up -d --build
 
 # 起動（バックグラウンド）
 docker compose -f docker-compose.dev.yml up -d
@@ -77,8 +81,8 @@ docker compose -f docker-compose.dev.yml up -d
 # 停止
 docker compose -f docker-compose.dev.yml down
 
-# 再ビルドして起動（Dockerfile や pyproject.toml を変更した場合）
-docker compose -f docker-compose.dev.yml up --build
+# 起動（フォアグラウンド、ログ表示）
+docker compose -f docker-compose.dev.yml up
 ```
 
 ```bash
@@ -151,13 +155,114 @@ docker compose -f docker-compose.prd.yml exec web python manage.py shell
 
 ## 4. 開発ワークフロー
 
-### 4.1. 日常の開発作業
+### 4.1. Git 運用規則
+
+運用・エンハンスフェーズにおける、ブランチ・コミット・プルリクエストの命名規則と運用ルールを定めます。
+
+**基本規則**
+
+- Issueを必ず登録し、Issue駆動開発
+
+表. type一覧
+| type        | 用途                                       | 例                             |
+| :---------- | :----------------------------------------- | :----------------------------- |
+| `feat/`     | 新機能追加                                 | `feat/123-add-user-auth`       |
+| `fix/`      | バグ修正                                   | `fix/45-card-image-not-shown`  |
+| `refactor/` | リファクタリング                           | `refactor/67-optimize-queries` |
+| `docs/`     | ドキュメント更新                           | `docs/89-update-readme`        |
+| `test/`     | テストコードの追加・修正                   | `test/12-add-card-model-tests` |
+| `chore/`    | 雑務（設定ファイル変更、依存関係更新など） | `chore/34-update-deps`         |
+
+
+#### 4.1.1. ブランチ命名規則
+
+**フォーマット**: `<type>/<issue番号>-<description>`
+
+**命名ルール**:
+
+- **Issue番号を必ず含める**: GitHub Issues で管理しているタスクと1対1で対応させる
+- **説明は英語・ケバブケース**: 簡潔に変更内容を表す（例: `add-login`, `fix-null-error`）
+- **全て小文字**: 大文字は使用しない
+
+**例**:
 
 ```bash
-# ===== Step 1: feature ブランチを作成 =====
+# Issue #42 「ユーザー認証機能を追加」の場合
+git checkout -b feat/42-add-user-authentication
+
+# Issue #15 「カード検索でエラーが発生する」の場合
+git checkout -b fix/15-card-search-error
+```
+
+#### 4.1.2. コミットメッセージ規則
+
+[Conventional Commits](https://www.conventionalcommits.org/ja/) に準拠した簡易フォーマットを採用します。
+
+**フォーマット**:
+
+```text
+<type>: <subject>
+
+[optional body]
+```
+
+**ルール**:
+
+- **Typeは必須**: メッセージの先頭に必ず `<type>:` を付ける
+- **Subjectは簡潔に**: 50文字以内を目安に、変更内容を明確に記述
+- **日本語OK**: 日本語でのSubject記述を許容
+
+**例**:
+
+```text
+feat: ユーザー認証機能を追加
+
+JWT認証を使用し、ログイン・ログアウトを実装。
+```
+
+```text
+fix: カード検索でNullPointerExceptionが発生する問題を修正
+```
+
+#### 4.1.3. プルリクエスト (PR) 運用規則
+
+**基本方針**:
+
+- `main` ブランチへの直接コミットは**禁止**
+- すべての変更は作業ブランチからのPRを経由する
+- マージ方法は **Squash and Merge** を使用する。(merge commit, rebaseは設定で拒否済)
+
+**PRタイトルの命名規則**:
+
+コミットメッセージと同様のフォーマットを使用します。
+※Default commit message = `Pull request title`に設定済み
+
+```text
+<type>: <subject> (#<issue番号>)
+```
+
+**PRテンプレート**:
+
+本リポジトリでは `.github/PULL_REQUEST_TEMPLATE.md` にテンプレートを用意しています。
+PR作成時に自動で記入フォームが表示されるので、各項目を埋めてください。
+
+**Squash and Merge を使用する理由**:
+
+- `main` ブランチのコミット履歴がクリーンに保たれる
+- 1つのPR = 1つのコミットとなり、履歴の追跡が容易
+- 作業中の細かいコミット（WIP、typo修正など）がまとめられる
+
+---
+
+### 4.2. 日常の開発作業
+
+```bash
+# ===== Step 1: 作業ブランチを作成 =====
+# ブランチ命名規則: <type>/<issue番号>-<description>
+# 例: Issue #42 「ユーザー認証機能を追加」の場合
 git checkout main
 git pull origin main
-git checkout -b feature/新機能名
+git checkout -b feat/42-add-user-authentication
 
 # ===== Step 2: dev 環境を起動 =====
 docker compose -f docker-compose.dev.yml up
@@ -177,32 +282,33 @@ docker-compose -f docker-compose.dev.yml exec web npm run build
 
 # ===== Step 4: 変更をコミット =====
 git add .
-git commit -m "feat: 新機能の説明"
+git commit -m "feat: ユーザー認証機能を追加"
 
 # ===== Step 5: リモートにプッシュ =====
-git push origin feature/新機能名
+git push origin feat/42-add-user-authentication
 ```
 
-### 4.2. main ブランチへのマージ
+### 4.3. main ブランチへのマージ
 
 ```bash
-# Step 1: feature ブランチをプッシュ（3.1 の Step 5 で完了済み）
+# Step 1: 作業ブランチをプッシュ（4.2 の Step 5 で完了済み）
 
 # Step 2: GitHub で PR を作成
 # - ブラウザで GitHub リポジトリにアクセス
 # - 「Compare & pull request」ボタンをクリック
-# - タイトルと説明を入力して「Create pull request」
-# - 差分を確認して「Merge pull request」→「Confirm merge」
+# - PRタイトルは「feat: ユーザー認証機能を追加 (#42)」のように記載
+# - テンプレートに従って説明を入力して「Create pull request」
+# - 差分を確認して「Squash and merge」→「Confirm squash and merge」
 
 # Step 3: ローカルの main を更新
 git checkout main
 git pull origin main
 
-# Step 4: 不要になった feature ブランチを削除
-git branch -d feature/新機能名
+# Step 4: 不要になった作業ブランチを削除
+git branch -d feat/42-add-user-authentication
 ```
 
-### 4.3. マージ後の動作確認
+### 4.4. マージ後の動作確認
 
 **マージが完了したら、dev 環境で main ブランチの動作を確認します。**
 
