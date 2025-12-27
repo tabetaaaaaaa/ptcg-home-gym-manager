@@ -27,7 +27,7 @@ class CardAnalyzer:
     # YOLO-World設定 (Notebookの検証結果に基づく)
     YOLO_MODEL_NAME = 'yolov8s-worldv2.pt'
     DETECT_CLASSES = ["one card"]
-    CONF_THRESHOLD = 0.01
+    CONF_THRESHOLD = 0.014
     IOU_THRESHOLD = 0.1
     MAX_DET = 30
     IMG_SIZE = 640
@@ -36,18 +36,20 @@ class CardAnalyzer:
     GEMINI_MODEL_NAME = 'gemini-2.5-flash' 
     
     GEMINI_PROMPT = """
-    あなたはポケモンカードの専門家です。
-    画像内の要素を**必ず左上から右下へ順に**読み取り、以下のJSON配列形式のみを出力してください。
+    あなたはポケモンカードと画像解析の専門家です。
+    添付画像は、**赤字のID番号**に従って、ポケモンカードに限らず、長方形の画像要素をgrid形式で並べたものです。
+    画像内の**赤字でidが振られた長方形要素**を**必ず左上から右下へ順に**読み取り、以下のJSON配列形式のみを出力してください。
     画像品質が悪くても推測して補完してください。
     Markdown記法は一切含めないでください。
     **idは必ず0始まりとしてください**
 
     # データ定義
     - 全ての項目は必須です。値がない場合は `null` (文字列, 数値) または `[]` (配列)、`false` (真偽値)、を使用してください。
+    - `id`: 画像内の**赤字のid**
     - `category`: "pokemon", "trainers", "Other" (ポケモンカード以外の場合)
     - `trainer_type`: "グッズ", "サポート", "スタジアム", "ポケモンのどうぐ" (pokemon/Otherの場合は null)
     - `special_trainers`: `category`が"trainers"でカード色が蛍光ピンクの場合のみ"ACE SPEC"
-    - `evolves_from`, `evolution_stage`: Pokemonの進化元・進化段階を表す。カード右上に記載されていることが多い。**画像品質が悪くても推測して補完**すること。
+    - `evolves_from`, `evolution_stage`: Pokemonの進化元・進化段階を表す。カード左上に記載されていることが多い。**画像品質が悪くても推測して補完**すること。
     - `special_features`: Pokemonの特殊分類("ポケモンex", "テラスタル"等)。trainers/Otherの場合は null
     - `hp`, `type`, `move_types`: Pokemonの属性。trainers/Otherの場合は [] (空配列)。同一types, move_typesは一度のみ記載。
     - `weakness`, `resistance`: Pokemonの属性。trainers/Otherの場合は [] (空配列)。カード下部に記載されていることが多い。
