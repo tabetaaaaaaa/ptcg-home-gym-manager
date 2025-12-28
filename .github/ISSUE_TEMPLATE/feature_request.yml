@@ -1,6 +1,6 @@
 name: 機能リクエスト
 description: 新しい機能やアイデアを提案してください
-title: " "
+title: "[FEAT] "
 labels: ["feat"]
 body:
   - type: markdown

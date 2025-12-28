@@ -1,6 +1,4 @@
 title: "[IDEA] "
-labels: [""]
-category: Ideas
 body:
   - type: textarea
     id: idea-description

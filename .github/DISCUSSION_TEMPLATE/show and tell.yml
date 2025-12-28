@@ -1,6 +1,4 @@
 title: "[SHOW] "
-labels: [""]
-category:   
 body:
   - type: textarea
     id: showcase

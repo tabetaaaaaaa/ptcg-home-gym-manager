@@ -1,6 +1,6 @@
 name: バグ報告
 description: 不具合の改善にご協力ください
-title: " "
+title: "[FIX] "
 labels: ["fix"]
 body:
   - type: markdown

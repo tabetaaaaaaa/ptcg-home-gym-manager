@@ -1,6 +1,4 @@
 title: "[Q&A] "
-labels: ["question"]
-category: Q&A
 body:
   - type: textarea
     id: question
