@@ -1,9 +1,3 @@
-# study
-docs/study
-docs/demo
-# docs/post
-# docs/00_tasks.md
-
 # Environments
 .env
 .env.dev
@@ -41,3 +35,6 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# AI Models
+*.pt
