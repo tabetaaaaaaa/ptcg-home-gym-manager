@@ -35,7 +35,7 @@
 
 ## 📖 概要 (Overview)
 
-> [!INFO]
+> [!IMPORTANT] このアプリとは…
 > **TCGプレイヤーのための在庫管理アプリ**
 
 P TCG Home Gym Manager は、自宅のカード在庫を効率的に管理するためのオープンソースのWebアプリケーションです。
