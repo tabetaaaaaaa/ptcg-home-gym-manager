@@ -64,7 +64,7 @@ P TCG Home Gym Manager は、自宅のカード在庫を効率的に管理する
 👉 **[アーキテクチャ設計 (docs/20_architecture.md)](docs/20_architecture.md)**
 
 > [!NOTE]
-> **本番環境での運用について**
+> **本番環境での運用について**: 
 > 本リポジトリに含まれる `docker-compose.prd.yml` は、個人運用を目的とした最小構成です。
 
 ## 🚀 セットアップ手順 (Getting Started)
@@ -137,4 +137,3 @@ Not affiliated with Nintendo, Creatures, GAME FREAK, or The Pokémon Company.
 - GitHub: [@tabetaaaaaaa](https://github.com/tabetaaaaaaa)
 - Twitter: [@Tabetaaaaaaa](https://x.com/tabetaaaaaaa)
 - Zenn: [たべたああああああ](https://zenn.dev/tabetaaaaaaa)
-- note: [Tabetaaaaaaa](https://note.com/tabetaaaaaaa)

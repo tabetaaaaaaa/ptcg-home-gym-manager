@@ -234,11 +234,11 @@ fix: カード検索でNullPointerExceptionが発生する問題を修正
 
 **PRタイトルの命名規則**:
 
-コミットメッセージと同様のフォーマットを使用します。
+ブランチ名と同様のフォーマットを使用します。自動で末尾にPR番号も付与されます。
 ※Default commit message = `Pull request title`に設定済み
 
 ```text
-<type>: <subject> (#<issue番号>)
+<type>/<issue番号> <subject>
 ```
 
 **PRテンプレート**:
