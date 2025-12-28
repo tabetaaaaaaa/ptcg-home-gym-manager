@@ -1,0 +1,18 @@
+title: "[Q&A] "
+labels: ["question"]
+category: Q&A
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: 質問内容
+      description: 分からないことや困っていることを書いてください。
+      placeholder: Dockerでの起動方法について...
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: 試したこと・詳細
+      description: すでに試したことや、関連する情報があれば教えてください。
+      placeholder: ドキュメントの〇〇ページを見たのですが...

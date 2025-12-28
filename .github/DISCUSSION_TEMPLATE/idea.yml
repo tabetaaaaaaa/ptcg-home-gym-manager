@@ -1,0 +1,20 @@
+title: "[IDEA] "
+labels: [""]
+category: Ideas
+body:
+  - type: textarea
+    id: idea-description
+    attributes:
+      label: アイデアの概要
+      description: どんな機能や改善があったら面白いと思いますか？
+      placeholder: カードの画像認識をもっと〇〇にできないか...
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: 具体的な利用シーン
+      description: その機能があると、どんな時に便利になりますか？
+      placeholder: デッキ構築の際、持っていないカードを一目で...
+    validations:
+      required: true
