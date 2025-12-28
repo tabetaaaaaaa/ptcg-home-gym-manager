@@ -1,0 +1,17 @@
+title: "[SHOW] "
+labels: [""]
+category:   
+body:
+  - type: textarea
+    id: showcase
+    attributes:
+      label: 紹介したいこと
+      description: 自慢のデッキ構築環境や、このアプリの便利な使い方をシェアしてください！
+      placeholder: 私の最強の環境構築を紹介します...
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: 詳細・スクリーンショット
+      description: 画像や詳細な説明があればぜひ載せてください。

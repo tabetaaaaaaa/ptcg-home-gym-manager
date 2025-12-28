@@ -1,0 +1,31 @@
+name: 機能リクエスト
+description: 新しい機能やアイデアを提案してください
+title: " "
+labels: ["feat"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        新しい機能の提案ありがとうございます！
+        
+        もし「実装するかどうか迷っているアイデア」や「単なる質問」の場合は、**Discussions**での投稿もご検討ください。
+  - type: textarea
+    id: description
+    attributes:
+      label: 解決したい課題
+      description: この機能要望は何らかの問題に関連していますか？背景を教えてください。
+      placeholder: いつも〇〇の作業が面倒で...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 提案内容
+      description: どのような解決策（機能）が欲しいか、具体的に説明してください。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 代替案
+      description: 他に検討した解決策があれば教えてください。
