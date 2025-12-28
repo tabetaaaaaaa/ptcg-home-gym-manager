@@ -8,27 +8,27 @@
   <a href="https://www.gnu.org/licenses/agpl-3.0">
     <img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg?style=flat-square" alt="License: AGPL v3" />
   </a>
-  <img src="https://img.shields.io/github/last-commit/Tabetaaaaaaa/pokeapp?style=flat-square" alt="GitHub last commit" />
-  <img src="https://img.shields.io/github/issues/Tabetaaaaaaa/pokeapp?style=flat-square" alt="GitHub issues" />
-  <img src="https://img.shields.io/github/repo-size/Tabetaaaaaaa/pokeapp?style=flat-square" alt="GitHub repo size" />
+  <img src="https://img.shields.io/github/last-commit/Tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub last commit" />
+  <img src="https://img.shields.io/github/issues/Tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub issues" />
+  <img src="https://img.shields.io/github/repo-size/Tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub repo size" />
 </div>
 
 <br>
 
 <!-- Tech Stack Badges -->
 <div align="center">
-  <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python" />
-  <img src="https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white" alt="Django" />
-  <img src="https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/google%20gemini-8E75B2?style=for-the-badge&logo=google%20gemini&logoColor=white" alt="Google Gemini" />
-  <br>
-  <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
-  <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/daisyui-5A0EF8?style=for-the-badge&logo=daisyui&logoColor=white" alt="DaisyUI" />
-  <img src="https://img.shields.io/badge/htmx-%233D72D7.svg?style=for-the-badge&logo=htmx&logoColor=white" alt="htmx" />
-  <br>
-  <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-  <img src="https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi&logoColor=white" alt="Raspberry Pi" />
+    <img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Python" />
+    <img src="https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white" alt="Django" />
+    <img src="https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/google%20gemini-8E75B2?style=for-the-badge&logo=google%20gemini&logoColor=white" alt="Google Gemini" />
+    <br>
+    <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
+    <img src="https://img.shields.io/badge/htmx-%233D72D7.svg?style=for-the-badge&logo=htmx&logoColor=white" alt="htmx" />
+    <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/daisyui-5A0EF8?style=for-the-badge&logo=daisyui&logoColor=white" alt="DaisyUI" />
+    <br>
+    <img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+    <img src="https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi&logoColor=white" alt="Raspberry Pi" />
 </div>
 
 ---
@@ -79,8 +79,8 @@ Docker Desktop がインストールされていることを前提とします�
 
 ### 1. リポジトリのクローン
 ```bash
-git clone https://github.com/Tabetaaaaaaa/pokeapp.git
-cd pokeapp
+git clone https://github.com/Tabetaaaaaaa/ptcg-home-gym-manager.git
+cd ptcg-home-gym-manager
 ```
 
 ### 2. 環境変数の設定
