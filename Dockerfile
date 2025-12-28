@@ -30,7 +30,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     libgl1 \
     libglib2.0-0 \
+    wget \
     && rm -rf /var/lib/apt/lists/*
+
+# AIモデルのダウンロード (yolov8s-worldv2.pt)
+RUN wget -q -O /app/yolov8s-worldv2.pt https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8s-worldv2.pt
 
 # 環境変数の設定
 ENV PYTHONDONTWRITEBYTECODE 1
