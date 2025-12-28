@@ -8,9 +8,9 @@
   <a href="https://www.gnu.org/licenses/agpl-3.0">
     <img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg?style=flat-square" alt="License: AGPL v3" />
   </a>
-  <img src="https://img.shields.io/github/last-commit/Tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub last commit" />
-  <img src="https://img.shields.io/github/issues/Tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub issues" />
-  <img src="https://img.shields.io/github/repo-size/Tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub repo size" />
+  <img src="https://img.shields.io/github/last-commit/tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub last commit" />
+  <img src="https://img.shields.io/github/issues/tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub issues" />
+  <img src="https://img.shields.io/github/repo-size/tabetaaaaaaa/ptcg-home-gym-manager?style=flat-square" alt="GitHub repo size" />
 </div>
 
 <br>
@@ -79,7 +79,7 @@ Docker Desktop がインストールされていることを前提とします�
 
 ### 1. リポジトリのクローン
 ```bash
-git clone https://github.com/Tabetaaaaaaa/ptcg-home-gym-manager.git
+git clone https://github.com/tabetaaaaaaa/ptcg-home-gym-manager.git
 cd ptcg-home-gym-manager
 ```
 
@@ -128,5 +128,9 @@ Issuesの作成やプルリクエストを送る前に、以下のガイドラ�
 
 **Tabetaaaaaaa**
 
-- GitHub: [@Tabetaaaaaaa](https://github.com/Tabetaaaaaaa)
-- Twitter: 
+SNSアカウントだけは多々あります。
+
+- GitHub: [@tabetaaaaaaa](https://github.com/tabetaaaaaaa)
+- Twitter: [@Tabetaaaaaaa](https://x.com/tabetaaaaaaa)
+- Zenn: [たべたああああああ](https://zenn.dev/tabetaaaaaaa)
+- note: [Tabetaaaaaaa](https://note.com/tabetaaaaaaa)
