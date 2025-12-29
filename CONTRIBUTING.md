@@ -23,7 +23,7 @@ P TCG Home Gym Manager への貢献をご検討いただき、ありがとうご
 
 バグの報告や新しい機能の提案は、GitHub Issues/Discussions を使用してください。
 
-👉 **[GitHub機能の使い分けガイド](docs/50_github_usage.md)**
+- **[GitHub機能の使い分けガイド](docs/50_github_usage.md)**
 
 ## 行動規範 (Code of Conduct)
 
