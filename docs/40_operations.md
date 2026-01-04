@@ -113,7 +113,7 @@ docker compose -f docker-compose.dev.yml exec web python manage.py shell
 
 ```bash
 # ----- CSS 管理コマンド -----
-docker-compose -f docker-compose.dev.yml exec web npm run build
+docker run --rm -v "$(pwd):/app" -w /app node:20-slim /bin/bash -c "npm install && npm run build"
 ```
 
 ### 3.2. prd 環境
@@ -278,7 +278,7 @@ docker compose -f docker-compose.dev.yml exec web python manage.py makemigration
 docker compose -f docker-compose.dev.yml exec web python manage.py migrate
 
 # - CSSを明示的に再ビルドしたい場合：
-docker-compose -f docker-compose.dev.yml exec web npm run build
+docker run --rm -v "$(pwd):/app" -w /app node:20-slim /bin/bash -c "npm install && npm run build"
 
 # ===== Step 4: 変更をコミット =====
 git add .
