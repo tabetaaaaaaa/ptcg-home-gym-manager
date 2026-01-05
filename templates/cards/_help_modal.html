@@ -177,13 +177,12 @@
             <form method="dialog">
                 <button class="btn btn-primary px-8 rounded-full">わかった！</button>
             </form>
-            <a href="https://github.com/tabetaaaaaaa/ptcg-home-gym-manager/wiki" target="_blank" rel="noopener noreferrer" class="btn btn-ghost px-8 rounded-full">わからない</a>
+            <button type="button" onclick="document.getElementById('help-modal').close(); document.getElementById('faq-modal').showModal();" class="btn btn-ghost px-8 rounded-full">わからない</button>
         </div>
     </div>
     <form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
         <button>close</button>
     </form>
-</dialog>
 
 <script>
     (function() {

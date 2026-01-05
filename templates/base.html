@@ -102,7 +102,7 @@
                     <span class="text-xs font-bold opacity-30 tracking-widest uppercase select-none">Info</span>
                     <div class="flex gap-3">
                         <a href="https://github.com/tabetaaaaaaa/ptcg-home-gym-manager/wiki" target="_blank" rel="noopener noreferrer" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium">About us</a>
-                        <a href="https://github.com/tabetaaaaaaa/ptcg-home-gym-manager/wiki" target="_blank" rel="noopener noreferrer" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium">For developers</a>
+                        <button onclick="document.getElementById('faq-modal').showModal()" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium">FAQ</button>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -190,6 +190,7 @@
             }
         });
     </script>
+    {% include "cards/_faq_modal.html" %}
 
 </body>
 </html>
