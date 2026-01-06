@@ -2,6 +2,19 @@
 
 P TCG Home Gym Manager への貢献をご検討いただき、ありがとうございます🎉
 
+## バグ報告 / 機能要望
+
+バグの報告や新しい機能の提案は、GitHub Issues/Discussions を使用してください。
+
+- **[GitHub機能の使い分けガイド](docs/50_github_usage.md)**
+
+## 行動規範 (Code of Conduct)
+
+すべての参加者が快適に活動できるよう、行動規範を定めています。
+プロジェクトに参加する前に必ずご一読ください。
+
+- **[行動規範 (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)**
+
 ## 開発を始める前に
 
 開発環境のセットアップやプロジェクト構成については、以下のドキュメントを参照してください。
@@ -18,16 +31,3 @@ P TCG Home Gym Manager への貢献をご検討いただき、ありがとうご
   - ブランチ命名規則（`feat/`, `fix/` 等）
   - コミットメッセージ規則（Conventional Commits 準拠）
   - プルリクエスト運用規則
-
-## バグ報告 / 機能要望
-
-バグの報告や新しい機能の提案は、GitHub Issues/Discussions を使用してください。
-
-- **[GitHub機能の使い分けガイド](docs/50_github_usage.md)**
-
-## 行動規範 (Code of Conduct)
-
-すべての参加者が快適に活動できるよう、行動規範を定めています。
-プロジェクトに参加する前に必ずご一読ください。
-
-- **[行動規範 (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)**
