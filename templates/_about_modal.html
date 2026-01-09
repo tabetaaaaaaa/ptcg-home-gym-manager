@@ -1,0 +1,65 @@
+{% load static %}
+<dialog id="about-modal" class="modal">
+    <!-- アトモスフィアデザイン: 柔らかい光とガラスの質感、ミニマルな情報構成 -->
+    <div class="modal-box w-auto max-w-sm bg-base-100/60 backdrop-blur-xl border border-white/40 shadow-2xl rounded-[2rem] p-10 relative overflow-hidden">
+        
+        <!-- 背景装飾（ふんわりとしたオーブ） -->
+        <div class="absolute -top-20 -left-20 w-60 h-60 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute -bottom-20 -right-20 w-60 h-60 bg-secondary/20 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-accent/10 rounded-full blur-2xl"></div>
+
+        <!-- 閉じるボタン -->
+        <form method="dialog">
+            <button class="absolute top-5 right-5 text-base-content/40 hover:text-base-content transition-colors z-20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </form>
+
+        <div class="relative z-10 text-center">
+            <!-- 名前 -->
+            <h3 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-base-content to-base-content/50 tracking-tighter mb-10 mt-2">
+                Tabetaaaaaaa
+            </h3>
+
+            <!-- SNSリンク (横並び・グラスモーフィズムスタイル) -->
+            <div class="flex justify-center gap-4">
+                <!-- GitHub -->
+                <a href="https://github.com/tabetaaaaaaa" target="_blank" rel="noopener noreferrer" 
+                   class="btn btn-circle btn-lg border-0 bg-base-content/5 hover:bg-[#24292e] hover:text-white hover:scale-110 transition-all duration-300 text-[#24292e] shadow-sm backdrop-blur-md group">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405 1.02 0 2.04.135 3 .405 2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.92 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                </a>
+
+                <!-- X (Twitter) -->
+                <a href="https://x.com/tabetaaaaaaa" target="_blank" rel="noopener noreferrer"
+                   class="btn btn-circle btn-lg border-0 bg-base-content/5 hover:bg-black hover:text-white hover:scale-110 transition-all duration-300 text-black shadow-sm backdrop-blur-md">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+
+                <!-- Zenn -->
+                <a href="https://zenn.dev/tabetaaaaaaa" target="_blank" rel="noopener noreferrer"
+                   class="btn btn-circle btn-lg border-0 bg-[#3EA8FF]/10 hover:bg-[#3EA8FF] hover:scale-110 transition-all duration-300 shadow-sm backdrop-blur-md group relative overflow-hidden">
+                    <div class="w-8 h-8 relative">
+                        <img src="{% static 'images/brand/zenn.svg' %}" alt="Zenn" class="w-full h-full object-contain group-hover:brightness-[10] transition-all duration-300" />
+                    </div>
+                </a>
+
+                <!-- Qiita -->
+                <a href="https://qiita.com/tabetaaaaaaa" target="_blank" rel="noopener noreferrer"
+                   class="btn btn-circle btn-lg border-0 bg-[#55C500]/10 hover:bg-[#55C500] hover:scale-110 transition-all duration-300 shadow-sm backdrop-blur-md group">
+                    <div class="w-8 h-8 relative">
+                         <img src="{% static 'images/brand/qiita.png' %}" alt="Qiita" class="w-full h-full object-contain group-hover:brightness-[10] transition-all duration-300" />
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop bg-base-100/30 backdrop-blur-sm">
+        <button>close</button>
+    </form>
+</dialog>

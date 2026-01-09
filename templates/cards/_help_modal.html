@@ -173,16 +173,16 @@
             </div>
         </div>
 
-        <div class="px-8 py-6 bg-base-200 flex justify-end">
+        <div class="px-8 py-6 bg-base-200 flex justify-end gap-3">
             <form method="dialog">
                 <button class="btn btn-primary px-8 rounded-full">わかった！</button>
             </form>
+            <button type="button" onclick="document.getElementById('help-modal').close(); document.getElementById('faq-modal').showModal();" class="btn btn-ghost px-8 rounded-full">わからない</button>
         </div>
     </div>
     <form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
         <button>close</button>
     </form>
-</dialog>
 
 <script>
     (function() {

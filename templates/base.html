@@ -90,10 +90,28 @@
     </main>
 
     {# フッター #}
-    <footer class="footer footer-center p-4 bg-base-300 text-base-content">
-        <aside>
-            <p>Copyright © {% now "Y" %} - All right reserved by Tabetaaaaaaa</p>
-        </aside>
+    <footer class="bg-base-200 text-base-content py-4 mt-8">
+        <div class="container mx-auto px-4 flex flex-col-reverse md:flex-row justify-between items-center gap-4 text-sm">
+            <aside class="flex items-center">
+                <p class="cursor-default">
+                    &copy; {% now "Y" %} Tabetaaaaaaa. All rights reserved.
+                </p>
+            </aside>
+            <nav class="flex flex-col sm:flex-row gap-x-8 gap-y-2 items-center">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold opacity-30 tracking-widest uppercase select-none">Info</span>
+                    <div class="flex gap-3">
+                        <button onclick="document.getElementById('about-modal').showModal()" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium">About us</button>
+                        <button onclick="document.getElementById('faq-modal').showModal()" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium">FAQ</button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold opacity-30 tracking-widest uppercase select-none">Legal</span>
+                    <button onclick="document.getElementById('terms-modal').showModal()" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium text-inherit">Terms</button>
+                    <button onclick="document.getElementById('privacy-modal').showModal()" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium text-inherit">Privacy Policy</button>
+                </div>
+            </nav>
+        </div>
     </footer>
 
     {# htmxがモーダルコンポーネントを挿入するためのターゲット #}
@@ -173,6 +191,10 @@
             }
         });
     </script>
+    {% include "cards/_faq_modal.html" %}
+    {% include "_about_modal.html" %}
+    {% include "_terms_modal.html" %}
+    {% include "_privacy_modal.html" %}
 
 </body>
 </html>

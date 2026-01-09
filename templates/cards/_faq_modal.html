@@ -1,0 +1,89 @@
+<dialog id="faq-modal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl p-0 overflow-y-auto max-h-[90vh] bg-base-100 shadow-2xl rounded-3xl">
+        {# FAQヘッダー #}
+        <div class="px-8 pt-8 pb-4 flex justify-between items-center border-b border-base-200">
+            <div>
+                <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 from-30% to-red-600 mb-1">
+                    FAQ - よくある質問
+                </h2>
+                <p class="text-sm opacity-60">お困りの内容をお探しください</p>
+            </div>
+            <form method="dialog">
+                <button class="btn btn-circle btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        {# FAQコンテンツ #}
+        <div class="p-8 space-y-4">
+            <details class="collapse collapse-plus bg-base-100 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md" name="faq-accordion">
+                <summary class="collapse-title text-lg font-bold flex items-center gap-3 text-base-content/90">
+                    <span class="text-xl font-black text-base-300">Q.</span>
+                    まとめて登録機能の精度を上げたい
+                </summary>
+                <div class="collapse-content"> 
+                    <div class="pt-2 pb-2 pl-9 text-sm opacity-80 leading-relaxed border-t border-base-100">
+                        精度の高いAI処理のための写真撮影のコツは以下の通りです：<br>
+                        <ul class="list-disc pl-5 mt-2 mb-2 space-y-1">
+                            <li>明るい場所で、<strong>ピントを合わせて</strong>撮影する（手ブレに注意）</li>
+                            <li>光の反射（白飛び）や影が入らないように調整する</li>
+                            <li>背景は単色（白や黒など）にし、カードと区別しやすくする</li>
+                            <li>カード同士の間隔を<strong>小指の太さくらい</strong>空けて並べる</li>
+                        </ul>
+                        カード全体が見切れないようにはっきりと写すと、AIが認識しやすくなります。
+                    </div>
+                </div>
+            </details>
+
+            <details class="collapse collapse-plus bg-base-100 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md" name="faq-accordion">
+                <summary class="collapse-title text-lg font-bold flex items-center gap-3 text-base-content/90">
+                    <span class="text-xl font-black text-base-300">Q.</span>
+                    進化サーチに表示されないポケモンがいる
+                </summary>
+                <div class="collapse-content"> 
+                    <div class="pt-2 pb-2 pl-9 text-sm opacity-80 leading-relaxed border-t border-base-100">
+                        進化サーチは、データベースにあるカードの「進化元」情報をたどってつながりを探しています。そのため、中間の進化段階（1進化など）が登録されていないと、進化の鎖が途切れてしまい、正しく表示されないことがあります。また、カード名や進化元名に誤字がある場合も検知できません。
+                    </div>
+                </div>
+            </details>
+
+            <details class="collapse collapse-plus bg-base-100 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md" name="faq-accordion">
+                <summary class="collapse-title text-lg font-bold flex items-center gap-3 text-base-content/90">
+                    <span class="text-xl font-black text-base-300">Q.</span>
+                    間違った情報を登録してしまった
+                </summary>
+                <div class="collapse-content"> 
+                    <div class="pt-2 pb-2 pl-9 text-sm opacity-80 leading-relaxed border-t border-base-100">
+                        カード詳細画面の「編集」ボタンから、いつでも情報を修正できます。<br>
+                        また、不要なカードは詳細画面下部のゴミ箱アイコンから削除することが可能です。
+                    </div>
+                </div>
+            </details>
+
+            <details class="collapse collapse-plus bg-base-100 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md" name="faq-accordion">
+                <summary class="collapse-title text-lg font-bold flex items-center gap-3 text-base-content/90">
+                    <span class="text-xl font-black text-base-300">Q.</span>
+                    機能やバグの報告について
+                </summary>
+                <div class="collapse-content"> 
+                    <div class="pt-2 pb-2 pl-9 text-sm opacity-80 leading-relaxed border-t border-base-100">
+                        いつもご利用ありがとうございます！<br>
+                        機能の要望やバグのご報告は、<a href="https://github.com/tabetaaaaaaa/ptcg-home-gym-manager/blob/main/CONTRIBUTING.md#%E3%83%90%E3%82%B0%E5%A0%B1%E5%91%8A--%E6%A9%9F%E8%83%BD%E8%A6%81%E6%9C%9B" target="_blank" class="link font-bold">GitHubのIssues/Discussions</a>にて受け付けています。
+                    </div>
+                </div>
+            </details>
+        </div>
+        
+        <div class="px-8 py-6 bg-base-200 flex justify-end gap-3">
+            <form method="dialog">
+                <button class="btn btn-primary px-8 rounded-full">閉じる</button>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
+        <button>close</button>
+    </form>
+</dialog>

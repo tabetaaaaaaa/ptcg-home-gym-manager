@@ -29,4 +29,4 @@ Thumbs.db
 
 # Node.js
 node_modules/
-/static/css/dist/
+# /static/css/dist/
