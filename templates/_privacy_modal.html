@@ -1,0 +1,111 @@
+<dialog id="privacy-modal" class="modal">
+    <div class="modal-box w-11/12 max-w-4xl bg-base-100 shadow-2xl rounded-2xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 z-10">✕</button>
+        </form>
+        
+        <div class="px-4 py-2">
+            <h3 class="font-black text-2xl mb-6 border-b pb-4 flex items-center gap-2">
+                プライバシーポリシー (Privacy Policy)
+            </h3>
+            
+            <div class="overflow-y-auto max-h-[70vh] pr-2 space-y-8 text-sm leading-relaxed opacity-90">
+                <p class="mb-4">
+                    本ドキュメントは、<strong>P TCG Home Gym Manager</strong>（以下「本サービス」といいます）の個人情報の取り扱いについて定めるものです。<br>
+                    ユーザーの皆様（未成年者の場合はその親権者等の法定代理人を含みます）におかれましては、本サービスを利用する前に必ず本ドキュメントをご確認いただき、同意の上でご利用ください。<br>
+                    本サービスを利用することにより、本規約のすべての条件に同意したものとみなされます。
+                </p>
+                
+                <!-- 第1条 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-2 text-neutral">第1条（収集する情報）</h4>
+                    <p class="mb-2">運営者は、本サービスの提供にあたり、以下の情報をユーザーから取得します。</p>
+                    <ol class="list-decimal list-outside pl-5 space-y-2">
+                        <li><span class="font-bold">アカウント情報</span>: 登録用メールアドレス、パスワード（暗号化して保存）、ユーザーID。</li>
+                        <li><span class="font-bold">ユーザーコンテンツ</span>: ユーザー自身が撮影・アップロードしたカード画像、およびユーザーが登録したコレクションデータ（カード名、所持数、メモ等）。</li>
+                        <li><span class="font-bold">利用状況</span>: アクセスログ、Cookie、利用端末情報、IPアドレス。</li>
+                    </ol>
+                </section>
+
+                <!-- 第2条 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-2 text-neutral">第2条（利用目的）</h4>
+                    <p class="mb-2">取得した情報は、以下の目的で利用されます。</p>
+                    <ol class="list-decimal list-outside pl-5 space-y-2">
+                        <li>本サービスの提供、本人確認、設定の保存のため。</li>
+                        <li><span class="font-bold">AI画像解析</span>: アップロードされた画像をAIに解析させ、テキスト情報を抽出するため。</li>
+                        <li><span class="font-bold">サービス改善</span>: 利用統計の作成、バグの発見・修正のため。</li>
+                        <li><span class="font-bold">広告配信</span>: ユーザーの興味最適化された広告を表示するため（Cookieを利用）。</li>
+                    </ol>
+                </section>
+
+                <!-- 第3条 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-2 text-neutral">第3条（画像データとAI学習について）</h4>
+                    <ol class="list-decimal list-outside pl-5 space-y-2">
+                        <li>
+                            <span class="font-bold">通常利用</span>: ユーザーがアップロードした画像は、本サービスの機能（表示・解析・バックアップ）を提供するために必要な範囲で、運営者が契約するクラウドサーバー（Google Cloud等）に保存・処理されます。
+                        </li>
+                        <li>
+                            <span class="font-bold">第三者APIへの提供</span>: AI解析を行うため、ユーザーの画像データは一時的に <strong>Google LLC (Gemini API / Vertex AI)</strong> へ送信されます。
+                            <ul class="list-disc list-outside pl-5 mt-1 opacity-80">
+                                <li>本サービスではGoogle Cloudの有料版API（Enterpriseプラン等）を利用しており、<strong>原則として、ユーザーの画像データがGoogleのAIモデルの学習（入力データの再利用）に使用されることはありません。</strong>（Google Cloud利用規約に準拠）</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="font-bold">AI学習への同意（オプトイン）</span>:
+                            <ul class="list-disc list-outside pl-5 mt-1 opacity-80">
+                                <li>本サービスの設定において「AI精度の向上のために画像データを提供する」旨の同意を行ったユーザーに限り、運営者は、その画像データを匿名化した上で、本サービスのAIモデルの再学習（ファインチューニング）や精度検証のために利用できるものとします。</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </section>
+
+                <!-- 第4条 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-2 text-neutral">第4条（情報の第三者提供）</h4>
+                    <p class="mb-2">運営者は、以下の場合を除き、ユーザーの個人情報を第三者に提供しません。</p>
+                    <ol class="list-decimal list-outside pl-5 space-y-2">
+                        <li>ユーザーの同意がある場合。</li>
+                        <li>法令に基づく場合。</li>
+                        <li><span class="font-bold">広告配信事業者への提供</span>: 広告配信のために、Cookie等の識別子をGoogle AdSense等の広告事業者が取得・利用する場合があります。</li>
+                    </ol>
+                </section>
+
+                <!-- 第5条 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-2 text-neutral">第5条（データの保存期間と退会）</h4>
+                    <ol class="list-decimal list-outside pl-5 space-y-2">
+                        <li><span class="font-bold">保存期間</span>: ユーザーがアカウントを保持している限り、登録データは原則として永続的に保存されます。</li>
+                        <li><span class="font-bold">退会時の処理</span>: ユーザーが退会手続きを行った場合、運営者は速やかにサーバー上の個人データ（メールアドレス、画像データ等）を削除、または個人を特定できない状態に加工します。ただし、システムのバックアップに残存するデータについては、一定期間経過後に自動的に消去されます。</li>
+                    </ol>
+                </section>
+
+                <!-- 第6条 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-2 text-neutral">第6条（プライバシーポリシーの変更）</h4>
+                    <p class="mb-2">本ポリシーの内容は、法令改正や本サービスの変更に伴い、予告なく変更されることがあります。変更後のポリシーは、本サービス上に掲載された時点で効力を生じるものとします。</p>
+                </section>
+
+                <!-- 第7条 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-2 text-neutral">第7条（お問い合わせ）</h4>
+                    <p class="mb-2">本サービスに関するお問い合わせは、以下の窓口までお願いいたします。</p>
+                    <ul class="list-disc list-outside pl-5 space-y-2">
+                        <li>運営者: Tabetaaaaaaa</li>
+                        <li>連絡先: （サイト内に設置されるお問い合わせフォーム、またはGitHub Issues）</li>
+                    </ul>
+                </section>
+
+                <!-- 附則 -->
+                <div class="text-right text-xs opacity-50 mt-8">
+                    制定日: 2026年1月6日<br>
+                    最終改定日: 2026年1月9日
+                </div>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop bg-black/40 backdrop-blur-sm">
+            <button>close</button>
+        </form>
+    </div>
+</dialog>

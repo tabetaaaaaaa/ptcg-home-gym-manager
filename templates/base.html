@@ -107,7 +107,8 @@
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="text-xs font-bold opacity-30 tracking-widest uppercase select-none">Legal</span>
-                    <a href="https://github.com/tabetaaaaaaa/ptcg-home-gym-manager/wiki" target="_blank" rel="noopener noreferrer" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium">Privacy Policy</a>
+                    <button onclick="document.getElementById('terms-modal').showModal()" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium text-inherit">Terms</button>
+                    <button onclick="document.getElementById('privacy-modal').showModal()" class="link link-hover opacity-60 hover:opacity-100 transition-opacity duration-300 font-medium text-inherit">Privacy Policy</button>
                 </div>
             </nav>
         </div>
@@ -192,6 +193,8 @@
     </script>
     {% include "cards/_faq_modal.html" %}
     {% include "_about_modal.html" %}
+    {% include "_terms_modal.html" %}
+    {% include "_privacy_modal.html" %}
 
 </body>
 </html>
