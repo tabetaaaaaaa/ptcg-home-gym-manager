@@ -1,0 +1,118 @@
+
+<!-- 画像拡大表示用モーダル (Lightbox風) -->
+<!-- <dialog>要素を使用することで、他のモーダル(Top Layer)よりもさらに前面に表示可能にする -->
+<dialog id="image-preview-modal" class="modal bg-transparent outline-none border-none">
+    
+    <!-- 背景 (クリックで閉じる) -->
+    <!-- dialog::backdropはCSSで制御されるが、クリックイベント用に見えないオーバーレイを配置 -->
+    <div class="fixed inset-0 w-full h-full z-0" onclick="closeImagePreview()"></div>
+
+    <!-- 画像コンテナ -->
+    <div class="relative z-10 flex items-center justify-center w-full h-full pointer-events-none p-4 outline-none border-none">
+        <img id="image-preview-img" 
+             src="" 
+             alt="Preview" 
+             class="max-h-[90vh] max-w-full object-contain rounded shadow-2xl pointer-events-auto transform transition-all duration-300 scale-95 opacity-0" 
+             onclick="event.stopPropagation()" />
+             
+        <!-- 閉じるボタン -->
+        <button onclick="closeImagePreview()" 
+                class="absolute top-4 right-4 btn btn-circle btn-ghost text-white pointer-events-auto bg-black bg-opacity-20 hover:bg-opacity-40">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+</dialog>
+
+<style>
+    /* モーダルのデフォルト背景を消す（Lightbox風にするため独自スタイリング） */
+    #image-preview-modal::backdrop {
+        background-color: rgba(0, 0, 0, 0.9);
+        animation: fade-in 0.3s ease-out forwards;
+    }
+    #image-preview-modal.closing::backdrop {
+        animation: fade-out 0.3s ease-in forwards;
+    }
+
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes fade-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+</style>
+
+<script>
+    /**
+     * 画像プレビューモーダルを開く
+     * @param {string} src - 画像のURL
+     */
+    function openImagePreview(src) {
+        const modal = document.getElementById('image-preview-modal');
+        const img = document.getElementById('image-preview-img');
+        
+        if (modal && img) {
+            // 画像ソースを設定
+            img.src = src;
+            
+            // クラス初期化（アニメーション用）
+            modal.classList.remove('closing');
+            img.classList.remove('scale-100', 'opacity-100');
+            img.classList.add('scale-95', 'opacity-0');
+
+            // モーダルを表示 (Top Layerに追加される)
+            try {
+                modal.showModal();
+            } catch (e) {
+                // すでに開いている場合のエラーハンドリング
+                console.error("Failed to show modal:", e);
+                return;
+            }
+            
+            // 表示後にアニメーション開始
+            requestAnimationFrame(() => {
+                img.classList.remove('scale-95', 'opacity-0');
+                img.classList.add('scale-100', 'opacity-100');
+            });
+            
+            // 背景スクロール防止
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    /**
+     * 画像プレビューモーダルを閉じる
+     */
+    function closeImagePreview() {
+        const modal = document.getElementById('image-preview-modal');
+        const img = document.getElementById('image-preview-img');
+        
+        if (modal && img) {
+            // 閉じるアニメーションクラス付与
+            modal.classList.add('closing');
+            img.classList.remove('scale-100', 'opacity-100');
+            img.classList.add('scale-95', 'opacity-0');
+            
+            // アニメーション完了後に閉じる
+            setTimeout(() => {
+                modal.close();
+                img.src = ''; // リソース解放
+                document.body.style.overflow = ''; // スクロール復帰
+                modal.classList.remove('closing'); // クラスリセット
+            }, 300);
+        }
+    }
+
+    // Escapeキーの挙動補正
+    // <dialog>はEscapeで自動で閉じてしまうが、アニメーションさせたいのでイベントをフックする
+    const modal = document.getElementById('image-preview-modal');
+    if (modal) {
+        modal.addEventListener('cancel', (event) => {
+            event.preventDefault(); // デフォルトの閉じる動作をキャンセル
+            closeImagePreview();    // アニメーション付きで閉じる
+        });
+    }
+</script>
