@@ -2,11 +2,14 @@ name: バグ報告
 description: 不具合の改善にご協力ください
 title: "[FIX] "
 labels: ["fix"]
+projects: ["PTCG"]
 body:
   - type: markdown
     attributes:
       value: |
         バグ報告ありがとうございます！以下の項目に入力をお願いします。
+
+        もし「広く意見を募りたいバグ」や「質問」の場合は、**Discussions**での投稿もご検討ください。
   - type: textarea
     id: description
     attributes:
@@ -35,3 +38,5 @@ body:
         - OS: [例: macOS, Windows]
         - ブラウザ: [例: Chrome, Safari]
         - バージョン: [例: 1.0.0]
+    validations:
+      required: true

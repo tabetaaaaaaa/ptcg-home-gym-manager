@@ -576,11 +576,28 @@ def bulk_register_edit_item(request, item_id):
                     # 表示用名称リストの更新
                     if key in ['types', 'special_features', 'move_types', 'special_trainers']:
                         item[f'{key}_names'] = [v.name for v in value]
+                    
+                    # プレビュー表示用データ(色情報など含む)の再構築
+                    if key in ['types', 'weakness', 'resistance', 'move_types']:
+                        item[f'{key}_preview'] = [
+                            {
+                                'name': v.name,
+                                'bg_color': v.bg_color,
+                                'text_color': v.text_color
+                            } for v in value
+                        ]
+
                 elif value is None:
                     item[key] = None
                     # Noneになった場合の名称クリア
                     if key in ['category', 'evolution_stage', 'trainer_type']:
                         item[f'{key}_name'] = None
+                    # ManyToMany系のクリア
+                    if key in ['types', 'special_features', 'move_types', 'special_trainers']:
+                        item[f'{key}_names'] = []
+                    if key in ['types', 'weakness', 'resistance', 'move_types']:
+                        item[f'{key}_preview'] = []
+                        
                 else:
                     item[key] = value
 
@@ -724,20 +741,11 @@ def bulk_register_submit(request):
         alert_class = "alert-success"
         message = f"<span>{registered_count}件のカードをすべて登録しました</span>"
 
-    response = HttpResponse(f"""
-        <div class='alert {alert_class} shadow-lg'>
-            <div>
-                <svg xmlns='http://www.w3.org/2000/svg' class='stroke-current flex-shrink-0 h-6 w-6' fill='none' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-                {message}
-            </div>
-        </div>
-        <script>
-            setTimeout(function() {{
-                const modal = document.getElementById('bulk-preview-modal');
-                if(modal) modal.close();
-            }}, 2000);
-        </script>
-    """)
+    context = {
+        'alert_class': alert_class,
+        'message': message
+    }
+    response = render(request, 'cards/_bulk_register_result_toast.html', context)
     response['HX-Trigger'] = json.dumps({'cardCreated': ''}) # リスト更新
     return response
 
