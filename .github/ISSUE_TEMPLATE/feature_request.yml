@@ -2,13 +2,14 @@ name: 機能リクエスト
 description: 新しい機能やアイデアを提案してください
 title: "[FEAT] "
 labels: ["feat"]
+projects: ["PTCG"]
 body:
   - type: markdown
     attributes:
       value: |
         新しい機能の提案ありがとうございます！
         
-        もし「実装するかどうか迷っているアイデア」や「単なる質問」の場合は、**Discussions**での投稿もご検討ください。
+        もし「広く意見を募りたいアイデア」や「質問」の場合は、**Discussions**での投稿もご検討ください。
   - type: textarea
     id: description
     attributes:
