@@ -751,11 +751,14 @@ def bulk_register_submit(request):
 
 def search_cards_by_name_modal(request):
     """名前でカードを検索し、結果をモーダルで表示する"""
+    from .query_builder import build_fuzzy_query
+    
     query = request.GET.get('name', '').strip()
     cards = []
+    
     if query:
-        # 名前で部分一致検索
-        cards = PokemonCard.objects.filter(name__icontains=query)
+        q_obj = build_fuzzy_query(query)
+        cards = PokemonCard.objects.filter(q_obj)
     
     return render(request, 'cards/_search_result_modal.html', {
         'query': query,
