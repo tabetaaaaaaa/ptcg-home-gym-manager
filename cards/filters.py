@@ -3,12 +3,12 @@ from django import forms
 from django.db.models import Q
 from .models import PokemonCard, Type, EvolutionStage, SpecialFeature, MoveType, TrainerType, SpecialTrainer
 from .widgets import RangeSliderWidget
+from .query_builder import build_fuzzy_query
 
 class PokemonCardFilter(django_filters.FilterSet):
     """ポケモンカードの絞り込みを行うためのFilterSet"""
     name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='icontains',
+        method='filter_by_name_fuzzy',
         label='カード名',
         widget=forms.TextInput(attrs={'class': 'input input-bordered w-full'})
     )
@@ -99,6 +99,14 @@ class PokemonCardFilter(django_filters.FilterSet):
         # fields の指定により、GETパラメータのキー名とフィルタのフィールド名が一致する
         fields = ['name', 'types', 'evolution_stage', 'special_features', 'move_types', 'weakness', 'resistance', 'hp', 'retreat_cost', 'ordering']
 
+    def filter_by_name_fuzzy(self, queryset, name, value):
+        """名前であいまい検索（ひらがな/カタカナ揺らぎ + スペース区切りAND）"""
+        if not value:
+            return queryset
+        
+        q_obj = build_fuzzy_query(value)
+        return queryset.filter(q_obj)
+
     def filter_range_with_null(self, queryset, name, value):
         """
         null（未設定）の値を 0 として扱い、指定された範囲に含まれる場合に表示するカスタムフィルタ。
@@ -137,8 +145,7 @@ class PokemonCardFilter(django_filters.FilterSet):
 class TrainersCardFilter(django_filters.FilterSet):
     """トレーナーズカードの絞り込みを行うためのFilterSet"""
     name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='icontains',
+        method='filter_by_name_fuzzy',
         label='カード名',
         widget=forms.TextInput(attrs={'class': 'input input-bordered w-full'})
     )
@@ -191,4 +198,12 @@ class TrainersCardFilter(django_filters.FilterSet):
     class Meta:
         model = PokemonCard
         fields = ['name', 'trainer_type', 'special_trainers', 'memo', 'ordering']
+
+    def filter_by_name_fuzzy(self, queryset, name, value):
+        """名前であいまい検索（ひらがな/カタカナ揺らぎ + スペース区切りAND）"""
+        if not value:
+            return queryset
+        
+        q_obj = build_fuzzy_query(value)
+        return queryset.filter(q_obj)
 

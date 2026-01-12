@@ -18,6 +18,25 @@
         </div>
 
         {# FAQコンテンツ #}
+        {% comment %} 
+        記入例
+        <details class="collapse collapse-plus bg-base-100 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md" name="faq-accordion">
+            <summary class="collapse-title text-lg font-bold flex items-center gap-3 text-base-content/90">
+                <span class="text-xl font-black text-base-300">Q.</span>
+                質問内容
+            </summary>
+            <div class="collapse-content"> 
+                <div class="pt-2 pb-2 pl-9 text-sm opacity-80 leading-relaxed border-t border-base-100">
+                    回答まとめ：<br>
+                    <ul class="list-disc pl-5 mt-2 mb-2 space-y-1">
+                        <li>箇条書き１</li>
+                        <li>箇条書き２</li>
+                    </ul>
+                    回答結論
+                </div>
+            </div>
+        </details> 
+        {% endcomment %}
         <div class="p-8 space-y-4">
             <details class="collapse collapse-plus bg-base-100 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md" name="faq-accordion">
                 <summary class="collapse-title text-lg font-bold flex items-center gap-3 text-base-content/90">
@@ -34,6 +53,18 @@
                             <li>カード同士の間隔を<strong>小指の太さくらい</strong>空けて並べる</li>
                         </ul>
                         カード全体が見切れないようにはっきりと写すと、AIが認識しやすくなります。
+                    </div>
+                </div>
+            </details>
+
+            <details class="collapse collapse-plus bg-base-100 shadow-sm rounded-2xl group transition-all duration-300 hover:shadow-md" name="faq-accordion">
+                <summary class="collapse-title text-lg font-bold flex items-center gap-3 text-base-content/90">
+                    <span class="text-xl font-black text-base-300">Q.</span>
+                    画像を拡大して確認したい
+                </summary>
+                <div class="collapse-content"> 
+                    <div class="pt-2 pb-2 pl-9 text-sm opacity-80 leading-relaxed border-t border-base-100">
+                        カードモードあるいはテーブルモードの詳細画面に入ると、画像をクリックして拡大表示することができます。
                     </div>
                 </div>
             </details>
