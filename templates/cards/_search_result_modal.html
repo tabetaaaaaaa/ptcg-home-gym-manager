@@ -1,9 +1,12 @@
 {% load static %}
 <dialog id="search-result-modal" class="modal">
     <div class="modal-box w-11/12 max-w-4xl">
-        <h3 class="font-bold text-lg mb-4">
+        <h3 class="font-bold text-lg mb-2">
             「{{ query }}」の検索結果 ({{ cards|length }}件)
         </h3>
+        <p class="text-error text-sm mb-4">
+            🔔 ヒント：ここで所持数を更新したら、戻って「追加しない」にチェックを入れると、同じカードが二重に登録されません。
+        </p>
         
         <div class="overflow-x-auto border rounded-lg max-h-[60vh]">
             <table class="table table-zebra w-full table-compact">
@@ -20,11 +23,10 @@
                     {% for card in cards %}
                     <tr>
                         <td class="text-center p-1">
-                            {% if card.image %}
-                                <img src="{{ card.image.url }}" alt="{{ card.name }}" class="w-10 h-14 object-contain mx-auto border bg-base-200 rounded">
-                            {% else %}
-                                <img src="{% static 'images/nonepic.png' %}" alt="{{ card.name }}" class="w-10 h-14 object-contain mx-auto border bg-base-200 rounded">
-                            {% endif %}
+                            <img src="{% if card.image %}{{ card.image.url }}{% else %}{% static 'images/nonepic.png' %}{% endif %}"
+                                alt="{{ card.name }}"
+                                class="w-10 h-14 object-contain mx-auto border bg-base-200 rounded"
+                                onclick="openImagePreview(this.src)" />
                         </td>
                         <td class="font-bold">
                             {{ card.name }}
