@@ -111,14 +111,15 @@ class CardDataMapper:
         mapped['special_features'] = []
         mapped['special_trainers'] = []
 
-        # 1. ACE SPEC (is_ace_spec フラグ または special_trainers 文字列)
-        is_ace_spec = raw_item.get('is_ace_spec')
-        special_trainers_raw = raw_item.get('special_trainers')
-        
-        # フラグまたは文字列で検知
-        if is_ace_spec is True or special_trainers_raw == "ACE SPEC":
+        # 1. トレーナーズの特別分類 (special_trainers)
+        # 文字列リストまたは単一文字列に対応 (例: ["ACE SPEC"], "ACE SPEC")
+        st_raw = raw_item.get('special_trainers')
+        mapped['special_trainers'] = self._map_many_to_many(st_raw, self._special_trainers)
+
+        # is_ace_spec フラグがある場合は ACE SPEC を追加 (重複排除)
+        if raw_item.get('is_ace_spec') is True:
             ace_spec = self._special_trainers.get('ACE SPEC')
-            if ace_spec:
+            if ace_spec and ace_spec not in mapped['special_trainers']:
                 mapped['special_trainers'].append(ace_spec)
 
         # 2. ポケモンの特殊分類 (special または special_features)
