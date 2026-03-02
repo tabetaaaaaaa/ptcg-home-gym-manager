@@ -11,7 +11,7 @@
                     <h4 class="font-semibold text-sm mb-2">検出された画像</h4>
                     <div class="rounded-lg border-2 border-base-300 p-2 bg-base-200 flex justify-center items-center min-h-[200px]">
                         {% if item.image_url %}
-                            <img src="{{ item.image_url }}" alt="Detected Card" class="max-w-full max-h-[400px] object-contain rounded shadow-md">
+                            <img src="{{ item.image_url }}" alt="Detected Card" class="max-w-full max-h-[400px] object-contain rounded shadow-md" onclick="openImagePreview(this.src)" >
                         {% else %}
                             <span class="text-gray-400">No Image</span>
                         {% endif %}

@@ -1,11 +1,10 @@
 {% load static %}
 <tr id="card-{{ card.pk }}">
     <td class="text-center">
-        {% if card.image %}
-            <img src="{{ card.image.url }}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded mx-auto">
-        {% else %}
-            <img src="{% static 'images/nonepic.png' %}" alt="{{ card.name }}" class="w-16 h-20 object-cover rounded mx-auto">
-        {% endif %}
+        <img src="{% if card.image %}{{ card.image.url }}{% else %}{% static 'images/nonepic.png' %}{% endif %}"
+            alt="{{ card.name }}"
+            class="w-16 h-20 object-cover rounded mx-auto"
+            onclick="openImagePreview(this.src)" />
     </td>
     <td class="font-semibold">{{ card.name }}</td>
     <td class="text-center">
