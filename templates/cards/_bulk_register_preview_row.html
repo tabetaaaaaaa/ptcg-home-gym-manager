@@ -2,7 +2,7 @@
     {# 画像 #}
     <td class="text-center align-middle">
         {% if item.image_url %}
-            <img src="{{ item.image_url }}" alt="crop" class="w-16 h-20 object-contain rounded mx-auto border bg-base-200">
+            <img src="{{ item.image_url }}" alt="crop" class="w-16 h-20 object-contain rounded mx-auto border bg-base-200" onclick="openImagePreview(this.src)" >
         {% else %}
             <span class="text-xs text-gray-400">No Image</span>
         {% endif %}

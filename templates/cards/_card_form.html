@@ -380,7 +380,7 @@
                          data-original-image-url="{% if card and card.image %}{{ card.image.url }}{% endif %}">
                         <div class="avatar">
                             <div class="w-32 rounded-lg ring ring-primary ring-offset-base-100 ring-offset-2">
-                                <img id="image-preview" src="{% if card and card.image %}{{ card.image.url }}{% endif %}" alt="画像プレビュー">
+                                <img id="image-preview" src="{% if card and card.image %}{{ card.image.url }}{% endif %}" alt="画像プレビュー" onclick="openImagePreview(this.src)">
                             </div>
                         </div>
                     </div>
